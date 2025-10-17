@@ -1,0 +1,47 @@
+{% extends 'restaurant/base.html' %}
+{% block title %}Customer Dashboard{% endblock %}
+{% block content %}
+
+<h2 class="mb-3">Welcome, {{ username }}</h2>
+
+<div class="grid grid-3">
+  <div class="card">
+    <h3 class="card-title">My Orders</h3>
+    <p class="card-muted mb-2">Pending orders: <strong>{{ pending_orders }}</strong></p>
+    <span class="badge badge-info">Last status: {{ last_order_status }}</span>
+    <button class="btn btn-primary btn-block mt-3">Start a New Order</button>
+  </div>
+
+  <div class="card" style="grid-column: span 2;">
+    <h3 class="card-title">Recommendations</h3>
+    <div class="badges">
+      {% for item in recommendations %}
+        <span class="badge">{{ item }}</span>
+      {% empty %}
+        <span class="card-muted">No recommendations yet.</span>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<div class="card mt-4">
+  <h3 class="card-title">Quick Menu</h3>
+  <div class="grid grid-3 mt-2">
+    <div class="card">
+      <div class="card-title">Pepperoni Pizza</div>
+      <p class="card-muted">{{ SAR }} 36</p>
+      <button class="btn btn-success btn-block">Add to Cart</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Chicken Wrap</div>
+      <p class="card-muted">{{ SAR }} 24</p>
+      <button class="btn btn-success btn-block">Add to Cart</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Iced Latte</div>
+      <p class="card-muted">{{ SAR }} 18</p>
+      <button class="btn btn-success btn-block">Add to Cart</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

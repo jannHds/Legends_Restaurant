@@ -1,0 +1,36 @@
+{% extends 'restaurant/base.html' %}
+{% block title %}Manager Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-3">Manager Summary</h2>
+
+<div class="grid grid-2">
+  <div class="card">
+    <h3 class="card-title">Today’s Revenue</h3>
+    <div class="stat-value">{{ SAR }} {{ today_revenue }}</div>
+    <div class="card-muted">Orders today: {{ orders_today }}</div>
+  </div>
+
+  <div class="card">
+    <h3 class="card-title">Low-Stock Items</h3>
+    {% if low_stock_items %}
+      <div class="badges">
+        {% for item in low_stock_items %}
+          <span class="badge badge-warn">{{ item }}</span>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="card-muted">All stocked well.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card mt-4">
+  <h3 class="card-title">Menu Management</h3>
+  <div style="display:flex; gap:10px; flex-wrap:wrap;">
+    <button class="btn btn-primary">Add Item</button>
+    <button class="btn btn-outline">Edit Item</button>
+    <button class="btn btn-danger">Delete Item</button>
+  </div>
+</div>
+{% endblock %}
+
