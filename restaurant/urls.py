@@ -1,11 +1,17 @@
 from django.urls import path
 from . import views
-from django.urls import path
 
 urlpatterns = [
-    path('', views.home, name='home'),
-    path('customer/', views.customer_dashboard, name='customer_dashboard'),
-    path('staff/', views.staff_dashboard, name='staff_dashboard'),
-    path('manager/', views.manager_dashboard, name='manager_dashboard'),
+    # الصفحة الرئيسية /
+    path("", views.home, name="home"),
+
+    # صفحات الدخول والخروج
+    path("login/", views.login_view, name="login"),
+    path("logout/", views.logout_view, name="logout"),
+
+    # Dashboards حسب الـ RBAC
+    path("customer/dashboard/", views.customer_dashboard, name="customer_dashboard"),
+    path("staff/dashboard/", views.staff_dashboard, name="staff_dashboard"),
+    path("manager/dashboard/", views.manager_dashboard, name="manager_dashboard"),
 ]
 
