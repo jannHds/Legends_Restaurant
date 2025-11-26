@@ -25,7 +25,8 @@ class User(AbstractUser):
         ("staff", "Staff"),
         ("manager", "Manager"),
     ]
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="customer")
+    role = models.CharField(
+        max_length=20, choices=ROLE_CHOICES, default="customer")
 
     def is_customer(self):
         return self.role == "customer"

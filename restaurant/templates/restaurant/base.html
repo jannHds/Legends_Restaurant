@@ -1,11 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Legends Restaurant</title>
     <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 </head>
+
 <body class="lr-body">
 
     <header class="lr-header">
@@ -36,60 +38,60 @@
             <div class="lr-menu-grid">
                 {# لو عندك menu_items من الـ DB استخدمي هذا اللوب #}
                 {% if menu_items %}
-                    {% for item in menu_items %}
-                        <article class="lr-menu-card">
-                            <div class="lr-menu-image"></div>
-                            <h3 class="lr-menu-title">{{ item.name }}</h3>
-                            <p class="lr-menu-desc">{{ item.description }}</p>
-                            <div class="lr-menu-footer">
-                                <span class="lr-menu-price">
-                                    <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                                    {{ item.price }}
-                                </span>
-                                <button class="lr-btn-secondary">Add to cart</button>
-                            </div>
-                        </article>
-                    {% endfor %}
+                {% for item in menu_items %}
+                <article class="lr-menu-card">
+                    <div class="lr-menu-image"></div>
+                    <h3 class="lr-menu-title">{{ item.name }}</h3>
+                    <p class="lr-menu-desc">{{ item.description }}</p>
+                    <div class="lr-menu-footer">
+                        <span class="lr-menu-price">
+                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                            {{ item.price }}
+                        </span>
+                        <button class="lr-btn-secondary">Add to cart</button>
+                    </div>
+                </article>
+                {% endfor %}
                 {% else %}
                 {# بيانات تجريبية لو ما فيه DB للحين #}
-                    <article class="lr-menu-card">
-                        <div class="lr-menu-image"></div>
-                        <h3 class="lr-menu-title">Classic Burger</h3>
-                        <p class="lr-menu-desc">Juicy beef patty, fresh lettuce and cheese.</p>
-                        <div class="lr-menu-footer">
-                            <span class="lr-menu-price">
-                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                                32
-                            </span>
-                            <button class="lr-btn-secondary">Add to cart</button>
-                        </div>
-                    </article>
+                <article class="lr-menu-card">
+                    <div class="lr-menu-image"></div>
+                    <h3 class="lr-menu-title">Classic Burger</h3>
+                    <p class="lr-menu-desc">Juicy beef patty, fresh lettuce and cheese.</p>
+                    <div class="lr-menu-footer">
+                        <span class="lr-menu-price">
+                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                            32
+                        </span>
+                        <button class="lr-btn-secondary">Add to cart</button>
+                    </div>
+                </article>
 
-                    <article class="lr-menu-card">
-                        <div class="lr-menu-image"></div>
-                        <h3 class="lr-menu-title">Chicken Alfredo Pasta</h3>
-                        <p class="lr-menu-desc">Creamy sauce with grilled chicken and parmesan.</p>
-                        <div class="lr-menu-footer">
-                            <span class="lr-menu-price">
-                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                                45
-                            </span>
-                            <button class="lr-btn-secondary">Add to cart</button>
-                        </div>
-                    </article>
+                <article class="lr-menu-card">
+                    <div class="lr-menu-image"></div>
+                    <h3 class="lr-menu-title">Chicken Alfredo Pasta</h3>
+                    <p class="lr-menu-desc">Creamy sauce with grilled chicken and parmesan.</p>
+                    <div class="lr-menu-footer">
+                        <span class="lr-menu-price">
+                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                            45
+                        </span>
+                        <button class="lr-btn-secondary">Add to cart</button>
+                    </div>
+                </article>
 
-                    <article class="lr-menu-card">
-                        <div class="lr-menu-image"></div>
-                        <h3 class="lr-menu-title">Caramel Latte</h3>
-                        <p class="lr-menu-desc">Hot coffee with milk foam and caramel drizzle.</p>
-                        <div class="lr-menu-footer">
-                            <span class="lr-menu-price">
-                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                                18
-                            </span>
-                            <button class="lr-btn-secondary">Add to cart</button>
-                        </div>
-                    </article>
+                <article class="lr-menu-card">
+                    <div class="lr-menu-image"></div>
+                    <h3 class="lr-menu-title">Caramel Latte</h3>
+                    <p class="lr-menu-desc">Hot coffee with milk foam and caramel drizzle.</p>
+                    <div class="lr-menu-footer">
+                        <span class="lr-menu-price">
+                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                            18
+                        </span>
+                        <button class="lr-btn-secondary">Add to cart</button>
+                    </div>
+                </article>
                 {% endif %}
             </div>
         </section>
@@ -100,4 +102,5 @@
     </footer>
 
 </body>
+
 </html>

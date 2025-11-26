@@ -1,27 +1,85 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Login</title>
+    <meta charset="utf-8">
+    <title>Login | Legends Restaurant</title>
+    <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 </head>
-<body>
 
-    <h2>Login</h2>
+<body class="lr-body">
 
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
+    <header class="lr-header">
+        <div class="lr-logo">Legends Restaurant</div>
+        <nav class="lr-nav">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'login' %}">Login</a>
+            <a href="/customer/dashboard/">Customer</a>
+            <a href="/staff/dashboard/">Staff</a>
+            <a href="/manager/dashboard/">Manager</a>
+        </nav>
+    </header>
 
-    <form method="POST">
-        {% csrf_token %}
+    <main class="lr-main">
 
-        <label>Username:</label>
-        <input type="text" name="username" required><br><br>
+        <div class="lr-login-wrapper">
 
-        <label>Password:</label>
-        <input type="password" name="password" required><br><br>
+            <h1 class="lr-login-title">Welcome Back</h1>
+            <p class="lr-login-subtitle">
+                Sign in to continue your Legends Restaurant experience.
+            </p>
 
-        <button type="submit">Login</button>
-    </form>
+            {% if error %}
+            <p style="color: red; text-align:center; margin-bottom: 10px;">
+                {{ error }}
+            </p>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <label class="lr-form-label">Username</label>
+                <input type="text" name="username" class="lr-input" required>
+
+                <label class="lr-form-label">Password</label>
+                <input type="password" name="password" class="lr-input" required>
+
+                <button type="submit" class="lr-btn-login">Login</button>
+            </form>
+
+            <p class="lr-login-note">
+                Don’t have an account? <a href="{% url 'signup' %}">Create one</a>
+            </p>
+
+            <!-- ===== SOCIAL MEDIA (SMALL ICON + TEXT) ===== -->
+            <div class="lr-login-social-clean">
+
+                <a class="lr-social-line" href="#" target="_blank">
+                    <img src="{% static 'restaurant/insta.png' %}" alt="Instagram">
+                    <span>Instagram</span>
+                </a>
+
+                <a class="lr-social-line" href="#" target="_blank">
+                    <img src="{% static 'restaurant/tiktok.png' %}" alt="TikTok">
+                    <span>TikTok</span>
+                </a>
+
+                <a class="lr-social-line" href="#" target="_blank">
+                    <img src="{% static 'restaurant/whatsapp.png' %}" alt="WhatsApp">
+                    <span>WhatsApp</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="lr-footer">
+        &copy; {{ now|date:"Y" }} Legends Restaurant – Takeaway & Delivery
+    </footer>
 
 </body>
+
 </html>
