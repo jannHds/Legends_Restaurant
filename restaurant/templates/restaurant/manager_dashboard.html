@@ -13,13 +13,13 @@
   <div class="card">
     <h3 class="card-title">Low-Stock Items</h3>
     {% if low_stock_items %}
-      <div class="badges">
-        {% for item in low_stock_items %}
-          <span class="badge badge-warn">{{ item }}</span>
-        {% endfor %}
-      </div>
+    <div class="badges">
+      {% for item in low_stock_items %}
+      <span class="badge badge-warn">{{ item }}</span>
+      {% endfor %}
+    </div>
     {% else %}
-      <p class="card-muted">All stocked well.</p>
+    <p class="card-muted">All stocked well.</p>
     {% endif %}
   </div>
 </div>
@@ -33,4 +33,3 @@
   </div>
 </div>
 {% endblock %}
-
