@@ -36,3 +36,98 @@ class User(AbstractUser):
 
     def is_manager(self):
         return self.role == "manager"
+    
+class MenuItem(models.Model):
+
+    CATEGORY_CHOICES = [
+    ('drinks', 'Drinks'),
+    ('main', 'Main Dishes'),
+    ('appetizers', 'Appetizers'),
+    ('sweet', 'Sweet'),
+    ('special', 'Special Dishes'),
+    ]
+
+
+    name = models.CharField(max_length=150)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+    is_available = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name 
+
+# ============================
+# CART (سلة العميل)
+# ============================
+class Cart(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def total_price(self):
+        items = self.cartitem_set.all()
+        return sum([item.total_price() for item in items])
+
+    def __str__(self):
+        return f"{self.user.username}'s Cart"
+
+
+# ============================
+# CART ITEM (عنصر داخل السلة)
+# ============================
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def total_price(self):
+        return self.item.price * self.quantity
+
+    def __str__(self):
+        return f"{self.quantity} × {self.item.name}"
+
+
+# ============================
+# ORDER
+# ============================
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('preparing', 'Preparing'),
+        ('out_for_delivery', 'Out For Delivery'),
+        ('delivered', 'Delivered'),
+    ]
+
+    TYPE_CHOICES = [
+        ('takeaway', 'Takeaway'),
+        ('delivery', 'Delivery'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=30, choices=STATUS_CHOICES, default='preparing'
+    )
+    order_type = models.CharField(
+        max_length=30, choices=TYPE_CHOICES, default='takeaway'
+    )
+    total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    notes = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order #{self.id} - {self.user.username}"
+
+
+# ============================
+# ORDER ITEM
+# ============================
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+
+    def total(self):
+        return self.price * self.quantity
+
+    def __str__(self):
+        return f"{self.quantity} × {self.item.name}" 
+
