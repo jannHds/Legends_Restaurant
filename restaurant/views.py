@@ -47,9 +47,6 @@ def login_view(request):
     return render(request, "restaurant/login.html")
 
 
-from django.contrib.auth import get_user_model
-User = get_user_model()
-
 def signup_view(request):
     return render(request, 'restaurant/signup.html')
 
