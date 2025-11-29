@@ -1331,3 +1331,93 @@ body {
 .mu-table tbody tr:hover {
     background: rgba(158, 138, 255, 0.12);
 }
+
+/* ========= ACCESS DENIED PAGE (clean final version) ========= */
+
+/* Wrapper فقط لصفحة Access Denied */
+.lr-access-wrapper {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* الكرت */
+.lr-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 32px 40px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    max-width: 640px;
+    width: 100%;
+}
+
+/* الكرت الداخلي للرسالة */
+.lr-access-card {
+    text-align: center;
+}
+
+/* الأيقونة 🚫 */
+.lr-access-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+/* العنوان */
+.lr-access-card h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #3e2c66;
+}
+
+/* النص */
+.lr-access-card p {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 26px;
+}
+
+/* الحاوية اللي تمسك الزرين */
+.lr-access-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+/* ستايل الأزرار داخل صفحة Access Denied فقط */
+.lr-access-actions .lr-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    transition: 0.15s ease;
+    border: none;
+    cursor: pointer;
+}
+
+/* زر Back to Home (فاتح) */
+.lr-access-actions .lr-btn-ghost {
+    background: #fde2b9;
+    color: #4b3b63;
+}
+
+.lr-access-actions .lr-btn-ghost:hover {
+    background: #fcd49a;
+    transform: translateY(-2px);
+}
+
+/* زر Login with another account (بنفسجي) */
+.lr-access-actions .lr-btn-primary {
+    background: #9f88ff;
+    color: #ffffff;
+}
+
+.lr-access-actions .lr-btn-primary:hover {
+    background: #8b72ff;
+    transform: translateY(-2px);
+}

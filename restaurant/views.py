@@ -68,9 +68,18 @@ def _ensure_role(request, required_role):
     """هيلبر داخلي: يتحقق من تسجيل الدخول والـ role"""
     if not request.user.is_authenticated:
         return redirect("login")
-    if request.user.role != required_role:
-        return HttpResponseForbidden("You are not allowed to access this page.")
+
+    # لو الدور مختلف، نعرض صفحة شكلها حلو بدل النص العادي
+    if getattr(request.user, "role", None) != required_role:
+        return render(
+            request,
+            "restaurant/access_denied.html",
+            {"required_role": required_role},
+            status=403,
+        )
+
     return None
+
 
 
 def customer_dashboard(request):
