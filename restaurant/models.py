@@ -27,6 +27,17 @@ class User(AbstractUser):
     ]
     role = models.CharField(
         max_length=20, choices=ROLE_CHOICES, default="customer")
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+
+    # للستاف
+    hired_at = models.DateTimeField(blank=True, null=True)
+    salary = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+    )
 
     def is_customer(self):
         return self.role == "customer"
@@ -36,17 +47,17 @@ class User(AbstractUser):
 
     def is_manager(self):
         return self.role == "manager"
-    
+
+
 class MenuItem(models.Model):
 
     CATEGORY_CHOICES = [
-    ('drinks', 'Drinks'),
-    ('main', 'Main Dishes'),
-    ('appetizers', 'Appetizers'),
-    ('sweet', 'Sweet'),
-    ('special', 'Special Dishes'),
+        ('drinks', 'Drinks'),
+        ('main', 'Main Dishes'),
+        ('appetizers', 'Appetizers'),
+        ('sweet', 'Sweet'),
+        ('special', 'Special Dishes'),
     ]
-
 
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
@@ -55,11 +66,13 @@ class MenuItem(models.Model):
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name 
+        return self.name
 
 # ============================
 # CART (سلة العميل)
 # ============================
+
+
 class Cart(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
@@ -129,5 +142,4 @@ class OrderItem(models.Model):
         return self.price * self.quantity
 
     def __str__(self):
-        return f"{self.quantity} × {self.item.name}" 
-
+        return f"{self.quantity} × {self.item.name}"

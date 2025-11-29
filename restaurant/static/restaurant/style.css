@@ -765,7 +765,8 @@ body {
 
 
 .manager-title {
-    color: #4b4d73 !important; /* نفس لون Today's Menu */
+    color: #4b4d73 !important;
+    /* نفس لون Today's Menu */
     font-size: 32px;
     font-weight: 800;
     margin-bottom: 20px;
@@ -786,13 +787,13 @@ body {
     border-radius: 18px;
     text-decoration: none;
     color: #4b4d73;
-    box-shadow: 0 10px 30px rgba(137,138,196,0.15);
+    box-shadow: 0 10px 30px rgba(137, 138, 196, 0.15);
     transition: 0.2s ease;
 }
 
 .manager-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 18px 40px rgba(137,138,196,0.25);
+    box-shadow: 0 18px 40px rgba(137, 138, 196, 0.25);
 }
 
 .manager-card h2 {
@@ -805,4 +806,618 @@ body {
     margin: 0;
     font-size: 14px;
     color: #6a6c85;
+}
+
+/* ===== Manage Users Page ===== */
+
+.manage-users-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.6fr);
+    gap: 2.5rem;
+    align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+    .manage-users-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.manage-users-card {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 1.8rem 2.2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* فورم مرتب */
+
+.lr-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.form-row-inline {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.5rem;
+}
+
+.lr-form label {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.lr-form input,
+.lr-form select {
+    padding: 0.5rem 0.7rem;
+    border-radius: 10px;
+    border: 1px solid #d1c5f0;
+    font-size: 0.95rem;
+}
+
+/* جدول المستخدمين */
+
+.lr-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.lr-table thead {
+    background: #f0e8ff;
+}
+
+.lr-table th,
+.lr-table td {
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+}
+
+.lr-table tbody tr:nth-child(even) {
+    background: #faf5ff;
+}
+
+.lr-table tbody tr:hover {
+    background: #eee4ff;
+}
+
+/* رسائل */
+
+.lr-error {
+    color: #b3261e;
+    margin-top: 0.6rem;
+}
+
+.lr-success {
+    color: #137333;
+    margin-top: 0.6rem;
+}
+
+/* ===== Manage Users (layout) ===== */
+
+.mu-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.mu-card {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 1.8rem 2.2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+/* form */
+
+.mu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.mu-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.mu-field label {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.mu-field input,
+.mu-field select {
+    padding: 0.5rem 0.7rem;
+    border-radius: 10px;
+    border: 1px solid #d1c5f0;
+    font-size: 0.95rem;
+}
+
+/* table */
+
+.mu-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.mu-table thead {
+    background: #f0e8ff;
+}
+
+.mu-table th,
+.mu-table td {
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    border-bottom: 1px solid #e1d7ff;
+}
+
+.mu-table tbody tr:nth-child(even) {
+    background: #faf5ff;
+}
+
+.mu-table tbody tr:hover {
+    background: #eee4ff;
+}
+
+/* رسائل */
+
+.lr-error {
+    color: #b3261e;
+    margin-top: 0.6rem;
+}
+
+.lr-success {
+    color: #137333;
+    margin-top: 0.6rem;
+}
+
+.mu-container {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.mu-card {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 1.8rem 2.2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+}
+
+.mu-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.mu-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.mu-field label {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.mu-field input,
+.mu-field select {
+    padding: 0.5rem 0.7rem;
+    border-radius: 10px;
+    border: 1px solid #d1c5f0;
+    font-size: 0.95rem;
+}
+
+.mu-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mu-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.mu-filter-form select {
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #d1c5f0;
+    font-size: 0.9rem;
+}
+
+.mu-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+}
+
+.mu-table thead {
+    background: #f0e8ff;
+}
+
+.mu-table th,
+.mu-table td {
+    padding: 0.5rem 0.7rem;
+    text-align: left;
+    border-bottom: 1px solid #e1d7ff;
+}
+
+.mu-table tbody tr:nth-child(even) {
+    background: #faf5ff;
+}
+
+.mu-table tbody tr:hover {
+    background: #eee4ff;
+}
+
+.mu-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    font-size: 0.9rem;
+}
+
+.mu-filter-form select {
+    padding: 0.25rem 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #d1c5f0;
+    font-size: 0.9rem;
+}
+.mu-filter-form select {
+    padding: 4px 10px;
+    min-width: 140px;
+    border-radius: 8px;
+    border: 1px solid #d2c6ff;
+    font-size: 14px;
+}
+.form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.form-group.half {
+    flex: 1;
+}
+
+.form-group.full {
+    width: 100%;
+}
+
+.form-group label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.mu-form input, 
+.mu-form select {
+    width: 100%;
+}
+/* Manager - Add User form layout */
+.user-form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.user-form .user-field {
+    flex: 1;
+}
+
+.user-form .user-field.full {
+    flex: 0 0 100%;
+}
+
+.user-form .user-field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+/* خلي الحقول تملي عرض الكارد */
+.user-form .lr-input,
+.user-form select {
+    width: 100%;
+}
+
+/* للجوال: خليه يرجع عمود واحد */
+@media (max-width: 768px) {
+    .user-form-row {
+        flex-direction: column;
+    }
+}
+/* ===== Manager two-column layout ===== */
+.manager-flex {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+.manager-half {
+    flex: 1;
+}
+
+/* يمنع الكرت من التمدد أكثر من اللازم */
+.manager-half .mu-card {
+    width: 100%;
+}
+
+/* للجوال: يرجّعهم فوق بعض */
+@media (max-width: 900px) {
+    .manager-flex {
+        flex-direction: column;
+    }
+}
+/* ===== Manage Users layout (final) ===== */
+
+/* الحاوية اللي تمسك الكرتين */
+.manager-flex {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 32px;
+    margin: 40px auto 0;
+    max-width: 1200px;      /* يستغل عرض الصفحة أكثر */
+}
+
+/* كل نصف ياخذ نص المساحة تقريبًا */
+.manager-half {
+    flex: 1 1 0;
+}
+
+/* نخلي الكرت الأبيض يملى عرض النصف */
+.manager-half .mu-card {
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 auto;
+}
+
+/* ===== يسار: فورم إضافة يوزر – الحقول تحت بعض ===== */
+
+.manager-half:first-child .user-form-row {
+    display: block;
+    margin-bottom: 16px;
+}
+
+.manager-half:first-child .user-field {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.manager-half:first-child .user-field.full {
+    width: 100%;
+}
+
+.manager-half:first-child .lr-input {
+    width: 100%;
+}
+
+/* زر Create User بشكل مرتب */
+.manager-half:first-child .lr-btn-primary {
+    width: 70%;
+    margin: 20px auto 0;
+    display: block;
+}
+
+/* ===== يمين: فلتر + جدول اليوزرز ===== */
+
+/* الفلتر فوق الكرت اليمين */
+.mu-filter-form {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 12px 0;
+}
+
+/* ما نبي سكرول أفقي هنا */
+.manager-half:last-child .mu-card {
+    overflow-x: visible;
+}
+
+/* الجدول يملأ الكرت والكلام ما يطيح برا */
+.mu-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.mu-table th,
+.mu-table td {
+    padding: 8px 10px;
+    text-align: left;
+    white-space: normal;   /* يخلي النص يلف وما يختفي */
+}
+
+/* في الشاشات الصغيرة نخليهم تحت بعض */
+@media (max-width: 1100px) {
+    .manager-flex {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .manager-half {
+        max-width: 90%;
+    }
+}
+.mu-accordion-wrapper {
+    margin-top: 15px !important;
+}
+/* =============================== */
+/* Hover Effects - Elegant Motion */
+/* =============================== */
+
+/* 1) تأثير لطيف على كروت الـ Accordion */
+.mu-accordion-card {
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.mu-accordion-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 45px rgba(158, 138, 255, 0.22);
+}
+
+/* 2) تفاعل عنوان الـsummary */
+.mu-accordion-card summary:hover {
+    background: rgba(158, 138, 255, 0.08);
+    color: #3f2f63;
+    transition: 0.2s ease;
+}
+
+/* 3) تأثير على زر Create Employee */
+.lr-btn-primary {
+    transition: 0.2s ease;
+}
+
+.lr-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+    background-color: #7f6cd6;
+}
+
+/* 4) الحقول داخل الفورم */
+.lr-input {
+    transition: 0.25s ease;
+}
+
+.lr-input:hover, 
+.lr-input:focus {
+    border-color: #7f6cd6;
+    box-shadow: 0 0 0 4px rgba(158, 138, 255, 0.25);
+}
+
+/* 5) حركة رابط Edit */
+.mu-edit-btn {
+    transition: 0.15s ease;
+    color: #6b54c7;
+}
+
+.mu-edit-btn:hover {
+    color: #3e2e74;
+    text-decoration: underline;
+}
+
+/* 6) صفوف الجدول */
+.mu-table tbody tr {
+    transition: background 0.2s ease;
+}
+
+.mu-table tbody tr:hover {
+    background: rgba(158, 138, 255, 0.12);
+}
+
+/* ========= ACCESS DENIED PAGE (clean final version) ========= */
+
+/* Wrapper فقط لصفحة Access Denied */
+.lr-access-wrapper {
+    min-height: calc(100vh - 140px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* الكرت */
+.lr-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 32px 40px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+    max-width: 640px;
+    width: 100%;
+}
+
+/* الكرت الداخلي للرسالة */
+.lr-access-card {
+    text-align: center;
+}
+
+/* الأيقونة 🚫 */
+.lr-access-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+}
+
+/* العنوان */
+.lr-access-card h1 {
+    font-size: 28px;
+    margin-bottom: 10px;
+    color: #3e2c66;
+}
+
+/* النص */
+.lr-access-card p {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 26px;
+}
+
+/* الحاوية اللي تمسك الزرين */
+.lr-access-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+}
+
+/* ستايل الأزرار داخل صفحة Access Denied فقط */
+.lr-access-actions .lr-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+    transition: 0.15s ease;
+    border: none;
+    cursor: pointer;
+}
+
+/* زر Back to Home (فاتح) */
+.lr-access-actions .lr-btn-ghost {
+    background: #fde2b9;
+    color: #4b3b63;
+}
+
+.lr-access-actions .lr-btn-ghost:hover {
+    background: #fcd49a;
+    transform: translateY(-2px);
+}
+
+/* زر Login with another account (بنفسجي) */
+.lr-access-actions .lr-btn-primary {
+    background: #9f88ff;
+    color: #ffffff;
+}
+
+.lr-access-actions .lr-btn-primary:hover {
+    background: #8b72ff;
+    transform: translateY(-2px);
 }
