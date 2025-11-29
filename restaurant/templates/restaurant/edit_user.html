@@ -1,0 +1,63 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Employee</title>
+    <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
+</head>
+
+<body class="lr-body">
+
+<header class="lr-header">
+    <div class="lr-logo">Manager Dashboard</div>
+    <nav class="lr-nav">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'manage_users' %}">Back</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+</header>
+
+<main class="lr-main">
+    <div class="mu-container">
+
+        <section class="mu-card">
+            <h2 class="manager-title">Edit Employee: {{ user_obj.username }}</h2>
+
+            <form method="post" class="mu-form">
+                {% csrf_token %}
+
+                <label>Employee Username</label>
+                {{ form.username }}
+
+                <label>Email</label>
+                {{ form.email }}
+
+                <label>Phone</label>
+                {{ form.phone }}
+
+                <label>Address</label>
+                {{ form.address }}
+
+                <label>Role</label>
+                {{ form.role }}
+
+                <label>Salary (for staff)</label>
+                {{ form.salary }}
+
+                {% if user_obj.role == 'staff' %}
+                    <label>Hired At</label>
+                    {{ form.hired_at }}
+                {% endif %}
+
+                <button type="submit" class="mu-submit-btn">Save Changes</button>
+            </form>
+
+        </section>
+
+    </div>
+</main>
+
+</body>
+</html>
