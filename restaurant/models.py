@@ -1,22 +1,6 @@
 from django.db import models
-'''models.py
-
-Database tables 
-
-User
-
-MenuItem
-
-Category
-
-Order
-
-Cart
-
-Staff handling
-
-Manager tools '''
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 
 
 class User(AbstractUser):
@@ -143,3 +127,24 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} × {self.item.name}"
+class CustomerUser(models.Model):
+    # هذا هو Customer_id = INT(PK) ويتولد تلقائياً
+    customer_id = models.AutoField(primary_key=True)
+
+    # نخزن الربط مع User الأساسي (اختياري لكن مفيد جداً)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="customer_profile",
+        null=True,
+        blank=True,
+    )
+
+    username = models.CharField(max_length=150)
+    password = models.CharField(max_length=128)  # بنخزن فيها نفس الـ hashed password
+    email = models.EmailField(unique=True, null=True, blank=True)
+    phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    address = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.username} ({self.customer_id})"

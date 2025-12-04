@@ -24,4 +24,6 @@ urlpatterns = [
     path("manager/users/", views.manage_users, name="manage_users"),
     path('manager/users/<int:user_id>/edit/', views.edit_user, name='edit_user'),
 
+    path("customer/signup/", views.customer_signup_view, name="customer_signup"),
+
 ]

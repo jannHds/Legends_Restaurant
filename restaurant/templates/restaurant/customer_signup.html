@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Customer Sign Up | Legends Restaurant</title>
+    <style>
+        :root {
+            --primary: #8064A2;
+            --primary-light: #F4E1FF;
+            --accent: #F9B4ED;
+            --text-dark: #2E2140;
+            --bg: #f6f2fb;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-light), #ffffff);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-wrapper {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            padding: 30px 32px 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 16px;
+            font-size: 28px;
+            text-decoration: none;
+            color: #b39ddb;
+            font-weight: 600;
+        }
+
+        .close-btn:hover {
+            color: #8064A2;
+            transform: scale(1.15);
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .brand-subtitle {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .auth-title {
+            margin-top: 12px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        form {
+            margin-top: 10px;
+        }
+        .password-tooltip-group {
+         position: relative;
+        }
+        .tooltip-bubble {
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 6px;
+            background: #2E2140;
+            color: #ffffff;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            line-height: 1.4;
+            max-width: 290px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(4px);
+            transition: opacity 0.15s ease, transform 0.15s ease;
+            z-index: 20;
+        }
+        .tooltip-bubble::before {
+            content: "";
+            position: absolute;
+            top: -6px;
+            left: 18px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: transparent transparent #2E2140 transparent;
+        }
+        .password-tooltip-group input:hover + .tooltip-bubble,
+        .password-tooltip-group input:focus + .tooltip-bubble,
+        .password-tooltip-group:hover .tooltip-bubble {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 9px 10px;
+            border-radius: 10px;
+            border: 1px solid #d6cfe6;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+            background-color: #fbf8ff;
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(128, 100, 162, 0.18);
+            background-color: #ffffff;
+        }
+
+        .btn-primary {
+            width: 100%;
+            border: none;
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-size: 0.98rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: linear-gradient(135deg, var(--primary), #9a7bd9);
+            color: #ffffff;
+            margin-top: 6px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(128, 100, 162, 0.35);
+        }
+
+        .helper-text {
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.87rem;
+            color: #666;
+        }
+
+        .helper-text a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .helper-text a:hover {
+            text-decoration: underline;
+        }
+
+        .errorlist {
+            list-style: none;
+            padding-left: 0;
+            margin: 4px 0 0 0;
+            font-size: 0.78rem;
+            color: #d61f3a;
+        }
+
+        .non-field-errors {
+            background: #ffe6ec;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+            font-size: 0.8rem;
+            color: #a10f28;
+        }
+    </style>
+</head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <a href="/" class="close-btn">&times;</a>
+
+        <div class="auth-header">
+            <div class="brand-title">LEGENDS RESTAURANT</div>
+            <div class="brand-subtitle">Customer Sign Up</div>
+            <div class="auth-title">Create your account</div>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="non-field-errors">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            {% for field in form %}
+              {% if field.name == "password1" %}
+               <div class="form-group password-tooltip-group">
+                   <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                   {{ field }}
+                   {% if field.errors %}
+                       <ul class="errorlist">
+                           {% for error in field.errors %}
+                               <li>{{ error }}</li>
+                           {% endfor %}
+                       </ul>
+                {% endif %}
+
+            <div class="tooltip-bubble">
+                <strong>Password rules:</strong><br>
+                • At least 8 characters<br>
+                • Not entirely numeric<br>
+                • Not too similar to your name or email<br>
+                • Not a very common password
+            </div>
+        </div>
+    {% else %}
+    
+        <div class="form-group">
+            <label for "{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+                <ul class="errorlist">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endfor %}
+
+            <button type="submit" class="btn-primary">Sign Up as Customer</button>
+        </form>
+
+        <div class="helper-text">
+            Already have an account?
+            <a href="{% url 'login' %}">Log in</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
-
+from .forms import CustomerSignUpForm
 
 
 # صفحة رئيسية بسيطة (تقدرين تغيرينها لاحقاً)
@@ -249,3 +249,23 @@ def edit_user(request, user_id):
         'form': form,
         'user_obj': user_obj,
     })
+def customer_signup_view(request):
+    """
+    Customer Sign Up Page
+    """
+    if request.method == "POST":
+        form = CustomerSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # تسجيل الدخول مباشرة بعد التسجيل (تقدرين تشيلينه لو ما تبغينه)
+            login(request, user)
+            # غيري "customer_home" لاسم الـ URL الخاص بداشبورد الكستمر عندكم
+            return redirect("customer_home")  # مثال: "customer_dashboard"
+    else:
+        form = CustomerSignUpForm()
+
+    context = {
+        "form": form,
+    }
+    return render(request, "restaurant/customer_signup.html", context)
+
