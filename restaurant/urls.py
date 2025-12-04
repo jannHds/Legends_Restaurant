@@ -1,17 +1,27 @@
 from django.urls import path
 from . import views
+from . import manager_views  # فيه menu_list للمنيو
 
 urlpatterns = [
-    # الصفحة الرئيسية /
+    # الصفحة الرئيسية
     path("", views.home, name="home"),
 
     # صفحات الدخول والخروج
     path("login/", views.login_view, name="login"),
+    path("signup/", views.signup_view, name="signup"),
     path("logout/", views.logout_view, name="logout"),
 
-    # Dashboards حسب الـ RBAC
-    path("customer/dashboard/", views.customer_dashboard, name="customer_dashboard"),
+    # Dashboards حسب الـ role
+    path("customer/dashboard/", views.customer_dashboard,
+         name="customer_dashboard"),
     path("staff/dashboard/", views.staff_dashboard, name="staff_dashboard"),
     path("manager/dashboard/", views.manager_dashboard, name="manager_dashboard"),
-]
 
+    # زر Manage Menu في صفحة المدير
+    path("manager/menu/", manager_views.menu_list, name="manager_menu_list"),
+
+    # زر Manage Users الجديد
+    path("manager/users/", views.manage_users, name="manage_users"),
+    path('manager/users/<int:user_id>/edit/', views.edit_user, name='edit_user'),
+
+]

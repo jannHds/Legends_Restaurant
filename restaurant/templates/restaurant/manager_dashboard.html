@@ -1,36 +1,65 @@
-{% extends 'restaurant/base.html' %}
-{% block title %}Manager Dashboard{% endblock %}
-{% block content %}
-<h2 class="mb-3">Manager Summary</h2>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
 
-<div class="grid grid-2">
-  <div class="card">
-    <h3 class="card-title">Today’s Revenue</h3>
-    <div class="stat-value">{{ SAR }} {{ today_revenue }}</div>
-    <div class="card-muted">Orders today: {{ orders_today }}</div>
-  </div>
+<head>
+    <meta charset="UTF-8">
+    <title>Manager Dashboard</title>
+    <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
+</head>
 
-  <div class="card">
-    <h3 class="card-title">Low-Stock Items</h3>
-    {% if low_stock_items %}
-      <div class="badges">
-        {% for item in low_stock_items %}
-          <span class="badge badge-warn">{{ item }}</span>
-        {% endfor %}
-      </div>
-    {% else %}
-      <p class="card-muted">All stocked well.</p>
-    {% endif %}
-  </div>
-</div>
+<body class="lr-body">
 
-<div class="card mt-4">
-  <h3 class="card-title">Menu Management</h3>
-  <div style="display:flex; gap:10px; flex-wrap:wrap;">
-    <button class="btn btn-primary">Add Item</button>
-    <button class="btn btn-outline">Edit Item</button>
-    <button class="btn btn-danger">Delete Item</button>
-  </div>
-</div>
-{% endblock %}
+    <header class="lr-header">
+        <div class="lr-logo">Manager Dashboard</div>
+        <nav class="lr-nav">
+            <a href="{% url 'home' %}">Home</a>
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
 
+    <main class="lr-main">
+
+        <h1 class="manager-title">Welcome, Manager</h1>
+
+
+        <div class="lr-menu-grid">
+
+            <!-- زر إدارة المنيو -->
+            <div class="lr-menu-card">
+                <div class="lr-menu-image"></div>
+                <h3>Manage Menu</h3>
+                <p>Add, edit, or delete menu items.</p>
+                <div class="lr-menu-footer">
+                    <a href="{% url 'manager_menu_list' %}" class="lr-btn-primary">Open</a>
+                </div>
+            </div>
+
+            <!-- زر إدارة المستخدمين -->
+            <div class="lr-menu-card">
+                <div class="lr-menu-image"></div>
+                <p class="card-title">Manage Employees</p>
+                <p class="card-text">Add, view, and manage staff or managers.</p>
+
+                <div class="lr-menu-footer">
+                    <a href="{% url 'manage_users' %}" class="lr-btn-primary">Open</a>
+                </div>
+            </div>
+
+            <!-- زر التقارير -->
+            <div class="lr-menu-card">
+                <div class="lr-menu-image"></div>
+                <h3>Reports</h3>
+                <p>View system statistics and order summaries.</p>
+                <div class="lr-menu-footer">
+                    <a href="#" class="lr-btn-primary">Open</a>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Access denied - Legends Restaurant</title>
+    <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
+</head>
+<body class="lr-body">
+
+<header class="lr-header">
+    <div class="lr-logo">Legends Restaurant</div>
+    <nav class="lr-nav">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'login' %}">Login</a>
+    </nav>
+</header>
+
+<main class="lr-main">
+    <section class="lr-access-wrapper">
+        <div class="lr-card lr-access-card">
+            <div class="lr-access-icon">🚫</div>
+
+            <h1>Access denied</h1>
+
+            <p>
+                You are not allowed to access this page.
+                {% if required_role %}
+                    This section is only available for <strong>{{ required_role }}</strong> users.
+                {% endif %}
+            </p>
+
+            <div class="lr-access-actions">
+                <!-- هنا خليت Back to Home زر فعلي -->
+                <a href="{% url 'home' %}" class="lr-btn lr-btn-ghost">
+                    Back to Home
+                </a>
+
+                <!-- وزر اللوقين بنفس ستايل الأزرار -->
+                <a href="{% url 'login' %}" class="lr-btn lr-btn-primary">
+                    Login with another account
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+</body>
+</html>
