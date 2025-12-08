@@ -6,6 +6,7 @@ from django.utils import timezone
 from .forms import CustomerSignUpForm
 from .models import Order
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 # صفحة رئيسية بسيطة (تقدرين تغيرينها لاحقاً)
@@ -113,7 +114,7 @@ def staff_dashboard(request):
 
 @login_required
 def update_order_status(request, order_id, new_status):
-   
+
     guard = _ensure_role(request, "staff")
     if guard is not None:
         return guard
@@ -129,6 +130,7 @@ def update_order_status(request, order_id, new_status):
     order.save()
 
     return redirect("staff_dashboard")
+
 
 
 def manager_dashboard(request):
