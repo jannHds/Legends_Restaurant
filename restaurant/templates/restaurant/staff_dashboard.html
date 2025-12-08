@@ -1,51 +1,143 @@
 {% extends 'restaurant/base.html' %}
 {% block title %}Staff Dashboard{% endblock %}
+
 {% block content %}
-<h2 class="mb-3">Staff Overview</h2>
 
-<div class="stats">
-  <div class="stat">
-    <div class="stat-label">New Orders</div>
-    <div class="stat-value">{{ new_orders }}</div>
-  </div>
-  <div class="stat">
-    <div class="stat-label">In Progress</div>
-    <div class="stat-value">{{ in_progress }}</div>
-  </div>
-  <div class="stat">
-    <div class="stat-label">Ready for Pickup</div>
-    <div class="stat-value">{{ ready_for_pickup }}</div>
-  </div>
-</div>
+<style>
+    body {
+        background: #FFF2E0 !important;
+        font-family: 'Segoe UI', sans-serif;
+    }
 
-<div class="card mt-4">
-  <h3 class="card-title">Orders Board</h3>
-  <div class="table-wrap mt-2">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Customer</th>
-          <th>Item</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>1021</td>
-          <td>Reem</td>
-          <td>Chicken Wrap</td>
-          <td><span class="badge badge-warn">Preparing</span></td>
-          <td>
-            <div style="display:flex; gap:8px;">
-              <button class="btn btn-outline">Mark Ready</button>
-              <button class="btn btn-danger">Cancel</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
+    header.staff-header {
+        background: #898AC4;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .orders-section {
+        display: flex;
+        gap: 20px;
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    .card {
+        width: 32%;
+        background: #C0C9EE;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    .card h2 {
+        color: #898AC4;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+
+    .card ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .card li {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 8px 12px;
+        margin-top: 10px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+    }
+
+    .preparing { background: #A2AADB; }
+    .ready { background: #898AC4; }
+    .complete { background: #5B5B8A; }
+</style>
+
+
+<header class="staff-header">Staff Dashboard</header>
+
+<section class="orders-section">
+
+    <!-- Pending Orders -->
+    <div class="card">
+        <h2>Pending Orders</h2>
+
+        {% if pending_orders %}
+            <ul>
+                {% for order in pending_orders %}
+                    <li>
+                        <strong>Order #{{ order.id }}</strong><br>
+                        {{ order.created_at|date:"Y-m-d H:i" }}<br><br>
+
+                        <a class="btn preparing" href="/staff/update/{{ order.id }}/Preparing/">
+                            Start Preparing
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No pending orders.</p>
+        {% endif %}
+    </div>
+
+    <!-- Preparing Orders -->
+    <div class="card">
+        <h2>Preparing Orders</h2>
+
+        {% if preparing_orders %}
+            <ul>
+                {% for order in preparing_orders %}
+                    <li>
+                        <strong>Order #{{ order.id }}</strong><br><br>
+
+                        <a class="btn ready" href="/staff/update/{{ order.id }}/Ready/">
+                            Mark as Ready
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No orders in preparation.</p>
+        {% endif %}
+    </div>
+
+    <!-- Ready Orders -->
+    <div class="card">
+        <h2>Ready for Pickup</h2>
+
+        {% if ready_orders %}
+            <ul>
+                {% for order in ready_orders %}
+                    <li>
+                        <strong>Order #{{ order.id }}</strong><br><br>
+
+                        <a class="btn complete" href="/staff/update/{{ order.id }}/Completed/">
+                            Complete
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No ready orders.</p>
+        {% endif %}
+    </div>
+
+</section>
+
 {% endblock %}

@@ -1,9 +1,11 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
 from .forms import CustomerSignUpForm
+from .models import Order
+from django.contrib.auth.decorators import login_required
 
 
 # صفحة رئيسية بسيطة (تقدرين تغيرينها لاحقاً)
@@ -94,14 +96,39 @@ def customer_dashboard(request):
 
 
 def staff_dashboard(request):
-    """
-    Staff Dashboard
-    """
+    pending_orders = Order.objects.filter(status="Pending").order_by("-created_at")
+    preparing_orders = Order.objects.filter(status="Preparing").order_by("-created_at")
+    ready_orders = Order.objects.filter(status="Ready").order_by("-created_at")
+
+    context = {
+        "pending_orders": pending_orders,
+        "preparing_orders": preparing_orders,
+        "ready_orders": ready_orders,
+    }
     guard = _ensure_role(request, "staff")
     if guard is not None:
         return guard
 
-    return render(request, "restaurant/staff_dashboard.html")
+    return render(request, "restaurant/staff_dashboard.html", context)
+
+@login_required
+def update_order_status(request, order_id, new_status):
+   
+    guard = _ensure_role(request, "staff")
+    if guard is not None:
+        return guard
+
+    order = get_object_or_404(Order, id=order_id)
+
+    allowed_statuses = ["Pending", "Preparing", "Ready", "Completed"]
+
+    if new_status not in allowed_statuses:
+        return HttpResponseForbidden("Invalid status")
+
+    order.status = new_status
+    order.save()
+
+    return redirect("staff_dashboard")
 
 
 def manager_dashboard(request):
