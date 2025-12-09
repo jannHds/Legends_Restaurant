@@ -46,8 +46,11 @@ def edit_menu_item(request, item_id):
         if form.is_valid():
             form.save()
             return redirect("manager_menu_list")
+    else:
+        form = MenuItemForm(instance=item)
 
-    return redirect("manager_menu_list")
+    return render(request, "restaurant/partials/edit_form_fields.html", {"form": form})
+
 
 
 # -----------------------------------
