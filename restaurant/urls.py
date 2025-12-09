@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 from . import manager_views  # فيه menu_list للمنيو
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     # الصفحة الرئيسية
@@ -30,4 +32,14 @@ urlpatterns = [
 
     path("customer/signup/", views.customer_signup_view, name="customer_signup"),
 
+
+    path('manager/menu/', manager_views.menu_list, name='menu_list'),
+    path('manager/menu/add/', manager_views.add_menu_item, name='add_menu_item'),
+    path('manager/menu/edit/<int:item_id>/', manager_views.edit_menu_item, name='edit_menu_item'),
+    path('manager/menu/delete/<int:item_id>/', manager_views.delete_menu_item, name='delete_menu_item'),
+    path('manager/menu/toggle/<int:item_id>/', manager_views.toggle_availability, name='toggle_availability'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
