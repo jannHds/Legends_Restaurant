@@ -2178,6 +2178,40 @@ body {
     margin: 10px 0;
     display: block;
 }
+/* إخفاء حقل is_available القادم من Django داخل المودال */
+#editModal label[for="id_is_available"],
+#editModal #id_is_available {
+    display: none !important;
+}
+/* إخفاء نسخة Django من الحقل */
+#editModal #editFormFields label[for="id_is_available"],
+#editModal #editFormFields #id_is_available {
+    display: none !important;
+}
+
+/* عرض الصورة */
+.current-image-box {
+    margin: 10px 0;
+}
+
+.image-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+/* إخفاء كلمة Clear فقط */
+#editFormFields label[for="image-clear"] {
+    display: none !important;
+}
+#currentImagePreview::before {
+    display: none !important;
+}
+.current-image-label {
+    display: none !important;
+}
 
 
 

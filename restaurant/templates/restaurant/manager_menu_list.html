@@ -69,7 +69,7 @@
 </div>
 
 
-<!-- ⭐⭐⭐ Modal (Edit Item) ⭐⭐⭐ -->
+<!-- ⭐⭐⭐ Popup Modal (Edit) ⭐⭐⭐ -->
 <div id="editModal" class="modal hidden">
     <div class="modal-content">
 
@@ -78,16 +78,19 @@
         <form id="editForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <!-- الفورم القادم من Django -->
+            <!-- حقول Django -->
             <div id="editFormFields"></div>
 
-            <!-- 🔥 عرض الصورة الحالية فقط -->
-            <div id="currentImagePreview"></div>
+            <!-- الصورة الحالية -->
+            <div class="current-image-box">
+                <label><strong>Current Image:</strong></label>
+                <div id="currentImagePreview"></div>
+            </div>
 
-            <!-- 🔥 Is available -->
+            <!-- available -->
             <div class="available-row">
-                <label for="id_is_available">Is available:</label>
-                <input type="checkbox" id="id_is_available" name="is_available">
+                <label for="custom_available"><strong>Is available:</strong></label>
+                <input type="checkbox" id="custom_available">
             </div>
 
             <!-- أزرار -->
@@ -95,11 +98,11 @@
                 <button type="submit" class="btn-save">Save</button>
                 <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
             </div>
-
         </form>
 
     </div>
 </div>
+
 
 
 <!-- JavaScript -->
@@ -115,33 +118,40 @@ function openEditModal(itemId) {
         .then(response => response.text())
         .then(html => {
 
-            // إدخال الحقول في المودال
             document.getElementById("editFormFields").innerHTML = html;
 
-            // 🔥 إزالة سطر Clear من الفورم
-            document.querySelectorAll("label").forEach(label => {
-                if (label.innerText.trim() === "Clear") {
-                    label.parentElement.style.display = "none";
-                }
-            });
+            // إخفاء Django is_available
+            const djangoCheckbox = document.querySelector("#editFormFields #id_is_available");
+            const djangoLabel = document.querySelector("#editFormFields label[for='id_is_available']");
+            if (djangoCheckbox) djangoCheckbox.style.display = "none";
+            if (djangoLabel) djangoLabel.style.display = "none";
 
-            // 🔥 استخراج رابط الصورة فقط
+            // نقل القيمة للـ checkbox الجديد
+            if (djangoCheckbox) {
+                const newCheckbox = document.getElementById("custom_available");
+                newCheckbox.checked = djangoCheckbox.checked;
+
+                newCheckbox.addEventListener("change", () => {
+                    djangoCheckbox.checked = newCheckbox.checked;
+                });
+            }
+
+            // إيجاد الصورة وعرضها
             const imgMatch = html.match(/src="([^"]+)"/);
+
             if (imgMatch) {
                 document.getElementById("currentImagePreview").innerHTML =
-                    `<p><strong>Current Image:</strong></p>
-                     <img src="${imgMatch[1]}" class="image-preview">`;
+                    `<img src="${imgMatch[1]}" class="image-preview">`;
             } else {
                 document.getElementById("currentImagePreview").innerHTML = "";
             }
 
-            // لتحديد الرابط الصحيح للفورم
             document.getElementById("editForm").action = `/manager/menu/edit/${itemId}/`;
 
-            // إظهار المودال
             document.getElementById("editModal").classList.remove("hidden");
         });
 }
+
 
 /* ⭐ إغلاق المودال */
 function closeModal() {
