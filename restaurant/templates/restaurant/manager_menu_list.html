@@ -1,4 +1,5 @@
 {% load static %}
+
 <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 
 <div class="menu-container">
@@ -17,35 +18,41 @@
         </form>
     </div>
 
-    <!-- جدول عرض العناصر -->
+    <!-- قائمة العناصر -->
     <div class="menu-grid">
         {% for item in menu_items %}
         <div class="menu-card">
-            
-            <!-- صورة -->
-            <img src="{{ item.image.url }}" class="menu-image">
 
-            <!-- معلومات -->
-            <div class="menu-info">
-                <h3>{{ item.name }}</h3>
-                <p class="menu-desc">{{ item.description }}</p>
-                <p class="menu-price">Price: {{ item.price }} SAR</p>
-                <p class="menu-category">Category: {{ item.get_category_display }}</p>
-                <p class="menu-status">
-                    Status:
-                    {% if item.is_available %}
-                        <span class="status available">Available</span>
-                    {% else %}
-                        <span class="status unavailable">Unavailable</span>
-                    {% endif %}
-                </p>
+            <!-- الجزء اليسار: الصورة + المعلومات -->
+            <div class="menu-main">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" class="menu-image">
+                {% else %}
+                    <div class="menu-image placeholder"></div>
+                {% endif %}
+
+                <div class="menu-info">
+                    <h3 class="menu-name">{{ item.name }}</h3>
+                    <p class="menu-desc">{{ item.description }}</p>
+                    <p class="menu-price">Price: {{ item.price }} SAR</p>
+                    <p class="menu-category">Category: {{ item.get_category_display }}</p>
+
+                    <p class="menu-status">
+                        Status:
+                        {% if item.is_available %}
+                            <span class="status available">Available</span>
+                        {% else %}
+                            <span class="status unavailable">Unavailable</span>
+                        {% endif %}
+                    </p>
+                </div>
             </div>
 
-            <!-- أزرار الإدارة -->
+            <!-- الجزء اليمين: أكشنات الإدارة -->
             <div class="menu-actions">
-                <a href="{% url 'edit_menu_item' item.id %}" class="edit-btn">✎</a>
-                <a href="{% url 'delete_menu_item' item.id %}" class="delete-btn">🗑</a>
-                <a href="{% url 'toggle_availability' item.id %}" class="toggle-btn">⟳</a>
+                <a href="{% url 'edit_menu_item' item.id %}" class="btn-small btn-edit">✎ Edit</a>
+                <a href="{% url 'delete_menu_item' item.id %}" class="btn-small btn-delete">🗑 Delete</a>
+                <a href="{% url 'toggle_availability' item.id %}" class="btn-small btn-toggle">⟳ Toggle</a>
             </div>
 
         </div>
@@ -55,7 +62,7 @@
     </div>
 </div>
 
-<!-- JavaScript -->
+<!-- JavaScript - إظهار وإخفاء فورم الإضافة -->
 <script>
 function toggleAddForm() {
     document.getElementById("add-form").classList.toggle("hidden");
