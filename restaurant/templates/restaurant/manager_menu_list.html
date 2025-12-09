@@ -76,15 +76,22 @@
 <!-- ⭐⭐⭐ Popup Modal (Edit) ⭐⭐⭐ -->
 <div id="editModal" class="modal hidden">
     <div class="modal-content">
-        <h2>Edit Item</h2>
+
+        <h2 class="modal-title">Edit Item</h2>
 
         <form id="editForm" method="POST" enctype="multipart/form-data">
-            <!-- ⚠️ مهم: لا نضع csrf هنا -->
+            {% csrf_token %}
+
+            <!-- هنا تنحط الحقول اللي تجي من Django -->
             <div id="editFormFields"></div>
 
-            <button class="add-submit-btn" type="submit">Save</button>
-            <button type="button" class="close-btn" onclick="closeModal()">Cancel</button>
+            <!-- الأزرار الجديدة -->
+            <div class="modal-actions">
+                <button type="submit" class="btn-save">Save</button>
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+            </div>
         </form>
+
     </div>
 </div>
 
@@ -92,7 +99,6 @@
 <!-- JavaScript -->
 <script>
 
-/* فتح وإغلاق فورم الإضافة */
 function toggleAddForm() {
     document.getElementById("add-form").classList.toggle("hidden");
 }
@@ -102,18 +108,13 @@ function openEditModal(itemId) {
     fetch(`/manager/menu/edit/${itemId}/`)
         .then(response => response.text())
         .then(html => {
-            // الفورم الجاهز اللي يرسله Django
             document.getElementById("editFormFields").innerHTML = html;
-
-            // تحديد مكان إرسال الفورم
             document.getElementById("editForm").action = `/manager/menu/edit/${itemId}/`;
-
-            // إظهار المودال
             document.getElementById("editModal").classList.remove("hidden");
         });
 }
 
-/* إغلاق المودال */
+/* ⭐ إغلاق المودال */
 function closeModal() {
     document.getElementById("editModal").classList.add("hidden");
 }

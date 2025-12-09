@@ -1868,12 +1868,16 @@ body {
 /* الصندوق الأساسي */
 .modal-content {
     background: #ffffff;
-    width: 450px;
-    padding: 25px;
-    border-radius: 18px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    animation: fadeIn 0.3s ease-out;
+    width: 380px;              /* أصغر */
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    animation: fadeIn 0.25s ease-out;
+    max-height: 85vh;          /* يمنع أنها تطلع من الشاشة */
+    overflow-y: auto;          /* يخليها تسكرول لو صارت طويلة */
 }
+
+
 
 /* عنوان المودال */
 .modal-content h2 {
@@ -1947,5 +1951,87 @@ body {
     border: 1px solid #ddd;
     margin-top: 5px;
 }
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    width: 380px;
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.modal-title {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-save {
+    flex: 1;
+    background: #b4b3ff;
+    color: white;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-save:hover {
+    background: #9d9af8;
+}
+
+.btn-cancel {
+    flex: 1;
+    background: #ffe0e6;
+    color: #b44d5d;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-cancel:hover {
+    background: #ffc9d3;
+}
+
+/* تحسين شكل الحقول */
+#editFormFields p {
+    margin-bottom: 12px;
+}
+
+#editFormFields label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+#editFormFields input[type="checkbox"] {
+    margin-left: 5px;
+}
+
 
 
