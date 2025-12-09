@@ -82,10 +82,10 @@
         <form id="editForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <!-- هنا تنحط الحقول اللي تجي من Django -->
+            <!-- Django سيملأ الحقول هنا -->
             <div id="editFormFields"></div>
 
-            <!-- الأزرار الجديدة -->
+            <!-- الأزرار -->
             <div class="modal-actions">
                 <button type="submit" class="btn-save">Save</button>
                 <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -108,8 +108,14 @@ function openEditModal(itemId) {
     fetch(`/manager/menu/edit/${itemId}/`)
         .then(response => response.text())
         .then(html => {
+
+            // وضع الفورم القادم من Django داخل المودال
             document.getElementById("editFormFields").innerHTML = html;
+
+            // تحديد الرابط الصحيح عند الحفظ
             document.getElementById("editForm").action = `/manager/menu/edit/${itemId}/`;
+
+            // إظهار المودال
             document.getElementById("editModal").classList.remove("hidden");
         });
 }
@@ -120,4 +126,5 @@ function closeModal() {
 }
 
 </script>
+
 
