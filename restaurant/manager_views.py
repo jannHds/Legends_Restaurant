@@ -135,6 +135,48 @@ def toggle_availability(request, item_id):
 
 
 
+def menu_list(request):
+    menu_items = MenuItem.objects.all().order_by('category')
+
+    # إضافة عنصر جديد
+    if request.method == "POST" and "add_item" in request.POST:
+        form = MenuItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect("menu_list")
+    else:
+        form = MenuItemForm()
+
+    context = {
+        "menu_items": menu_items,
+        "form": form,
+    }
+    return render(request, "restaurant/manager_menu_list.html", context)
+
+
+def edit_menu_item(request, item_id):
+    item = get_object_or_404(MenuItem, id=item_id)
+
+    if request.method == "POST":
+        form = MenuItemForm(request.POST, request.FILES, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect("menu_list")
+    return redirect("menu_list")
+
+
+def delete_menu_item(request, item_id):
+    item = get_object_or_404(MenuItem, id=item_id)
+    item.delete()
+    return redirect("menu_list")
+
+
+def toggle_availability(request, item_id):
+    item = get_object_or_404(MenuItem, id=item_id)
+    item.is_available = not item.is_available
+    item.save()
+    return redirect("menu_list")
+
 
 
 

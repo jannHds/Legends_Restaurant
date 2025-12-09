@@ -1435,3 +1435,139 @@ body {
     color: #8064A2;
 }
 
+/* === GENERAL PAGE STYLE === */
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(to bottom, #fff7f3, #f8ece8);
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* Page container */
+.menu-container {
+    width: 90%;
+    margin: 40px auto;
+    padding: 25px;
+}
+
+/* Title */
+.menu-container h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: #4a4a4a;
+    margin-bottom: 25px;
+}
+
+/* === TABLE DESIGN === */
+.menu-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 12px; /* Space between rows */
+}
+
+.menu-table tr {
+    background: white;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+    border-radius: 15px;
+}
+
+.menu-table th {
+    text-align: left;
+    padding: 12px;
+    font-size: 16px;
+    color: #666;
+}
+
+.menu-table td {
+    padding: 18px;
+    vertical-align: middle;
+}
+
+/* Image design */
+.menu-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 14px;
+    object-fit: cover;
+    border: 3px solid #f0e6e6;
+    background: #fafafa;
+}
+
+/* Text under image */
+.menu-info {
+    font-size: 15px;
+    margin-top: 6px;
+}
+
+.menu-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+/* === ACTION BUTTONS === */
+.menu-actions {
+    text-align: right;
+    padding-right: 10px;
+}
+
+.btn-small {
+    padding: 7px 14px;
+    margin: 4px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: white;
+    transition: 0.2s;
+}
+
+/* Colors */
+.btn-edit {
+    background: #7491ff;
+}
+.btn-edit:hover {
+    background: #5b78ff;
+}
+
+.btn-delete {
+    background: #ff6b6b;
+}
+.btn-delete:hover {
+    background: #ff4b4b;
+}
+
+.btn-toggle {
+    background: #57c26f;
+}
+.btn-toggle:hover {
+    background: #43a85a;
+}
+
+/* === ADD BUTTON === */
+.add-btn {
+    background: #5c7cfa;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-size: 16px;
+    display: inline-block;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.add-btn:hover {
+    background: #4a67e8;
+}
+
+/* === EDIT BOX === */
+.edit-box {
+    background: #f8f4ff;
+    padding: 15px;
+    margin-top: 12px;
+    border-radius: 10px;
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.08);
+    border: 1px solid #e4d7ff;
+}
