@@ -2202,16 +2202,35 @@ body {
     border: 2px solid #ddd;
 }
 
-/* إخفاء كلمة Clear فقط */
+/* إخفاء كلمة Clear */
 #editFormFields label[for="image-clear"] {
     display: none !important;
 }
-#currentImagePreview::before {
+
+/* إخفاء مربع Clear */
+#editFormFields input[type="checkbox"][name="image-clear"] {
     display: none !important;
 }
+
+/* إخفاء جملة Current Image: إذا ظهرت */
 .current-image-label {
     display: none !important;
 }
+
+/* منع إضافة كلمة Current Image تلقائياً قبل الصورة */
+#currentImagePreview::before {
+    display: none !important;
+}
+
+#editFormFields label[for$="-clear"], 
+#editFormFields input[id$="-clear"] {
+    display: none !important;
+}
+#editFormFields label[for="current_image"] {
+    display: none !important;
+}
+
+
 
 
 
