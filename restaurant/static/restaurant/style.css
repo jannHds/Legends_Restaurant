@@ -1444,144 +1444,18 @@ body {
     color: #333;
 }
 
-/* Page container */
-.menu-container {
-    width: 90%;
-    margin: 40px auto;
-    padding: 25px;
-}
-
-/* Title */
-.menu-container h1 {
-    font-size: 32px;
-    font-weight: 700;
-    color: #4a4a4a;
-    margin-bottom: 25px;
-}
-
-/* === TABLE DESIGN === */
-.menu-table {
-    width: 100%;
-    border-collapse: separate;
-    border-spacing: 0 12px; /* Space between rows */
-}
-
-.menu-table tr {
-    background: white;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-    border-radius: 15px;
-}
-
-.menu-table th {
-    text-align: left;
-    padding: 12px;
-    font-size: 16px;
-    color: #666;
-}
-
-.menu-table td {
-    padding: 18px;
-    vertical-align: middle;
-}
-
-/* Image design */
-.menu-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 14px;
-    object-fit: cover;
-    border: 3px solid #f0e6e6;
-    background: #fafafa;
-}
-
-/* Text under image */
-.menu-info {
-    font-size: 15px;
-    margin-top: 6px;
-}
-
-.menu-name {
-    font-size: 20px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 6px;
-}
-
-/* === ACTION BUTTONS === */
-.menu-actions {
-    text-align: right;
-    padding-right: 10px;
-}
-
-.btn-small {
-    padding: 7px 14px;
-    margin: 4px;
-    border-radius: 8px;
-    border: none;
-    font-size: 14px;
-    cursor: pointer;
-    color: white;
-    transition: 0.2s;
-}
-
-/* Colors */
-.btn-edit {
-    background: #7491ff;
-}
-.btn-edit:hover {
-    background: #5b78ff;
-}
-
-.btn-delete {
-    background: #ff6b6b;
-}
-.btn-delete:hover {
-    background: #ff4b4b;
-}
-
-.btn-toggle {
-    background: #57c26f;
-}
-.btn-toggle:hover {
-    background: #43a85a;
-}
-
-/* === ADD BUTTON === */
-.add-btn {
-    background: #5c7cfa;
-    color: white;
-    padding: 12px 22px;
-    border-radius: 12px;
-    text-decoration: none;
-    font-size: 16px;
-    display: inline-block;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-.add-btn:hover {
-    background: #4a67e8;
-}
-
-/* === EDIT BOX === */
-.edit-box {
-    background: #f8f4ff;
-    padding: 15px;
-    margin-top: 12px;
-    border-radius: 10px;
-    box-shadow: inset 0 1px 4px rgba(0,0,0,0.08);
-    border: 1px solid #e4d7ff;
-}
-
 /* ——————————————————————
-   صفحة إدارة المنيو (ستايل بنفسجي ناعم)
+   Manager Menu Page (Purple Soft Theme)
 ——————————————————————— */
 
+/* Container */
 .menu-container {
     width: 90%;
     margin: auto;
     padding-top: 30px;
 }
 
+/* Title */
 .page-title {
     font-size: 32px;
     font-weight: 700;
@@ -1589,8 +1463,8 @@ body {
     margin-bottom: 25px;
 }
 
-/* زر إضافة عنصر */
-.add-item-btn {
+/* Add Button */
+.menu-add-btn {
     padding: 12px 20px;
     background: #d7d7ff;
     color: #4b4a78;
@@ -1600,14 +1474,15 @@ body {
     cursor: pointer;
     box-shadow: 0 3px 10px rgba(0,0,0,0.07);
     transition: 0.2s;
+    margin-bottom: 25px;
 }
 
-.add-item-btn:hover {
+.menu-add-btn:hover {
     background: #c4c4ff;
 }
 
-/* فورم الإضافة */
-.add-form {
+/* Add Form */
+.menu-add-form {
     background: #f3f1ff;
     border-radius: 14px;
     padding: 20px;
@@ -1616,25 +1491,18 @@ body {
     display: none;
 }
 
-.add-form.hidden { display: none; }
-
-.add-submit-btn {
-    background: #b4b3ff;
-    color: white;
-    padding: 10px 16px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
+.menu-add-form.show {
+    display: block;
 }
 
-/* Grid */
+/* Menu Items Grid */
 .menu-grid {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* بطاقة العنصر */
+/* Card */
 .menu-card {
     display: flex;
     align-items: center;
@@ -1644,16 +1512,17 @@ body {
     box-shadow: 0 4px 14px rgba(0,0,0,0.08);
 }
 
-/* صورة */
-.menu-image {
-    width: 110px;
-    height: 110px;
-    border-radius: 12px;
+/* Image */
+.menu-img {
+    width: 120px;
+    height: 120px;
     object-fit: cover;
-    margin-right: 25px;
+    border-radius: 12px;
+    margin-right: 20px;
+    border: 3px solid #eceaff;
 }
 
-/* نص */
+/* Text Area */
 .menu-info h3 {
     font-size: 22px;
     font-weight: 600;
@@ -1665,17 +1534,21 @@ body {
     color: #7a7a9d;
 }
 
-.menu-price, 
+.menu-price,
 .menu-category {
+    font-weight: 600;
     color: #4b4a78;
+    margin-top: 5px;
 }
 
-/* الحالة */
+/* Availability status */
 .status {
     font-weight: 600;
     padding: 3px 10px;
     border-radius: 8px;
     font-size: 13px;
+    display: inline-block;
+    margin-top: 6px;
 }
 
 .status.available {
@@ -1688,8 +1561,9 @@ body {
     color: #d65a72;
 }
 
-/* أزرار الإدارة */
+/* Actions */
 .menu-actions {
+    margin-left: auto;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -1697,18 +1571,18 @@ body {
 
 .menu-actions a {
     text-decoration: none;
-    font-size: 20px;
-    padding: 8px;
-    border-radius: 8px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
     transition: 0.2s;
 }
 
-/* نفس ألوان الموقع */
+/* Buttons */
 .edit-btn {
     background: #e7e6ff;
     color: #5a59bd;
 }
-
 .edit-btn:hover {
     background: #d6d5ff;
 }
@@ -1717,7 +1591,6 @@ body {
     background: #ffe7ed;
     color: #c1576c;
 }
-
 .delete-btn:hover {
     background: #ffd4de;
 }
@@ -1726,14 +1599,14 @@ body {
     background: #e8f7ff;
     color: #4f90b7;
 }
-
 .toggle-btn:hover {
     background: #d5f1ff;
 }
 
-/* رسالة لا يوجد */
+/* Empty message */
 .empty-msg {
-    color: #7a7a9d;
-    margin-top: 25px;
+    text-align: center;
     font-size: 18px;
+    color: #7a7a9d;
+    padding: 40px 0;
 }

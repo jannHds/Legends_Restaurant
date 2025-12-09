@@ -24,7 +24,7 @@ urlpatterns = [
     
 
     # زر Manage Menu في صفحة المدير
-    path("manager/menu/", manager_views.manager_menu_list, name="manager_menu_list"),
+    #path("manager/menu/", manager_views.manager_menu_list, name="manager_menu_list"),
 
     # زر Manage Users الجديد
     path("manager/users/", views.manage_users, name="manage_users"),
@@ -33,11 +33,20 @@ urlpatterns = [
     path("customer/signup/", views.customer_signup_view, name="customer_signup"),
 
 
-    path('manager/menu/', manager_views.menu_list, name='menu_list'),
-    path('manager/menu/add/', manager_views.add_menu_item, name='add_menu_item'),
-    path('manager/menu/edit/<int:item_id>/', manager_views.edit_menu_item, name='edit_menu_item'),
-    path('manager/menu/delete/<int:item_id>/', manager_views.delete_menu_item, name='delete_menu_item'),
-    path('manager/menu/toggle/<int:item_id>/', manager_views.toggle_availability, name='toggle_availability'),
+    # زر Manage Menu في صفحة المدير
+    path("manager/menu/", manager_views.manager_menu_list, name="manager_menu_list"),
+
+    # إجراءات المينيو
+    #path("manager/menu/edit/<int:item_id>/", manager_views.edit_menu_item, name="edit_menu_item"),
+    #path("manager/menu/delete/<int:item_id>/", manager_views.delete_menu_item, name="delete_menu_item"),
+    #path("manager/menu/toggle/<int:item_id>/", manager_views.toggle_availability, name="toggle_availability"),
+
+    path("manager/menu/", manager_views.manager_menu_list, name="manager_menu_list"),
+    path("manager/menu/edit/<int:item_id>/", manager_views.edit_menu_item, name="edit_menu_item"),
+    path("manager/menu/delete/<int:item_id>/", manager_views.delete_menu_item, name="delete_menu_item"),
+    path("manager/menu/toggle/<int:item_id>/", manager_views.toggle_availability, name="toggle_availability"),
+
+
 ]
 
 if settings.DEBUG:
