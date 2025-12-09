@@ -2222,13 +2222,18 @@ body {
     display: none !important;
 }
 
-#editFormFields label[for$="-clear"], 
-#editFormFields input[id$="-clear"] {
+/* حذف Clear فقط */
+input[type="checkbox"][id$="clear_id"],
+label[for$="clear_id"] {
     display: none !important;
 }
-#editFormFields label[for="current_image"] {
+
+/* حذف كلمة Current Image: فقط */
+label[for$="current_image"] {
     display: none !important;
 }
+
+
 
 
 
