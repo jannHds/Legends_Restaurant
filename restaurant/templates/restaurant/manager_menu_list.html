@@ -1,7 +1,4 @@
-{% extends "restaurant/base.html" %}
 {% load static %}
-
-{% block content %}
 <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 
 <div class="menu-container">
@@ -22,7 +19,7 @@
 
     <!-- جدول عرض العناصر -->
     <div class="menu-grid">
-        {% for item in items %}
+        {% for item in menu_items %}
         <div class="menu-card">
             
             <!-- صورة -->
@@ -64,5 +61,3 @@ function toggleAddForm() {
     document.getElementById("add-form").classList.toggle("hidden");
 }
 </script>
-
-{% endblock %}
