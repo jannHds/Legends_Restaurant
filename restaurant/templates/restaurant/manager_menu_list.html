@@ -52,10 +52,8 @@
             <div class="menu-actions">
                 <button onclick="openEditModal({{ item.id }})" class="btn-small btn-edit">✎ Edit</button>
 
-                <a href="{% url 'delete_menu_item' item.id %}" 
-                   class="delete-btn"
-                   onclick="return confirm('Are you sure you want to delete this item?');">
-                   🗑 Delete
+                <a href="#" class="delete-btn" onclick="openDeleteModal({{ item.id }}, '{{ item.name }}')">
+                   🗑️ Delete
                 </a>
 
                 <a href="{% url 'toggle_availability' item.id %}" class="btn-small btn-toggle">⟳ Toggle</a>
@@ -83,7 +81,6 @@
 
             <!-- الصورة الحالية -->
             <div class="current-image-box">
-                <label><strong>Current Image:</strong></label>
                 <div id="currentImagePreview"></div>
             </div>
 
@@ -104,6 +101,33 @@
 </div>
 
 
+<!-- ⭐⭐⭐ Popup Modal (Delete) ⭐⭐⭐ -->
+<div id="deleteModal" class="modal hidden">
+    <div class="modal-content">
+
+        <h2 class="modal-title" style="color: #c77a85;">Delete Item</h2>
+
+
+        <p style="text-align: center; font-size: 18px; font-weight: normal; color: #333;">
+            Are you sure you want to delete:
+            <span id="deleteItemName" style="font-weight: normal;"></span>?
+        </p>
+
+
+
+        <form id="deleteForm" method="POST">
+            {% csrf_token %}
+            <div class="modal-actions">
+                <button type="submit" class="btn-save" style="background-color:#d9534f;">Yes, Delete</button>
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+
 
 <!-- JavaScript -->
 <script>
@@ -112,7 +136,7 @@ function toggleAddForm() {
     document.getElementById("add-form").classList.toggle("hidden");
 }
 
-/* ⭐ فتح المودال */
+/* ⭐ فتح مودال Edit */
 function openEditModal(itemId) {
     fetch(`/manager/menu/edit/${itemId}/`)
         .then(response => response.text())
@@ -120,13 +144,11 @@ function openEditModal(itemId) {
 
             document.getElementById("editFormFields").innerHTML = html;
 
-            // إخفاء Django is_available
             const djangoCheckbox = document.querySelector("#editFormFields #id_is_available");
             const djangoLabel = document.querySelector("#editFormFields label[for='id_is_available']");
             if (djangoCheckbox) djangoCheckbox.style.display = "none";
             if (djangoLabel) djangoLabel.style.display = "none";
 
-            // نقل القيمة للـ checkbox الجديد
             if (djangoCheckbox) {
                 const newCheckbox = document.getElementById("custom_available");
                 newCheckbox.checked = djangoCheckbox.checked;
@@ -136,9 +158,7 @@ function openEditModal(itemId) {
                 });
             }
 
-            // إيجاد الصورة وعرضها
             const imgMatch = html.match(/src="([^"]+)"/);
-
             if (imgMatch) {
                 document.getElementById("currentImagePreview").innerHTML =
                     `<img src="${imgMatch[1]}" class="image-preview">`;
@@ -152,10 +172,21 @@ function openEditModal(itemId) {
         });
 }
 
-
-/* ⭐ إغلاق المودال */
+/* ⭐ إغلاق مودال Edit */
 function closeModal() {
     document.getElementById("editModal").classList.add("hidden");
+}
+
+/* ⭐ فتح مودال Delete */
+function openDeleteModal(id, name) {
+    document.getElementById("deleteItemName").innerText = name;
+    document.getElementById("deleteForm").action = `/manager/menu/delete/${id}/`;
+    document.getElementById("deleteModal").classList.remove("hidden");
+}
+
+/* ⭐ إغلاق مودال Delete */
+function closeDeleteModal() {
+    document.getElementById("deleteModal").classList.add("hidden");
 }
 
 </script>

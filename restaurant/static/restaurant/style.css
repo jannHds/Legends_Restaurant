@@ -2232,6 +2232,9 @@ label[for$="clear_id"] {
 label[for$="current_image"] {
     display: none !important;
 }
+label[for*="image"] {
+    display: none !important;
+}
 
 
 
