@@ -2074,6 +2074,110 @@ body {
     font-size: 14px;
     margin-bottom: 8px;
 }
+/* ====== تحسين شكل حقول الفورم داخل المودال ====== */
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content textarea,
+.modal-content select,
+.modal-content input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #f6f4ff;      /* نفس لون مربعات الإضافة */
+    font-size: 15px;
+    margin-top: 6px;
+}
+
+/* إصلاح textarea لتكون مثل باقي الحقول */
+.modal-content textarea {
+    min-height: 100px;
+}
+
+/* ====== إصلاح الحواف اليمين ====== */
+.modal-content {
+    max-width: 650px;
+    width: 95%;
+    margin: auto;
+    border-radius: 18px;
+    padding: 25px 30px;
+}
+
+/* ====== ترتيب سيكشن الصورة ====== */
+.image-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 12px;
+}
+
+/* إخفاء Clear من Django */
+.modal-content input[type="checkbox"][name$="clear"] {
+    display: none;
+}
+.modal-content label[for$="clear"] {
+    display: none;
+}
+
+/* ====== ترتيب Is Available ====== */
+.available-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.available-row label {
+    font-weight: bold;
+}
+
+/* ====== زرّين Save/Cancel ====== */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-save {
+    background: #b8b3ff;
+    color: #fff;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 48%;
+}
+
+.btn-cancel {
+    background: #ffd7dd;
+    color: #ad5060;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 48%;
+}
+/* إخفاء خيار Clear من حقول Django ImageField */
+.modal-content input[type="checkbox"][name$="clear"] {
+    display: none;
+}
+
+.modal-content label[for$="clear"] {
+    display: none;
+}
+.image-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin: 10px 0;
+    display: block;
+}
 
 
 

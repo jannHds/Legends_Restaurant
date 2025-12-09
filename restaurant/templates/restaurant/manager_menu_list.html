@@ -5,7 +5,7 @@
 <div class="menu-container">
     <h1 class="page-title">Manage Menu</h1>
 
-    <!-- زر إضافة عنصر جديد -->
+    <!-- زر إضافة عنصر -->
     <button class="add-item-btn" onclick="toggleAddForm()">+ Add New Item</button>
 
     <!-- فورم الإضافة -->
@@ -23,7 +23,7 @@
         {% for item in menu_items %}
         <div class="menu-card">
 
-            <!-- الصورة + المعلومات -->
+            <!-- الصورة + النص -->
             <div class="menu-main">
                 {% if item.image %}
                     <img src="{{ item.image.url }}" class="menu-image">
@@ -50,18 +50,14 @@
 
             <!-- أزرار التحكم -->
             <div class="menu-actions">
-
-                <!-- فتح المودال -->
                 <button onclick="openEditModal({{ item.id }})" class="btn-small btn-edit">✎ Edit</button>
 
-                <!-- حذف -->
                 <a href="{% url 'delete_menu_item' item.id %}" 
                    class="delete-btn"
                    onclick="return confirm('Are you sure you want to delete this item?');">
                    🗑 Delete
                 </a>
 
-                <!-- تغيير الحالة -->
                 <a href="{% url 'toggle_availability' item.id %}" class="btn-small btn-toggle">⟳ Toggle</a>
             </div>
 
@@ -73,7 +69,7 @@
 </div>
 
 
-<!-- ⭐⭐⭐ Popup Modal (Edit) ⭐⭐⭐ -->
+<!-- ⭐⭐⭐ Modal (Edit Item) ⭐⭐⭐ -->
 <div id="editModal" class="modal hidden">
     <div class="modal-content">
 
@@ -82,14 +78,24 @@
         <form id="editForm" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
-            <!-- Django سيملأ الحقول هنا -->
+            <!-- الفورم القادم من Django -->
             <div id="editFormFields"></div>
 
-            <!-- الأزرار -->
+            <!-- 🔥 عرض الصورة الحالية فقط -->
+            <div id="currentImagePreview"></div>
+
+            <!-- 🔥 Is available -->
+            <div class="available-row">
+                <label for="id_is_available">Is available:</label>
+                <input type="checkbox" id="id_is_available" name="is_available">
+            </div>
+
+            <!-- أزرار -->
             <div class="modal-actions">
                 <button type="submit" class="btn-save">Save</button>
                 <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
             </div>
+
         </form>
 
     </div>
@@ -103,16 +109,33 @@ function toggleAddForm() {
     document.getElementById("add-form").classList.toggle("hidden");
 }
 
-/* ⭐ فتح مودال التعديل */
+/* ⭐ فتح المودال */
 function openEditModal(itemId) {
     fetch(`/manager/menu/edit/${itemId}/`)
         .then(response => response.text())
         .then(html => {
 
-            // وضع الفورم القادم من Django داخل المودال
+            // إدخال الحقول في المودال
             document.getElementById("editFormFields").innerHTML = html;
 
-            // تحديد الرابط الصحيح عند الحفظ
+            // 🔥 إزالة سطر Clear من الفورم
+            document.querySelectorAll("label").forEach(label => {
+                if (label.innerText.trim() === "Clear") {
+                    label.parentElement.style.display = "none";
+                }
+            });
+
+            // 🔥 استخراج رابط الصورة فقط
+            const imgMatch = html.match(/src="([^"]+)"/);
+            if (imgMatch) {
+                document.getElementById("currentImagePreview").innerHTML =
+                    `<p><strong>Current Image:</strong></p>
+                     <img src="${imgMatch[1]}" class="image-preview">`;
+            } else {
+                document.getElementById("currentImagePreview").innerHTML = "";
+            }
+
+            // لتحديد الرابط الصحيح للفورم
             document.getElementById("editForm").action = `/manager/menu/edit/${itemId}/`;
 
             // إظهار المودال
