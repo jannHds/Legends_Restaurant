@@ -131,6 +131,24 @@ def update_order_status(request, order_id, new_status):
 
     return redirect("staff_dashboard")
 
+@login_required
+def staff_order_details(request, order_id):
+
+    guard = _ensure_role(request, "staff")
+    if guard is not None:
+        return guard
+
+    order = get_object_or_404(Order, id=order_id)
+
+    # لو عندكم OrderItems Model اكتبوه هنا
+    order_items = order.orderitem_set.all() if hasattr(order, "orderitem_set") else []
+
+    context = {
+        "order": order,
+        "items": order_items,
+    }
+    return render(request, "restaurant/staff_order_details.html", context)
+
 
 
 def manager_dashboard(request):

@@ -1,6 +1,21 @@
 {% extends 'restaurant/base.html' %}
 {% block title %}Staff Dashboard{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* إخفاء واجهة الهوم في صفحة الستاف فقط */
+    .lr-hero,
+    .lr-menu-section {
+        display: none !important;
+    }
+
+    /* تعديل المساحة العلوية */
+    .lr-main {
+        padding-top: 0 !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <style>
@@ -64,11 +79,15 @@
         font-weight: bold;
     }
 
+    .details-btn {
+        background: #6E75A8;
+        margin-right: 5px;
+    }
+
     .preparing { background: #A2AADB; }
     .ready { background: #898AC4; }
     .complete { background: #5B5B8A; }
 </style>
-
 
 <header class="staff-header">Staff Dashboard</header>
 
@@ -84,6 +103,10 @@
                     <li>
                         <strong>Order #{{ order.id }}</strong><br>
                         {{ order.created_at|date:"Y-m-d H:i" }}<br><br>
+
+                        <a class="btn details-btn" href="{% url 'staff_order_details' order.id %}">
+                            View Details
+                        </a>
 
                         <a class="btn preparing" href="/staff/update/{{ order.id }}/Preparing/">
                             Start Preparing
@@ -106,6 +129,10 @@
                     <li>
                         <strong>Order #{{ order.id }}</strong><br><br>
 
+                        <a class="btn details-btn" href="{% url 'staff_order_details' order.id %}">
+                            View Details
+                        </a>
+
                         <a class="btn ready" href="/staff/update/{{ order.id }}/Ready/">
                             Mark as Ready
                         </a>
@@ -127,6 +154,10 @@
                     <li>
                         <strong>Order #{{ order.id }}</strong><br><br>
 
+                        <a class="btn details-btn" href="{% url 'staff_order_details' order.id %}">
+                            View Details
+                        </a>
+
                         <a class="btn complete" href="/staff/update/{{ order.id }}/Completed/">
                             Complete
                         </a>
@@ -139,5 +170,6 @@
     </div>
 
 </section>
+
 
 {% endblock %}

@@ -1,0 +1,98 @@
+{% extends "restaurant/base.html" %}
+{% block title %}Order #{{ order.id }} Details{% endblock %}
+
+{% block content %}
+
+<style>
+    .details-container {
+        background: #F2F0FF;
+        padding: 25px;
+        margin: 20px auto;
+        border-radius: 12px;
+        width: 70%;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .details-header {
+        font-size: 26px;
+        font-weight: bold;
+        color: #6A6DA9;
+        margin-bottom: 20px;
+    }
+
+    .item-card {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+    }
+
+    .item-name {
+        font-weight: bold;
+        font-size: 18px;
+    }
+
+    .status-btn {
+        padding: 10px 15px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+    }
+
+    .preparing { background: #A2AADB; }
+    .ready { background: #898AC4; }
+    .complete { background: #5B5B8A; }
+</style>
+
+<div class="details-container">
+
+    <div class="details-header">
+        Order #{{ order.id }} Details
+    </div>
+
+    <p><strong>Status:</strong> {{ order.status }}</p>
+    <p><strong>Customer:</strong> {{ order.customer.username }}</p>
+    <p><strong>Created:</strong> {{ order.created_at|date:"Y-m-d H:i" }}</p>
+
+    <hr>
+
+    <h3>Items</h3>
+    {% if items %}
+        {% for item in items %}
+            <div class="item-card">
+                <div class="item-name">{{ item.menu_item.name }}</div>
+                <div>Quantity: {{ item.quantity }}</div>
+                <div>Subtotal: {{ item.subtotal }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No items found.</p>
+    {% endif %}
+
+    <hr>
+
+    <h3>Total: {{ order.total_price }} SAR</h3>
+
+    <hr>
+
+    <!-- تغيير حالة الطلب -->
+    {% if order.status == "Pending" %}
+        <a href="{% url 'update_order_status' order.id 'Preparing' %}" class="status-btn preparing">Start Preparing</a>
+
+    {% elif order.status == "Preparing" %}
+        <a href="{% url 'update_order_status' order.id 'Ready' %}" class="status-btn ready">Mark as Ready</a>
+
+    {% elif order.status == "Ready" %}
+        <a href="{% url 'update_order_status' order.id 'Completed' %}" class="status-btn complete">Complete Order</a>
+    {% endif %}
+
+</div>
+
+{% endblock %}
+{% extends 'restaurant/base.html' %}
+{% block title %}Order Details{% endblock %}
+
+{% block content %}
