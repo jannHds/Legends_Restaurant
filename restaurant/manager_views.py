@@ -47,7 +47,7 @@ def manager_menu_list(request):
         form = MenuItemForm()
 
     return render(request, "restaurant/manager_menu_list.html", {
-        "items": menu_items,
+        "menu_items": menu_items,   # ← هنا التعديل
         "form": form,
     })
 
