@@ -1571,3 +1571,169 @@ body {
     box-shadow: inset 0 1px 4px rgba(0,0,0,0.08);
     border: 1px solid #e4d7ff;
 }
+
+/* ——————————————————————
+   صفحة إدارة المنيو (ستايل بنفسجي ناعم)
+——————————————————————— */
+
+.menu-container {
+    width: 90%;
+    margin: auto;
+    padding-top: 30px;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #4b4a78;
+    margin-bottom: 25px;
+}
+
+/* زر إضافة عنصر */
+.add-item-btn {
+    padding: 12px 20px;
+    background: #d7d7ff;
+    color: #4b4a78;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    transition: 0.2s;
+}
+
+.add-item-btn:hover {
+    background: #c4c4ff;
+}
+
+/* فورم الإضافة */
+.add-form {
+    background: #f3f1ff;
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    display: none;
+}
+
+.add-form.hidden { display: none; }
+
+.add-submit-btn {
+    background: #b4b3ff;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+}
+
+/* Grid */
+.menu-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* بطاقة العنصر */
+.menu-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+/* صورة */
+.menu-image {
+    width: 110px;
+    height: 110px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-right: 25px;
+}
+
+/* نص */
+.menu-info h3 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #4b4a78;
+}
+
+.menu-desc {
+    font-size: 15px;
+    color: #7a7a9d;
+}
+
+.menu-price, 
+.menu-category {
+    color: #4b4a78;
+}
+
+/* الحالة */
+.status {
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.status.available {
+    background: #e6f2ff;
+    color: #4d7eff;
+}
+
+.status.unavailable {
+    background: #ffe6ea;
+    color: #d65a72;
+}
+
+/* أزرار الإدارة */
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-actions a {
+    text-decoration: none;
+    font-size: 20px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+/* نفس ألوان الموقع */
+.edit-btn {
+    background: #e7e6ff;
+    color: #5a59bd;
+}
+
+.edit-btn:hover {
+    background: #d6d5ff;
+}
+
+.delete-btn {
+    background: #ffe7ed;
+    color: #c1576c;
+}
+
+.delete-btn:hover {
+    background: #ffd4de;
+}
+
+.toggle-btn {
+    background: #e8f7ff;
+    color: #4f90b7;
+}
+
+.toggle-btn:hover {
+    background: #d5f1ff;
+}
+
+/* رسالة لا يوجد */
+.empty-msg {
+    color: #7a7a9d;
+    margin-top: 25px;
+    font-size: 18px;
+}

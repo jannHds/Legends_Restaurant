@@ -1,162 +1,68 @@
+{% extends "restaurant/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Manage Menu</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-    <style>
-        .menu-container {
-            width: 90%;
-            margin: 30px auto;
-        }
 
-        .menu-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: #fff;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .menu-table th {
-            padding: 12px;
-            background: #f4f4f4;
-            font-size: 18px;
-            text-align: left;
-        }
-
-        .menu-table td {
-            padding: 15px;
-            vertical-align: top;
-            border-bottom: 1px solid #eee;
-        }
-
-        .menu-img {
-            width: 110px;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-        }
-
-        .menu-info {
-            font-size: 15px;
-            line-height: 1.4;
-            color: #333;
-        }
-
-        .menu-name {
-            font-size: 17px;
-            font-weight: bold;
-        }
-
-        .menu-actions {
-            text-align: right;
-            white-space: nowrap;
-        }
-
-        .btn-small {
-            padding: 6px 12px;
-            margin: 4px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            color: white;
-            font-size: 14px;
-        }
-
-        .btn-edit   { background-color: #4a76ff; }
-        .btn-delete { background-color: #ff5e57; }
-        .btn-toggle { background-color: #6cba43; }
-
-        /* Hidden edit form */
-        .edit-box {
-            background: #f9f9f9;
-            padding: 12px;
-            border-radius: 10px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .add-btn {
-            background: #4a76ff;
-            padding: 10px 18px;
-            color: white;
-            border-radius: 10px;
-            display: inline-block;
-            margin: 20px 0;
-            cursor: pointer;
-        }
-    </style>
-
-    <script>
-        function toggleEdit(id) {
-            let box = document.getElementById("edit-" + id);
-            box.style.display = box.style.display === "none" ? "block" : "none";
-        }
-    </script>
-</head>
-
-<body>
+{% block content %}
+<link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 
 <div class="menu-container">
-    <h1>Manage Menu</h1>
+    <h1 class="page-title">Manage Menu</h1>
 
-    <!-- Add new item button -->
-    <a class="add-btn" href="{% url 'add_menu_item' %}">+ Add New Item</a>
+    <!-- زر إضافة عنصر جديد -->
+    <button class="add-item-btn" onclick="toggleAddForm()">+ Add New Item</button>
 
-    <table class="menu-table">
-        <tr>
-            <th>Item</th>
-            <th>Details</th>
-            <th style="text-align:right;">Actions</th>
-        </tr>
+    <!-- فورم الإضافة -->
+    <div id="add-form" class="add-form hidden">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="add_item" value="1">
+            {{ form.as_p }}
+            <button class="add-submit-btn">Add Item</button>
+        </form>
+    </div>
 
-        {% for item in menu %}
-        <tr>
-            <!-- IMAGE -->
-            <td>
-                <img src="{{ item.image.url }}" class="menu-img">
-            </td>
+    <!-- جدول عرض العناصر -->
+    <div class="menu-grid">
+        {% for item in items %}
+        <div class="menu-card">
+            
+            <!-- صورة -->
+            <img src="{{ item.image.url }}" class="menu-image">
 
-            <!-- INFO UNDER IMAGE -->
-            <td>
-                <div class="menu-info">
-                    <div class="menu-name">{{ item.name }}</div>
-                    <div>Price: {{ item.price }} SAR</div>
-                    <div>Category: {{ item.get_category_display }}</div>
-                    <div>Status: {% if item.is_available %}Available{% else %}Not Available{% endif %}</div>
-                </div>
+            <!-- معلومات -->
+            <div class="menu-info">
+                <h3>{{ item.name }}</h3>
+                <p class="menu-desc">{{ item.description }}</p>
+                <p class="menu-price">Price: {{ item.price }} SAR</p>
+                <p class="menu-category">Category: {{ item.get_category_display }}</p>
+                <p class="menu-status">
+                    Status:
+                    {% if item.is_available %}
+                        <span class="status available">Available</span>
+                    {% else %}
+                        <span class="status unavailable">Unavailable</span>
+                    {% endif %}
+                </p>
+            </div>
 
-                <!-- Hidden edit form -->
-                <div id="edit-{{ item.id }}" class="edit-box">
-                    <form method="POST" enctype="multipart/form-data" action="{% url 'edit_menu_item' item.id %}">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button class="btn-small btn-edit" type="submit">Save Changes</button>
-                    </form>
-                </div>
-            </td>
+            <!-- أزرار الإدارة -->
+            <div class="menu-actions">
+                <a href="{% url 'edit_menu_item' item.id %}" class="edit-btn">✎</a>
+                <a href="{% url 'delete_menu_item' item.id %}" class="delete-btn">🗑</a>
+                <a href="{% url 'toggle_availability' item.id %}" class="toggle-btn">⟳</a>
+            </div>
 
-            <!-- ACTION BUTTONS -->
-            <td class="menu-actions">
-                <button class="btn-small btn-edit" onclick="toggleEdit('{{ item.id }}')">Edit</button>
-
-                <a href="{% url 'delete_menu_item' item.id %}">
-                    <button class="btn-small btn-delete">Delete</button>
-                </a>
-
-                <a href="{% url 'toggle_availability' item.id %}">
-                    <button class="btn-small btn-toggle">
-                        {% if item.is_available %}Hide{% else %}Show{% endif %}
-                    </button>
-                </a>
-            </td>
-        </tr>
+        </div>
+        {% empty %}
+        <p class="empty-msg">No menu items added yet.</p>
         {% endfor %}
-    </table>
+    </div>
 </div>
 
-</body>
-</html>
+<!-- JavaScript -->
+<script>
+function toggleAddForm() {
+    document.getElementById("add-form").classList.toggle("hidden");
+}
+</script>
+
+{% endblock %}
