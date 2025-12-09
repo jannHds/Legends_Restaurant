@@ -1842,3 +1842,110 @@ body {
     cursor: pointer;
 }
 
+/* =============================
+   MODAL POPUP (Edit Form)
+   ============================= */
+
+/* خلفية سوداء شفافة مع Blur */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(35, 35, 56, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+/* الصندوق الأساسي */
+.modal-content {
+    background: #ffffff;
+    width: 450px;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* عنوان المودال */
+.modal-content h2 {
+    margin-bottom: 15px;
+    color: #4b4a78;
+    font-weight: 700;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* زر الإغلاق */
+.close-btn {
+    background: #ffdde4;
+    color: #b44d5d;
+    padding: 8px 14px;
+    border: none;
+    margin-top: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    float: right;
+}
+
+.close-btn:hover {
+    background: #ffcbd7;
+}
+
+/* زر الحفظ */
+.add-submit-btn {
+    background: #b4b3ff;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.add-submit-btn:hover {
+    background: #9d9af8;
+}
+
+/* تحريك لطيف عند ظهور المودال */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* تنسيق الفورم داخل المودال */
+#editFormFields p {
+    margin-bottom: 10px;
+}
+
+#editFormFields label {
+    font-weight: 600;
+    color: #4b4a78;
+}
+
+#editFormFields input,
+#editFormFields select,
+#editFormFields textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-top: 5px;
+}
+
+
