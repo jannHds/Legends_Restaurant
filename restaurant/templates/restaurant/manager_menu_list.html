@@ -1,0 +1,194 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
+
+<div class="menu-container">
+    <h1 class="page-title">Manage Menu</h1>
+
+    <!-- زر إضافة عنصر -->
+    <button class="add-item-btn" onclick="toggleAddForm()">+ Add New Item</button>
+
+    <!-- فورم الإضافة -->
+    <div id="add-form" class="add-form hidden">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="add_item" value="1">
+            {{ form.as_p }}
+            <button class="add-submit-btn">Add Item</button>
+        </form>
+    </div>
+
+    <!-- قائمة العناصر -->
+    <div class="menu-grid">
+        {% for item in menu_items %}
+        <div class="menu-card">
+
+            <!-- الصورة + النص -->
+            <div class="menu-main">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" class="menu-image">
+                {% else %}
+                    <div class="menu-image placeholder"></div>
+                {% endif %}
+
+                <div class="menu-info">
+                    <h3 class="menu-name">{{ item.name }}</h3>
+                    <p class="menu-desc">{{ item.description }}</p>
+                    <p class="menu-price">Price: {{ item.price }} SAR</p>
+                    <p class="menu-category">Category: {{ item.get_category_display }}</p>
+
+                    <p class="menu-status">
+                        Status:
+                        {% if item.is_available %}
+                            <span class="status available">Available</span>
+                        {% else %}
+                            <span class="status unavailable">Unavailable</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <!-- أزرار التحكم -->
+            <div class="menu-actions">
+                <button onclick="openEditModal({{ item.id }})" class="btn-small btn-edit">✎ Edit</button>
+
+                <a href="#" class="delete-btn" onclick="openDeleteModal({{ item.id }}, '{{ item.name }}')">
+                   🗑️ Delete
+                </a>
+
+                <a href="{% url 'toggle_availability' item.id %}" class="btn-small btn-toggle">⟳ Toggle</a>
+            </div>
+
+        </div>
+        {% empty %}
+        <p class="empty-msg">No menu items added yet.</p>
+        {% endfor %}
+    </div>
+</div>
+
+
+<!-- ⭐⭐⭐ Popup Modal (Edit) ⭐⭐⭐ -->
+<div id="editModal" class="modal hidden">
+    <div class="modal-content">
+
+        <h2 class="modal-title">Edit Item</h2>
+
+        <form id="editForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- حقول Django -->
+            <div id="editFormFields"></div>
+
+            <!-- الصورة الحالية -->
+            <div class="current-image-box">
+                <div id="currentImagePreview"></div>
+            </div>
+
+            <!-- available -->
+            <div class="available-row">
+                <label for="custom_available"><strong>Is available:</strong></label>
+                <input type="checkbox" id="custom_available">
+            </div>
+
+            <!-- أزرار -->
+            <div class="modal-actions">
+                <button type="submit" class="btn-save">Save</button>
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+<!-- ⭐⭐⭐ Popup Modal (Delete) ⭐⭐⭐ -->
+<div id="deleteModal" class="modal hidden">
+    <div class="modal-content">
+
+        <h2 class="modal-title" style="color: #c77a85;">Delete Item</h2>
+
+
+        <p style="text-align: center; font-size: 18px; font-weight: normal; color: #333;">
+            Are you sure you want to delete:
+            <span id="deleteItemName" style="font-weight: normal;"></span>?
+        </p>
+
+
+
+        <form id="deleteForm" method="POST">
+            {% csrf_token %}
+            <div class="modal-actions">
+                <button type="submit" class="btn-save" style="background-color:#d9534f;">Yes, Delete</button>
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+
+
+
+<!-- JavaScript -->
+<script>
+
+function toggleAddForm() {
+    document.getElementById("add-form").classList.toggle("hidden");
+}
+
+/* ⭐ فتح مودال Edit */
+function openEditModal(itemId) {
+    fetch(`/manager/menu/edit/${itemId}/`)
+        .then(response => response.text())
+        .then(html => {
+
+            document.getElementById("editFormFields").innerHTML = html;
+
+            const djangoCheckbox = document.querySelector("#editFormFields #id_is_available");
+            const djangoLabel = document.querySelector("#editFormFields label[for='id_is_available']");
+            if (djangoCheckbox) djangoCheckbox.style.display = "none";
+            if (djangoLabel) djangoLabel.style.display = "none";
+
+            if (djangoCheckbox) {
+                const newCheckbox = document.getElementById("custom_available");
+                newCheckbox.checked = djangoCheckbox.checked;
+
+                newCheckbox.addEventListener("change", () => {
+                    djangoCheckbox.checked = newCheckbox.checked;
+                });
+            }
+
+            const imgMatch = html.match(/src="([^"]+)"/);
+            if (imgMatch) {
+                document.getElementById("currentImagePreview").innerHTML =
+                    `<img src="${imgMatch[1]}" class="image-preview">`;
+            } else {
+                document.getElementById("currentImagePreview").innerHTML = "";
+            }
+
+            document.getElementById("editForm").action = `/manager/menu/edit/${itemId}/`;
+
+            document.getElementById("editModal").classList.remove("hidden");
+        });
+}
+
+/* ⭐ إغلاق مودال Edit */
+function closeModal() {
+    document.getElementById("editModal").classList.add("hidden");
+}
+
+/* ⭐ فتح مودال Delete */
+function openDeleteModal(id, name) {
+    document.getElementById("deleteItemName").innerText = name;
+    document.getElementById("deleteForm").action = `/manager/menu/delete/${id}/`;
+    document.getElementById("deleteModal").classList.remove("hidden");
+}
+
+/* ⭐ إغلاق مودال Delete */
+function closeDeleteModal() {
+    document.getElementById("deleteModal").classList.add("hidden");
+}
+
+</script>
+
+

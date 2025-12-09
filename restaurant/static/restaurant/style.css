@@ -1435,3 +1435,810 @@ body {
     color: #8064A2;
 }
 
+/* === GENERAL PAGE STYLE === */
+body {
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(to bottom, #fff7f3, #f8ece8);
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+/* ——————————————————————
+   Manager Menu Page (Purple Soft Theme)
+——————————————————————— */
+
+/* Container */
+.menu-container {
+    width: 90%;
+    margin: auto;
+    padding-top: 30px;
+}
+
+/* Title */
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #4b4a78;
+    margin-bottom: 25px;
+}
+
+/* Add Button */
+.menu-add-btn {
+    padding: 12px 20px;
+    background: #d7d7ff;
+    color: #4b4a78;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    transition: 0.2s;
+    margin-bottom: 25px;
+}
+
+.menu-add-btn:hover {
+    background: #c4c4ff;
+}
+
+/* Add Form */
+.menu-add-form {
+    background: #f3f1ff;
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    display: none;
+}
+
+.menu-add-form.show {
+    display: block;
+}
+
+/* Menu Items Grid */
+.menu-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Card */
+.menu-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+/* Image */
+.menu-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-right: 20px;
+    border: 3px solid #eceaff;
+}
+
+/* Text Area */
+.menu-info h3 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #4b4a78;
+}
+
+.menu-desc {
+    font-size: 15px;
+    color: #7a7a9d;
+}
+
+.menu-price,
+.menu-category {
+    font-weight: 600;
+    color: #4b4a78;
+    margin-top: 5px;
+}
+
+/* Availability status */
+.status {
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    display: inline-block;
+    margin-top: 6px;
+}
+
+.status.available {
+    background: #e6f2ff;
+    color: #4d7eff;
+}
+
+.status.unavailable {
+    background: #ffe6ea;
+    color: #d65a72;
+}
+
+/* Actions */
+.menu-actions {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.menu-actions a {
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+/* Buttons */
+.edit-btn {
+    background: #e7e6ff;
+    color: #5a59bd;
+}
+.edit-btn:hover {
+    background: #d6d5ff;
+}
+
+.delete-btn {
+    background: #ffe7ed;
+    color: #c1576c;
+}
+.delete-btn:hover {
+    background: #ffd4de;
+}
+
+.toggle-btn {
+    background: #e8f7ff;
+    color: #4f90b7;
+}
+.toggle-btn:hover {
+    background: #d5f1ff;
+}
+
+/* Empty message */
+.empty-msg {
+    text-align: center;
+    font-size: 18px;
+    color: #7a7a9d;
+    padding: 40px 0;
+}
+
+/* ===========================
+   Manager - Manage Menu Page
+   =========================== */
+
+.menu-container {
+    width: 90%;
+    margin: 40px auto;
+    padding: 10px 10px 40px;
+}
+
+.page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #4b4a78;
+    margin-bottom: 20px;
+}
+
+/* زر إضافة عنصر جديد */
+.add-item-btn {
+    padding: 10px 18px;
+    background: #d7d7ff;
+    color: #4b4a78;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+    margin-bottom: 18px;
+}
+
+.add-item-btn:hover {
+    background: #c4c4ff;
+}
+
+/* فورم الإضافة */
+.add-form {
+    background: #f3f1ff;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+/* يخفي/يظهر الفورم */
+.hidden {
+    display: none !important;
+}
+
+/* شبكة الكروت */
+.menu-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* الكارد الأساسية */
+.menu-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* الجزء اليسار: صورة + نص في عمود */
+.menu-main {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* الصورة */
+.menu-image {
+    width: 230px;
+    height: 120px;
+    border-radius: 14px;
+    object-fit: cover;
+    background: #ecebff;
+}
+
+/* لو ما فيه صورة */
+.menu-image.placeholder {
+    background: linear-gradient(135deg, #d7d7ff, #f4f2ff);
+}
+
+/* النص */
+.menu-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.menu-desc {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 4px;
+}
+
+.menu-price,
+.menu-category {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b4a78;
+    margin-bottom: 2px;
+}
+
+.menu-status {
+    font-size: 14px;
+}
+
+/* حالة الـ Status */
+.status {
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+}
+
+.status.available {
+    background: #e6f2ff;
+    color: #4d7eff;
+}
+
+.status.unavailable {
+    background: #ffe6ea;
+    color: #d65370;
+}
+
+/* أزرار الإدارة */
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* زر صغير */
+.btn-small {
+    padding: 7px 14px;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: 0.2s;
+}
+
+/* نفس ألوان الموقع تقريبا */
+.btn-edit {
+    background: #e7e6ff;
+    color: #5a59bd;
+}
+
+.btn-edit:hover {
+    background: #d6d5ff;
+}
+
+.btn-delete {
+    background: #ffe7ed;
+    color: #c1576c;
+}
+
+.btn-delete:hover {
+    background: #ffd4de;
+}
+
+.btn-toggle {
+    background: #e8f7ff;
+    color: #4f90b7;
+}
+
+.btn-toggle:hover {
+    background: #d5f1ff;
+}
+
+/* رسالة لا يوجد عناصر */
+.empty-msg {
+    color: #7a7a9d;
+    font-size: 16px;
+    margin-top: 20px;
+    text-align: center;
+}
+
+/* إصلاح حجم خانة الـ Description */
+.menu-container textarea,
+.add-form textarea {
+    width: 100% !important;
+    min-height: 90px;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #dcdcff;
+    background: #fafaff;
+}
+
+.modal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 14px;
+    width: 450px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+}
+
+.close-btn {
+    background: #ddd;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+/* =============================
+   MODAL POPUP (Edit Form)
+   ============================= */
+
+/* خلفية سوداء شفافة مع Blur */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(35, 35, 56, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+/* الصندوق الأساسي */
+.modal-content {
+    background: #ffffff;
+    width: 380px;              /* أصغر */
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    animation: fadeIn 0.25s ease-out;
+    max-height: 85vh;          /* يمنع أنها تطلع من الشاشة */
+    overflow-y: auto;          /* يخليها تسكرول لو صارت طويلة */
+}
+
+
+
+/* عنوان المودال */
+.modal-content h2 {
+    margin-bottom: 15px;
+    color: #4b4a78;
+    font-weight: 700;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* زر الإغلاق */
+.close-btn {
+    background: #ffdde4;
+    color: #b44d5d;
+    padding: 8px 14px;
+    border: none;
+    margin-top: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    float: right;
+}
+
+.close-btn:hover {
+    background: #ffcbd7;
+}
+
+/* زر الحفظ */
+.add-submit-btn {
+    background: #b4b3ff;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.add-submit-btn:hover {
+    background: #9d9af8;
+}
+
+/* تحريك لطيف عند ظهور المودال */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* تنسيق الفورم داخل المودال */
+#editFormFields p {
+    margin-bottom: 10px;
+}
+
+#editFormFields label {
+    font-weight: 600;
+    color: #4b4a78;
+}
+
+#editFormFields input,
+#editFormFields select,
+#editFormFields textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    margin-top: 5px;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    width: 380px;
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    max-height: 85vh;
+    overflow-y: auto;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.modal-title {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-save {
+    flex: 1;
+    background: #b4b3ff;
+    color: white;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-save:hover {
+    background: #9d9af8;
+}
+
+.btn-cancel {
+    flex: 1;
+    background: #ffe0e6;
+    color: #b44d5d;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-cancel:hover {
+    background: #ffc9d3;
+}
+
+/* تحسين شكل الحقول */
+#editFormFields p {
+    margin-bottom: 12px;
+}
+
+#editFormFields label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+#editFormFields input[type="checkbox"] {
+    margin-left: 5px;
+}
+/* === Modal Layout Better Width + Center === */
+.modal-content {
+    max-width: 650px !important;
+    width: 95%;
+    padding: 25px 35px;
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.20);
+}
+
+/* ترتيب الحقول جنب بعض بدل فوق بعض */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 18px;
+}
+
+.form-row .form-field {
+    flex: 1;
+}
+
+/* تعديل تنسيق الـ checkbox بحيث يكون بجانب النص */
+.checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+/* زرّي Save / Cancel */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
+/* تصغير مساحة الصورة الحالية + وضوح */
+.image-current {
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+/* ====== تحسين شكل حقول الفورم داخل المودال ====== */
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content textarea,
+.modal-content select,
+.modal-content input[type="file"] {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: #f6f4ff;      /* نفس لون مربعات الإضافة */
+    font-size: 15px;
+    margin-top: 6px;
+}
+
+/* إصلاح textarea لتكون مثل باقي الحقول */
+.modal-content textarea {
+    min-height: 100px;
+}
+
+/* ====== إصلاح الحواف اليمين ====== */
+.modal-content {
+    max-width: 650px;
+    width: 95%;
+    margin: auto;
+    border-radius: 18px;
+    padding: 25px 30px;
+}
+
+/* ====== ترتيب سيكشن الصورة ====== */
+.image-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 12px;
+}
+
+/* إخفاء Clear من Django */
+.modal-content input[type="checkbox"][name$="clear"] {
+    display: none;
+}
+.modal-content label[for$="clear"] {
+    display: none;
+}
+
+/* ====== ترتيب Is Available ====== */
+.available-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.available-row label {
+    font-weight: bold;
+}
+
+/* ====== زرّين Save/Cancel ====== */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-save {
+    background: #b8b3ff;
+    color: #fff;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 48%;
+}
+
+.btn-cancel {
+    background: #ffd7dd;
+    color: #ad5060;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    width: 48%;
+}
+/* إخفاء خيار Clear من حقول Django ImageField */
+.modal-content input[type="checkbox"][name$="clear"] {
+    display: none;
+}
+
+.modal-content label[for$="clear"] {
+    display: none;
+}
+.image-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin: 10px 0;
+    display: block;
+}
+/* إخفاء حقل is_available القادم من Django داخل المودال */
+#editModal label[for="id_is_available"],
+#editModal #id_is_available {
+    display: none !important;
+}
+/* إخفاء نسخة Django من الحقل */
+#editModal #editFormFields label[for="id_is_available"],
+#editModal #editFormFields #id_is_available {
+    display: none !important;
+}
+
+/* عرض الصورة */
+.current-image-box {
+    margin: 10px 0;
+}
+
+.image-preview {
+    width: 150px;
+    height: 150px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+/* إخفاء كلمة Clear */
+#editFormFields label[for="image-clear"] {
+    display: none !important;
+}
+
+/* إخفاء مربع Clear */
+#editFormFields input[type="checkbox"][name="image-clear"] {
+    display: none !important;
+}
+
+/* إخفاء جملة Current Image: إذا ظهرت */
+.current-image-label {
+    display: none !important;
+}
+
+/* منع إضافة كلمة Current Image تلقائياً قبل الصورة */
+#currentImagePreview::before {
+    display: none !important;
+}
+
+/* حذف Clear فقط */
+input[type="checkbox"][id$="clear_id"],
+label[for$="clear_id"] {
+    display: none !important;
+}
+
+/* حذف كلمة Current Image: فقط */
+label[for$="current_image"] {
+    display: none !important;
+}
+label[for*="image"] {
+    display: none !important;
+}
+
+
+
+
+
+
+
