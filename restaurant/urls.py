@@ -40,6 +40,8 @@ urlpatterns = [
     path("manager/menu/edit/<int:item_id>/", manager_views.edit_menu_item, name="edit_menu_item"),
     path("manager/menu/delete/<int:item_id>/", manager_views.delete_menu_item, name="delete_menu_item"),
     path("manager/menu/toggle/<int:item_id>/", manager_views.toggle_availability, name="toggle_availability"),
+    
+
 
 
 ]
