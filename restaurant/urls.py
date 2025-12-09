@@ -24,7 +24,7 @@ urlpatterns = [
     
 
     # زر Manage Menu في صفحة المدير
-    path("manager/menu/", manager_views.menu_list, name="manager_menu_list"),
+    path("manager/menu/", manager_views.manager_menu_list, name="manager_menu_list"),
 
     # زر Manage Users الجديد
     path("manager/users/", views.manage_users, name="manage_users"),
