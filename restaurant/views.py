@@ -139,6 +139,13 @@ def update_status(request, order_id, new_status):
     return render(request, "restaurant/staff_dashboard.html")
 
 
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'restaurant/order_detail.html', {'order': order})
+
+
+
+
 
 def manager_dashboard(request):
     """

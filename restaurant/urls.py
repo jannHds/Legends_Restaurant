@@ -19,6 +19,10 @@ urlpatterns = [
     #staff
     path('staff/dashboard/', views.staff_dashboard, name='staff_dashboard'),
     path('update-status/<int:order_id>/<str:new_status>/', views.update_status, name='update_status'),
+    path("order/<int:order_id>/", views.order_detail, name='order_detail'),
+  
+
+
 
     path("manager/dashboard/", views.manager_dashboard, name="manager_dashboard"),
     
