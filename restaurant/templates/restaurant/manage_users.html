@@ -180,10 +180,11 @@
                     <div class="mu-accordion-content">
                         <form method="get" class="mu-filter-form">
                             <label for="role-filter">Filter by role:</label>
-                            <select id="role-filter" name="role" onchange="this.form.submit()">
-                                <option value="all" {% if role_filter == 'all' %}selected{% endif %}>All</option>
-                                <option value="manager" {% if role_filter == 'manager' %}selected{% endif %}>Managers</option>
-                                <option value="staff" {% if role_filter == 'staff' %}selected{% endif %}>Staff</option>
+                           <select name="role">
+                               <option value="all" {% if role_filter == "all" %}selected{% endif %}>All</option>
+                               <option value="manager" {% if role_filter == "manager" %}selected{% endif %}>Managers</option>
+                               <option value="staff" {% if role_filter == "staff" %}selected{% endif %}>Staff</option>
+                               <option value="customer" {% if role_filter == "customer" %}selected{% endif %}>Customers</option>
                             </select>
                         </form>
 

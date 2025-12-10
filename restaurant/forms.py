@@ -2,7 +2,6 @@ from django import forms
 from .models import MenuItem
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from .models import CustomerUser
 from django.core.exceptions import ValidationError
 
@@ -35,6 +34,148 @@ class UserUpdateForm(forms.ModelForm):
 
         return cleaned_data
 class CustomerSignUpForm(UserCreationForm):
+    """
+    Customer Sign Up Form:
+    - يحفظ البيانات في جدول User (مع role = "customer")
+    - وينشئ سجل في CustomerUser للربط مع باقي النظام
+    - يسمح بالتسجيل باستخدام إيميل أو جوال أو الاثنين
+    """
+
+    email = forms.EmailField(
+        required=False,   # واحد من الإيميل أو الجوال يكفي
+        label="Email",
+        widget=forms.EmailInput(
+            attrs={
+                "class": "input-field",
+                "placeholder": "Enter your email",
+                "title": "Provide a valid email. It will be used for account recovery and notifications.",
+            }
+        ),
+    )
+
+    phone = forms.CharField(
+        required=False,   # واحد من الإيميل أو الجوال يكفي
+        label="Phone",
+        max_length=20,
+        widget=forms.TextInput(
+            attrs={
+                "class": "input-field",
+                "placeholder": "05XXXXXXXX",
+                "title": "Phone number used for contact/login. Must be unique.",
+            }
+        ),
+    )
+
+    address = forms.CharField(
+        required=False,   # العنوان مو إجباري زي ما طلبتي
+        label="Address",
+        max_length=255,
+        widget=forms.TextInput(
+            attrs={
+                "class": "input-field",
+                "placeholder": "Enter your address",
+                "title": "Enter your delivery address.",
+            }
+        ),
+    )
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        # Username → Email → Phone → Address → Passwords
+        fields = ("username", "email", "phone", "address", "password1", "password2")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # ترتيب الحقول
+        self.order_fields(["username", "email", "phone", "address", "password1", "password2"])
+
+        self.fields["username"].widget.attrs.update(
+            {
+                "class": "input-field",
+                "placeholder": "Choose a username",
+                "title": "Username used to identify your account.",
+            }
+        )
+
+        # نخفي help_text الافتراضي للباسورد (بنستخدم الـ tooltip في HTML)
+        self.fields["password1"].help_text = None
+        self.fields["password2"].help_text = None
+
+        self.fields["password1"].widget.attrs.update(
+            {
+                "class": "input-field",
+                "placeholder": "Enter password",
+            }
+        )
+        self.fields["password2"].widget.attrs.update(
+            {
+                "class": "input-field",
+                "placeholder": "Confirm password",
+            }
+        )
+
+    def clean(self):
+        """
+        نتأكد أن فيه على الأقل (إيميل أو جوال)
+        ونتأكد من uniqueness في CustomerUser
+        """
+        cleaned_data = super().clean()
+        email = cleaned_data.get("email")
+        phone = cleaned_data.get("phone")
+
+        # واحد منهم لازم يكون موجود
+        if not email and not phone:
+            raise ValidationError("Please provide at least an email or a phone number.")
+
+        # لو فيه إيميل، تأكد أنه غير مكرر
+        if email and CustomerUser.objects.filter(email=email).exists():
+            self.add_error("email", "This email is already registered.")
+
+        # لو فيه جوال، تأكد أنه غير مكرر
+        if phone and CustomerUser.objects.filter(phone=phone).exists():
+            self.add_error("phone", "This phone number is already registered.")
+
+        return cleaned_data
+
+    def save(self, commit=True):
+        """
+        1) إنشاء User (في جدول المستخدمين الرئيسي)
+        2) تعيين role = "customer" عشان يظهر في Manage Employees
+        3) إنشاء سجل في CustomerUser مربوط بنفس الـ User
+        """
+        user = super().save(commit=False)
+
+        user.email = self.cleaned_data.get("email", "")
+        # لو عندكم حقول phone / address في User model نفسه:
+        if hasattr(user, "phone"):
+            user.phone = self.cleaned_data.get("phone", "")
+        if hasattr(user, "address"):
+            user.address = self.cleaned_data.get("address", "")
+
+        # أهم سطر: ربطه كـ Customer للنظام
+        if hasattr(user, "role"):
+            user.role = "customer"
+
+        # نتأكد أنه مو staff ولا superuser
+        user.is_staff = False
+        user.is_superuser = False
+
+        if commit:
+            user.save()
+
+            # ننشئ سجل في جدول CustomerUser (للوحدة الخاصة بالعملاء)
+            CustomerUser.objects.create(
+                user=user,
+                username=user.username,
+                password=user.password,  # hashed
+                email=self.cleaned_data.get("email", ""),
+                phone=self.cleaned_data.get("phone", ""),
+                address=self.cleaned_data.get("address", ""),
+            )
+
+        return user
+
     email = forms.EmailField(
         required=False,   # واحد من الإيميل أو الجوال يكفي
         label="Email",

@@ -22,6 +22,49 @@
     </header>
 
     <main class="lr-main">
+
+        {# بانر ترحيب يظهر فقط للـ customer المسجّل دخوله #}
+        {% if request.user.is_authenticated and request.user.role == "customer" %}
+        <section style="
+            background: #F4E1FF;
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin: 16px auto 8px;
+            max-width: 980px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            color: #2E2140;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        ">
+            <div>
+                <h2 style="margin: 0; font-size: 1.3rem;">
+                    Welcome, {{ request.user.username }}! 👋
+                </h2>
+                <p style="margin: 4px 0 0; font-size: 0.95rem;">
+                    Glad to have you back at Legends Restaurant.
+                </p>
+            </div>
+
+            <a href="{% url 'edit_user' request.user.id %}"
+               style="
+                   display: inline-flex;
+                   align-items: center;
+                   gap: 6px;
+                   background: #8064A2;
+                   color: #ffffff;
+                   padding: 9px 14px;
+                   border-radius: 999px;
+                   text-decoration: none;
+                   font-size: 0.9rem;
+                   font-weight: 600;
+               ">
+                ⚙ Edit Account
+            </a>
+        </section>
+        {% endif %}
+
         <!-- Hero section -->
         <section class="lr-hero">
             <div class="lr-hero-text">
@@ -38,60 +81,60 @@
             <div class="lr-menu-grid">
                 {# لو عندك menu_items من الـ DB استخدمي هذا اللوب #}
                 {% if menu_items %}
-                {% for item in menu_items %}
-                <article class="lr-menu-card">
-                    <div class="lr-menu-image"></div>
-                    <h3 class="lr-menu-title">{{ item.name }}</h3>
-                    <p class="lr-menu-desc">{{ item.description }}</p>
-                    <div class="lr-menu-footer">
-                        <span class="lr-menu-price">
-                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                            {{ item.price }}
-                        </span>
-                        <button class="lr-btn-secondary">Add to cart</button>
-                    </div>
-                </article>
-                {% endfor %}
+                    {% for item in menu_items %}
+                        <article class="lr-menu-card">
+                            <div class="lr-menu-image"></div>
+                            <h3 class="lr-menu-title">{{ item.name }}</h3>
+                            <p class="lr-menu-desc">{{ item.description }}</p>
+                            <div class="lr-menu-footer">
+                                <span class="lr-menu-price">
+                                    <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                    {{ item.price }}
+                                </span>
+                                <button class="lr-btn-secondary">Add to cart</button>
+                            </div>
+                        </article>
+                    {% endfor %}
                 {% else %}
-                {# بيانات تجريبية لو ما فيه DB للحين #}
-                <article class="lr-menu-card">
-                    <div class="lr-menu-image"></div>
-                    <h3 class="lr-menu-title">Classic Burger</h3>
-                    <p class="lr-menu-desc">Juicy beef patty, fresh lettuce and cheese.</p>
-                    <div class="lr-menu-footer">
-                        <span class="lr-menu-price">
-                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                            32
-                        </span>
-                        <button class="lr-btn-secondary">Add to cart</button>
-                    </div>
-                </article>
+                    {# بيانات تجريبية لو ما فيه DB للحين #}
+                    <article class="lr-menu-card">
+                        <div class="lr-menu-image"></div>
+                        <h3 class="lr-menu-title">Classic Burger</h3>
+                        <p class="lr-menu-desc">Juicy beef patty, fresh lettuce and cheese.</p>
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                32
+                            </span>
+                            <button class="lr-btn-secondary">Add to cart</button>
+                        </div>
+                    </article>
 
-                <article class="lr-menu-card">
-                    <div class="lr-menu-image"></div>
-                    <h3 class="lr-menu-title">Chicken Alfredo Pasta</h3>
-                    <p class="lr-menu-desc">Creamy sauce with grilled chicken and parmesan.</p>
-                    <div class="lr-menu-footer">
-                        <span class="lr-menu-price">
-                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                            45
-                        </span>
-                        <button class="lr-btn-secondary">Add to cart</button>
-                    </div>
-                </article>
+                    <article class="lr-menu-card">
+                        <div class="lr-menu-image"></div>
+                        <h3 class="lr-menu-title">Chicken Alfredo Pasta</h3>
+                        <p class="lr-menu-desc">Creamy sauce with grilled chicken and parmesan.</p>
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                45
+                            </span>
+                            <button class="lr-btn-secondary">Add to cart</button>
+                        </div>
+                    </article>
 
-                <article class="lr-menu-card">
-                    <div class="lr-menu-image"></div>
-                    <h3 class="lr-menu-title">Caramel Latte</h3>
-                    <p class="lr-menu-desc">Hot coffee with milk foam and caramel drizzle.</p>
-                    <div class="lr-menu-footer">
-                        <span class="lr-menu-price">
-                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                            18
-                        </span>
-                        <button class="lr-btn-secondary">Add to cart</button>
-                    </div>
-                </article>
+                    <article class="lr-menu-card">
+                        <div class="lr-menu-image"></div>
+                        <h3 class="lr-menu-title">Caramel Latte</h3>
+                        <p class="lr-menu-desc">Hot coffee with milk foam and caramel drizzle.</p>
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                18
+                            </span>
+                            <button class="lr-btn-secondary">Add to cart</button>
+                        </div>
+                    </article>
                 {% endif %}
             </div>
         </section>

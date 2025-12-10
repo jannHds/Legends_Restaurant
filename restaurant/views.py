@@ -36,7 +36,7 @@ def login_view(request):
             role = getattr(user, "role", None)
 
             if role == "customer":
-                return redirect("customer_dashboard")
+                return redirect("home")
             elif role == "staff":
                 return redirect("staff_dashboard")
             elif role == "manager":
@@ -94,6 +94,14 @@ def customer_dashboard(request):
         return guard
 
     return render(request, "restaurant/customer_dashboard.html")
+    """
+    Simple Customer Home page after login
+    """
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    return render(request, "restaurant/customer_home.html")
 
 
 def staff_dashboard(request):
@@ -185,8 +193,8 @@ def manage_users(request):
         if len(password) < 8:
             errors.append("Password must be at least 8 characters long.")
 
-        if role not in ["manager", "staff"]:
-            errors.append("Role must be either 'manager' or 'staff'.")
+        users_qs = User.objects.filter(role__in=["manager", "staff", "customer"])
+        errors.append("Role must be either 'manager' or 'staff'.")
 
         # لو ستاف لازم نكتب الراتب
         if role == "staff" and not salary_str:
@@ -221,10 +229,11 @@ def manage_users(request):
             form_success = "User created successfully."
 
     # تجهيز قائمة المستخدمين مع الفلتر
-    users_qs = User.objects.filter(role__in=["manager", "staff"])
+    users_qs = User.objects.filter(role__in=["manager", "staff", "customer"])
 
-    if role_filter in ["manager", "staff"]:
-        users_qs = users_qs.filter(role=role_filter)
+    if role_filter in ["manager", "staff", "customer"]:
+         users_qs = users_qs.filter(role=role_filter)
+
 
     users = users_qs.order_by("username")
 
@@ -279,6 +288,28 @@ def edit_user(request, user_id):
         'user_obj': user_obj,
     })
 def customer_signup_view(request):
+    """
+    Customer Sign Up Page (for role = customer)
+    Uses CustomerSignUpForm to create a new user, then logs them in
+    and redirects to the customer dashboard.
+    """
+    if request.method == "POST":
+        form = CustomerSignUpForm(request.POST)
+        if form.is_valid():
+            # form.save() يفترض أنه ينشئ User مع role = "customer"
+            user = form.save()
+            login(request, user)
+            # حاليًا عندكم customer_dashboard شغّال، لذلك نوجّه له
+            return redirect("home")
+    else:
+        form = CustomerSignUpForm()
+
+    context = {
+        "form": form,
+    }
+    # هذا التمبلت هو اللي Jana راح تشتغل عليه
+    return render(request, "restaurant/customer_signup.html", context)
+
     """
     Customer Sign Up Page
     """
