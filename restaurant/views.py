@@ -6,15 +6,13 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
-from django.shortcuts import render
 from .models import MenuItem
-
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-
 from .forms import CustomerSignUpForm, UserUpdateForm
 from .models import Order, OrderItem, MenuItem, Cart, CartItem  # ← أضفنا OrderItem هنا
+from .forms import UserUpdateForm ,CustomerAccountForm
+
 
 User = get_user_model()
 
@@ -48,52 +46,59 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            # يسجّل الدخول فعلياً
             login(request, user)
 
+            # نجيب الـ role بأمان (لو ما عنده role ما يطيح البرنامج)
             role = getattr(user, "role", None)
 
             if role == "customer":
-                return redirect("customer_dashboard")
+                return redirect("home")
             elif role == "staff":
                 return redirect("staff_dashboard")
             elif role == "manager":
                 return redirect("manager_dashboard")
             else:
+                # لو ما فيه role أو شيء مو متوقّع
                 return redirect("home")
         else:
+            # لو اليوزر/الباس غلط → نرجع لنفس صفحة اللوق إن مع رسالة
             return render(
                 request,
                 "restaurant/login.html",
                 {"error": "Invalid username or password"},
             )
 
+    # GET → أول مرة يفتح الصفحة
     return render(request, "restaurant/login.html")
-
 
 def customer_signup_view(request):
     """
-    صفحة تسجيل كستمر جديدة باستخدام CustomerSignUpForm
+    Customer Sign Up Page (for role = customer)
+    Uses CustomerSignUpForm to create a new user, then logs them in
+    and redirects to the customer dashboard.
     """
     if request.method == "POST":
         form = CustomerSignUpForm(request.POST)
         if form.is_valid():
+            # form.save() يفترض أنه ينشئ User مع role = "customer"
             user = form.save()
-            # تسجيل دخول بعد التسجيل (اختياري)
             login(request, user)
-            # غيري "customer_dashboard" لو اسم URL عندكم مختلف
-            return redirect("customer_dashboard")
+            # حاليًا عندكم customer_dashboard شغّال، لذلك نوجّه له
+            return redirect("home")
     else:
         form = CustomerSignUpForm()
 
     context = {
         "form": form,
     }
-    return render(request, "restaurant/customer_signup.html", context)
+    # هذا التمبلت هو اللي Jana راح تشتغل عليه
+    return render(request, "restaurant/customer_signup.html",context)
 
 
 # لو فيه URLs قديمة تشير إلى signup_view، نخليها تعيد استخدام نفس المنطق
 def signup_view(request):
-    return customer_signup_view(request)
+    return render(request, 'restaurant/signup.html')
 
 
 def logout_view(request):
@@ -124,15 +129,58 @@ def _ensure_role(request, required_role):
     return None
 
 
+@login_required
 def customer_dashboard(request):
-    """
-    Customer Dashboard
-    """
-    guard = _ensure_role(request, "customer")
-    if guard is not None:
-        return guard
+    
+    # لازم يكون مسجل دخول
+    if not request.user.is_authenticated:
+        return redirect("login")
 
-    return render(request, "restaurant/customer_dashboard.html")
+    # لو دخل ستاف → نرجعه لصفحة الستاف
+    if request.user.role == "staff":
+        return redirect("staff_dashboard")
+
+    # لو دخل مانجر → نرجعه لصفحة المانجر
+    if request.user.role == "manager":
+        return redirect("manager_dashboard")
+    user = request.user
+
+    # 1) إجمالي الطلبات
+    total_orders = Order.objects.filter(user=user).count()
+
+    # 2) حالة آخر طلب
+    last_order = Order.objects.filter(user=user).order_by('-created_at').first()
+
+    last_status = None
+    if last_order:
+        last_status = last_order.get_status_display()  # يخليها "Preparing" بدل preparing
+
+    # 3) الطلبات حسب الحالة
+    preparing = Order.objects.filter(user=user, status='preparing').count()
+    out_for_delivery = Order.objects.filter(user=user, status='out_for_delivery').count()
+    delivered = Order.objects.filter(user=user, status='delivered').count()
+
+    # 4) توصيات (نختار 3 أكلات عشوائية من المينيو)
+    recommendations = MenuItem.objects.filter(is_available=True).order_by('?')[:3]
+
+    # 5) أبرز المينيو (نختار 4 عناصر عشوائية)
+    highlights = MenuItem.objects.filter(is_available=True).order_by('?')[:4]
+
+    context = {
+        "username": user.username,
+        "total_orders": total_orders,
+        "last_order": last_order,
+        "last_status": last_status,
+
+        "preparing": preparing,
+        "out_for_delivery": out_for_delivery,
+        "delivered": delivered,
+
+        "recommendations": recommendations,
+        "highlights": highlights,
+    }
+
+    return render(request, "restaurant/customer_dashboard.html",context)
 
 
 def staff_dashboard(request):
@@ -222,20 +270,26 @@ def manage_users(request):
     form_error = None
     form_success = None
 
+    # فلتر الدور في الجدول (GET parameter)
     role_filter = request.GET.get("role", "all")
 
+    # ---------- معالجة فورم الإضافة (POST) ----------
     if request.method == "POST":
         username = (request.POST.get("username") or "").strip()
         email = (request.POST.get("email") or "").strip()
-        role = request.POST.get("role")
-        password = (request.POST.get("password") or "").strip()
 
+        # نقرأ الدور ونحوّله لحروف صغيرة (staff / manager)
+        role_raw = (request.POST.get("role") or "").strip()
+        role = role_raw.lower()
+
+        password = (request.POST.get("password") or "").strip()
         phone = (request.POST.get("phone") or "").strip()
         address = (request.POST.get("address") or "").strip()
         salary_str = (request.POST.get("salary") or "").strip()
 
-        errors = []
+        errors: list[str] = []
 
+        # فحوصات أساسية
         if not username:
             errors.append("Username is required.")
         elif User.objects.filter(username=username).exists():
@@ -244,12 +298,15 @@ def manage_users(request):
         if len(password) < 8:
             errors.append("Password must be at least 8 characters long.")
 
+        # التحقق من الدور
         if role not in ["manager", "staff"]:
             errors.append("Role must be either 'manager' or 'staff'.")
 
+        # لو ستاف لازم نكتب الراتب
         if role == "staff" and not salary_str:
             errors.append("Salary is required for staff users.")
 
+        # لو فيه راتب تأكدي أنه رقم
         if salary_str:
             try:
                 float(salary_str)
@@ -259,6 +316,7 @@ def manage_users(request):
         if errors:
             form_error = " | ".join(errors)
         else:
+            # إنشاء المستخدم
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -271,14 +329,15 @@ def manage_users(request):
             if role == "staff":
                 user.hired_at = timezone.now()
                 if salary_str:
-                    user.salary = salary_str
+                    user.salary = salary_str  # Django سيحوّلها لـ Decimal
 
             user.save()
             form_success = "User created successfully."
 
-    users_qs = User.objects.filter(role__in=["manager", "staff"])
+    # ---------- تجهيز قائمة المستخدمين (GET / بعد POST) ----------
+    users_qs = User.objects.filter(role__in=["manager", "staff", "customer"])
 
-    if role_filter in ["manager", "staff"]:
+    if role_filter in ["manager", "staff", "customer"]:
         users_qs = users_qs.filter(role=role_filter)
 
     users = users_qs.order_by("username")
@@ -291,35 +350,45 @@ def manage_users(request):
             "form_error": form_error,
             "form_success": form_success,
             "role_filter": role_filter,
-        },
+},
     )
 
 
 # تعديل بيانات مستخدم (للـ manager)
-def edit_user(request, user_id):
-    guard = _ensure_role(request, "manager")
-    if guard is not None:
-        return guard
-
+def edit_user_manager(request, user_id):
     user_obj = get_object_or_404(User, id=user_id)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = UserUpdateForm(request.POST, instance=user_obj)
         if form.is_valid():
             form.save()
             messages.success(request, "User updated successfully.")
-            return redirect("manage_users")
+            return redirect('manage_users')
     else:
         form = UserUpdateForm(instance=user_obj)
 
-    return render(
-        request,
-        "restaurant/edit_user.html",
-        {
-            "form": form,
-            "user_obj": user_obj,
-        },
-    )
+    return render(request, 'restaurant/edit_user.html', {
+        'form': form,
+        'user_obj': user_obj,
+    })
+
+@login_required
+def edit_customer_account(request):
+    user_obj = request.user  # الكستمر يعدّل نفسه فقط
+
+    if request.method == "POST":
+        form = CustomerAccountForm(request.POST, instance=user_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Account updated successfully.")
+            return redirect("customer_dashboard")
+    else:
+        form = CustomerAccountForm(instance=user_obj)
+
+    return render(request, "restaurant/customer_account_edit.html", {
+        "form": form,
+        "user_obj": user_obj,
+})
 
 
 # ============================
@@ -558,7 +627,6 @@ def cart_view(request):
         "cart_total": cart_total,
     }
     return render(request, "restaurant/cart.html", context)
-
 
 
 
