@@ -1,47 +1,238 @@
 {% extends 'restaurant/base.html' %}
+
+{% load static %}
+
 {% block title %}Customer Dashboard{% endblock %}
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 
-<h2 class="mb-3">Welcome, {{ username }}</h2>
+<style>
+    .dash-container {
+        padding: 20px;
+        max-width: 1050px;
+        margin: auto;
+    }
 
-<div class="grid grid-3">
-  <div class="card">
-    <h3 class="card-title">My Orders</h3>
-    <p class="card-muted mb-2">Pending orders: <strong>{{ pending_orders }}</strong></p>
-    <span class="badge badge-info">Last status: {{ last_order_status }}</span>
-    <button class="btn btn-primary btn-block mt-3">Start a New Order</button>
-  </div>
+    .welcome-box {
+        background: linear-gradient(135deg, #F4E1FF, #ffffff);
+        border-radius: 18px;
+        padding: 25px 30px;
+        margin-bottom: 25px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+    }
 
-  <div class="card" style="grid-column: span 2;">
-    <h3 class="card-title">Recommendations</h3>
-    <div class="badges">
-      {% for item in recommendations %}
-      <span class="badge">{{ item }}</span>
-      {% empty %}
-      <span class="card-muted">No recommendations yet.</span>
-      {% endfor %}
+    .welcome-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #8064A2;
+        margin-bottom: 6px;
+    }
+
+    .welcome-sub {
+        font-size: 1rem;
+        color: #444;
+    }
+
+    .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-top: 20px;
+    }
+
+    .dash-card {
+        background: white;
+        border-radius: 16px;
+        padding: 18px 20px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        transition: transform .15s ease;
+    }
+
+    .dash-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .dash-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2E2140;
+        margin-bottom: 8px;
+    }
+
+    .dash-number {
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: #8064A2;
+    }
+
+    .badge-status {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 999px;
+        font-size: .85rem;
+        background: #F4E1FF;
+        color: #8064A2;
+        margin-top: 5px;
+    }
+
+    /* === Recommended cards === */
+    .menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+        margin-top: 14px;
+    }
+
+    .menu-card {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 12px 12px 14px;
+        text-align: left;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .menu-card img {
+        display: block;
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 14px;
+    }
+
+    .menu-title {
+        font-weight: 600;
+        margin: 0;
+        color: #333;
+        font-size: 0.95rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .menu-footer {
+        margin-top: 4px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .menu-price {
+        color: #8064A2;
+        font-weight: 700;
+        font-size: 0.95rem;
+        white-space: nowrap;
+    }
+
+    .btn-small {
+        border: none;
+        background: #8064A2;
+        color: white;
+        padding: 7px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: .85rem;
+        transition: opacity .2s ease;
+        white-space: nowrap;
+    }
+
+    .btn-small:hover {
+        opacity: .85;
+    }
+
+    @media (max-width: 768px) {
+        .grid-3 {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="dash-container">
+
+    <!-- Welcome -->
+    <div class="welcome-box">
+        <div class="welcome-title">Welcome back, {{ username }} 🌸</div>
+        <div class="welcome-sub">
+            Track your orders, browse new dishes, and continue your journey with Legends Restaurant.
+        </div>
     </div>
-  </div>
+    <a href="{% url 'edit_customer_account' %}"
+   class="edit-account-btn">
+    ⚙️ Edit Account
+</a>
+
+<style>
+.edit-account-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #8064A2;
+    color: white;
+    padding: 9px 14px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.edit-account-btn:hover {
+    background: #6d5490;
+    transform: translateY(-2px);
+}
+</style>
+
+
+
+    <!-- Cards -->
+    <div class="grid-3">
+        <div class="dash-card">
+            <div class="dash-title">Total Orders</div>
+            <div class="dash-number">{{ total_orders }}</div>
+        </div>
+
+        <div class="dash-card">
+            <div class="dash-title">Last Order</div>
+            {% if last_order %}
+                <div class="dash-number">#{{ last_order.id }}</div>
+                <span class="badge-status">{{ last_status }}</span>
+            {% else %}
+                <div class="dash-number">–</div>
+                <span class="badge-status">No orders yet</span>
+            {% endif %}
+        </div>
+
+        <div class="dash-card">
+            <div class="dash-title">Status Overview</div>
+            <div>Preparing: <strong>{{ preparing }}</strong></div>
+            <div>Out for Delivery: <strong>{{ out_for_delivery }}</strong></div>
+            <div>Delivered: <strong>{{ delivered }}</strong></div>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <h2 style="margin-top: 30px;">Recommended for you</h2>
+    <div class="menu-grid">
+        {% for item in recommendations %}
+        <div class="menu-card">
+            {% if item.image %}
+            <img src="{{ item.image.url }}" alt="{{ item.name }}">
+            {% endif %}
+            <div class="menu-title">{{ item.name }}</div>
+            <div class="menu-footer">
+                <div class="menu-price">{{ item.price }} SAR</div>
+                <button class="btn-small">Add to Cart</button>
+            </div>
+        </div>
+        {% empty %}
+        <p>No recommendations yet.</p>
+        {% endfor %}
+    </div>
+
 </div>
 
-<div class="card mt-4">
-  <h3 class="card-title">Quick Menu</h3>
-  <div class="grid grid-3 mt-2">
-    <div class="card">
-      <div class="card-title">Pepperoni Pizza</div>
-      <p class="card-muted">{{ SAR }} 36</p>
-      <button class="btn btn-success btn-block">Add to Cart</button>
-    </div>
-    <div class="card">
-      <div class="card-title">Chicken Wrap</div>
-      <p class="card-muted">{{ SAR }} 24</p>
-      <button class="btn btn-success btn-block">Add to Cart</button>
-    </div>
-    <div class="card">
-      <div class="card-title">Iced Latte</div>
-      <p class="card-muted">{{ SAR }} 18</p>
-      <button class="btn btn-success btn-block">Add to Cart</button>
-    </div>
-  </div>
-</div>
 {% endblock %}
