@@ -145,14 +145,13 @@
 
 <!-- JavaScript -->
 <script>
-
 function toggleAddForm() {
     document.getElementById("add-form").classList.toggle("hidden");
 }
 
 /* ⭐ فتح مودال Edit */
 function openEditModal(itemId) {
-    fetch(/manager/menu/edit/${itemId}/)
+    fetch(`/manager/menu/edit/${itemId}/`)
         .then(response => response.text())
         .then(html => {
 
@@ -175,12 +174,12 @@ function openEditModal(itemId) {
             const imgMatch = html.match(/src="([^"]+)"/);
             if (imgMatch) {
                 document.getElementById("currentImagePreview").innerHTML =
-                    <img src="${imgMatch[1]}" class="image-preview">;
+                    `<img src="${imgMatch[1]}" class="image-preview">`;
             } else {
                 document.getElementById("currentImagePreview").innerHTML = "";
             }
 
-            document.getElementById("editForm").action = /manager/menu/edit/${itemId}/;
+            document.getElementById("editForm").action = `/manager/menu/edit/${itemId}/`;
 
             document.getElementById("editModal").classList.remove("hidden");
         });
@@ -194,7 +193,7 @@ function closeModal() {
 /* ⭐ فتح مودال Delete */
 function openDeleteModal(id, name) {
     document.getElementById("deleteItemName").innerText = name;
-    document.getElementById("deleteForm").action = /manager/menu/delete/${id}/;
+    document.getElementById("deleteForm").action = `/manager/menu/delete/${id}/`;
     document.getElementById("deleteModal").classList.remove("hidden");
 }
 
@@ -202,5 +201,4 @@ function openDeleteModal(id, name) {
 function closeDeleteModal() {
     document.getElementById("deleteModal").classList.add("hidden");
 }
-
 </script>

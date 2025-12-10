@@ -235,4 +235,38 @@
 
 </div>
 
+<div class="card mt-4">
+  <h3 class="card-title">Order History</h3>
+
+  {% if orders %}
+    <div class="table-responsive">
+      <table class="lr-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Total (SAR)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td>#{{ order.id }}</td>
+            <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+            <td>{{ order.get_order_type_display }}</td>
+            <td>{{ order.get_status_display }}</td>
+            <td>{{ order.total }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p class="card-muted">You have no orders yet.</p>
+  {% endif %}
+</div>
+
+
 {% endblock %}

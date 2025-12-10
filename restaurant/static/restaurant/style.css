@@ -589,12 +589,22 @@ body {
     color: #6a6b87;
 }
 
+/* الفوتر اللي يحتوي زر Open في كروت الداشبورد */
 .lr-menu-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    margin-top: auto;
+    margin-top: 20px;   /* بدلاً من auto */
 }
+
+/* نتأكد أن الزرّ يطلع كشكل كبسّة */
+.lr-menu-footer .lr-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
 
 /* السعر + شعار الريال */
 
@@ -2286,6 +2296,128 @@ label[for*="image"] {
     display: none !important;
 }
 
+/* ===== Staff Orders Page ===== */
+
+.staff-orders-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.staff-orders-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px 22px;
+    box-shadow: 0 10px 28px rgba(137, 138, 196, 0.16);
+}
+
+.staff-section-title {
+    margin: 0 0 10px;
+    font-size: 20px;
+    font-weight: 800;
+    color: #343457;
+}
+
+.staff-empty {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: #7a7b96;
+}
+
+/* قائمة الطلبات داخل كل سكشن */
+.staff-order-list {
+    list-style: none;
+    padding: 8px 0 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.staff-order-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: #faf7ff;
+}
+
+.staff-order-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.staff-order-id {
+    font-weight: 700;
+    color: #33334b;
+}
+
+.staff-order-meta {
+    font-size: 13px;
+    color: #7a7b96;
+}
+
+/* جانبه الأيمن: البادج + الزر */
+.staff-order-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* بادجات الحالة */
+.staff-badge {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .3px;
+}
+
+.staff-badge-pending {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.staff-badge-preparing {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.staff-badge-ready {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.staff-badge-cancelled {
+    background: #ffebee;
+    color: #c62828;
+}
+
+/* زر صغير مرتب */
+.staff-order-btn {
+    font-size: 13px;
+    padding: 8px 14px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* للجوال */
+@media (max-width: 700px) {
+    .staff-order-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .staff-order-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
 
 
 

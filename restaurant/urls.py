@@ -1,6 +1,9 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import checkout_view, payment_process
+from .views import staff_dashboard, staff_update_order_status
+
 
 from . import views
 from . import manager_views  # فيه menu_list للمنيو
@@ -27,6 +30,14 @@ urlpatterns = [
         name="update_order_status",
     ),
 
+    path("staff/dashboard/", staff_dashboard, name="staff_dashboard"),
+    path(
+    "staff/orders/<int:order_id>/status/",
+    staff_update_order_status,
+    name="staff_update_order_status",
+    ),
+
+
     # manager
     path("manager/dashboard/", views.manager_dashboard, name="manager_dashboard"),
 
@@ -38,6 +49,7 @@ urlpatterns = [
     path("manager/menu/edit/<int:item_id>/", manager_views.edit_menu_item, name="edit_menu_item"),
     path("manager/menu/delete/<int:item_id>/", manager_views.delete_menu_item, name="delete_menu_item"),
     path("manager/menu/toggle/<int:item_id>/", manager_views.toggle_availability, name="toggle_availability"),
+    path("manager/reports/", views.manager_reports, name="manager_reports"),
 
 
     # ✅ صفحة الكارت
@@ -51,6 +63,12 @@ urlpatterns = [
     # Checkout + Payment
     path("checkout/", views.checkout_view, name="checkout_view"),
     path("payment/<int:order_id>/", views.payment_process, name="payment_process"),
+
+    path("checkout/", checkout_view, name="checkout_view"),
+    path("payment/<int:order_id>/", payment_process, name="payment_process"),
+    
+
+
 ]
 
 if settings.DEBUG:

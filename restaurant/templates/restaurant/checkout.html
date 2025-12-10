@@ -2,54 +2,94 @@
 {% load static %}
 
 {% block content %}
-<section class="lr-cart-page">
-    <div class="lr-cart-header">
-        <h1>Checkout</h1>
-        <p class="lr-cart-subtitle">
-            Review your order before confirming.
-        </p>
-    </div>
+
+<section class="lr-menu-section">
+    <h1 class="lr-section-title">Checkout</h1>
+    <p style="margin-bottom: 20px; color:#666;">
+        Review your order before confirming.
+    </p>
 
     {% if cart_items %}
-        <div class="lr-cart-list">
+        <!-- شبكة المنيو: نفس كروت المنيو (٤ أعمدة) -->
+        <div class="lr-menu-grid">
             {% for c in cart_items %}
-                <article class="lr-cart-item">
+                <article class="lr-menu-card">
+
                     {% if c.item.image %}
-                        <img src="{{ c.item.image.url }}" alt="{{ c.item.name }}" class="lr-cart-img">
+                        <img src="{{ c.item.image.url }}" alt="{{ c.item.name }}" class="lr-menu-photo">
                     {% endif %}
 
-                    <div class="lr-cart-main">
-                        <h3 class="lr-cart-name">{{ c.item.name }}</h3>
-                        <p class="lr-cart-price">SAR {{ c.item.price }}</p>
-                        <p class="lr-cart-qty">Quantity: {{ c.quantity }}</p>
-                        <p class="lr-cart-line-total">
-                            Line total: SAR {{ c.total_price }}
-                        </p>
+                    <h3 class="lr-menu-title">{{ c.item.name }}</h3>
+                    <p class="lr-menu-desc">
+                        {{ c.item.description|default:"No description." }}
+                    </p>
+
+                    <div class="lr-menu-footer">
+                        <!-- سعر الواحد -->
+                        <span class="lr-menu-price">
+                            <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                            {{ c.item.price }}
+                        </span>
+
+                        <!-- الكمية + مجموع السطر -->
+                        <div style="text-align:right; font-size:14px; color:#555;">
+                            Qty: <strong>{{ c.quantity }}</strong><br>
+                            Line total:
+                            <strong>
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                {{ c.total_price }}
+                            </strong>
+                        </div>
                     </div>
                 </article>
             {% endfor %}
         </div>
 
-        <div class="lr-cart-summary">
-            <p class="lr-cart-total">
-                <strong>Total:</strong> SAR {{ cart_total }}
-            </p>
+        <!-- إجمالي الطلب + نوع الطلب + الأزرار -->
+        <div style="margin-top: 30px; display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap;">
 
-            <form method="post">
+            <!-- الإجمالي -->
+            <div style="font-size:18px; font-weight:700; color:#4b4d73;">
+                Total:
+                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                {{ cart_total }}
+            </div>
+
+            <!-- الفورم: نوع الطلب + الأزرار -->
+            <form method="post" style="display:flex; gap:15px; align-items:center; flex-wrap:wrap;">
                 {% csrf_token %}
-                <button type="submit" class="lr-btn-primary">
-                    Confirm Order
-                </button>
-                <a href="{% url 'cart_view' %}" class="lr-btn-secondary">
-                    Back to Cart
+
+                <!-- 🔹 نوع الطلب: Takeaway / Delivery -->
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <span style="font-weight:600; color:#4b4d73;">Order type:</span>
+
+                    <label style="display:flex; align-items:center; gap:4px; font-size:14px;">
+                        <input type="radio" name="order_type" value="takeaway" checked>
+                        Takeaway
+                    </label>
+
+                    <label style="display:flex; align-items:center; gap:4px; font-size:14px;">
+                        <input type="radio" name="order_type" value="delivery">
+                        Delivery
+                    </label>
+                </div>
+
+                <!-- الأزرار -->
+                <a href="{% url 'cart_view' %}" class="lr-btn-secondary" style="text-decoration:none;">
+                    Back to cart
                 </a>
+                <button type="submit" class="lr-btn-primary">
+                    Confirm order &amp; pay
+                </button>
             </form>
         </div>
+
     {% else %}
         <div class="lr-cart-empty">
-            <p>Your cart is empty.</p>
+            <p>No items in your cart yet.</p>
             <a href="{% url 'home' %}" class="lr-btn-primary">Browse Menu</a>
         </div>
     {% endif %}
 </section>
+
 {% endblock %}

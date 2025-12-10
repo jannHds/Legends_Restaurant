@@ -13,6 +13,8 @@ from .forms import CustomerSignUpForm, UserUpdateForm
 from .models import Order, OrderItem, MenuItem, Cart, CartItem  # ← أضفنا OrderItem هنا
 from .forms import UserUpdateForm ,CustomerAccountForm
 
+from django.db.models import Sum
+
 
 User = get_user_model()
 
@@ -23,11 +25,33 @@ User = get_user_model()
 def home(request):
     """
     صفحة الهوم:
-    - تستخدم التمبلت restaurant/home.html
-    - تمرر قائمة الأصناف المتاحة من الـ MenuItem إلى الصفحة
+    - تعرض المنيو
+    - فيها فلتر حسب الـ category
     """
-    menu_items = MenuItem.objects.filter(is_available=True)
-    return render(request, "restaurant/home.html", {"menu_items": menu_items})
+    # نجيب قيمة الكاتوقري من الرابط ?category=Burgers مثلاً
+    selected_category = request.GET.get("category", "all")
+
+    # كل الأصناف المتاحة
+    menu_qs = MenuItem.objects.filter(is_available=True)
+
+    # لو اختار كاتوقري معيّن (غير all) نفلتر عليها
+    if selected_category != "all":
+        menu_qs = menu_qs.filter(category=selected_category)
+
+    # نجيب قائمة بكل الكاتوقري الموجودة في المنيو (بدون تكرار)
+    categories = (
+        MenuItem.objects.filter(is_available=True)
+        .values_list("category", flat=True)
+        .distinct()
+    )
+
+    context = {
+        "menu_items": menu_qs,
+        "categories": categories,
+        "selected_category": selected_category,
+    }
+    return render(request, "restaurant/home.html", context)
+
 
 
 # ============================
@@ -129,9 +153,9 @@ def _ensure_role(request, required_role):
     return None
 
 
+
 @login_required
 def customer_dashboard(request):
-    
     # لازم يكون مسجل دخول
     if not request.user.is_authenticated:
         return redirect("login")
@@ -143,22 +167,27 @@ def customer_dashboard(request):
     # لو دخل مانجر → نرجعه لصفحة المانجر
     if request.user.role == "manager":
         return redirect("manager_dashboard")
+
     user = request.user
 
+    # ⭐ NEW: كل طلبات المستخدم (نفسنا بنستخدمها تحت)
+    orders = Order.objects.filter(user=user).order_by("-created_at")
+
     # 1) إجمالي الطلبات
-    total_orders = Order.objects.filter(user=user).count()
+    total_orders = orders.count()
 
     # 2) حالة آخر طلب
-    last_order = Order.objects.filter(user=user).order_by('-created_at').first()
+    last_order = orders.first()
 
     last_status = None
     if last_order:
-        last_status = last_order.get_status_display()  # يخليها "Preparing" بدل preparing
+        # يخليها "Preparing" بدل "preparing"
+        last_status = last_order.get_status_display()
 
     # 3) الطلبات حسب الحالة
-    preparing = Order.objects.filter(user=user, status='preparing').count()
-    out_for_delivery = Order.objects.filter(user=user, status='out_for_delivery').count()
-    delivered = Order.objects.filter(user=user, status='delivered').count()
+    preparing = orders.filter(status='preparing').count()
+    out_for_delivery = orders.filter(status='out_for_delivery').count()
+    delivered = orders.filter(status='delivered').count()
 
     # 4) توصيات (نختار 3 أكلات عشوائية من المينيو)
     recommendations = MenuItem.objects.filter(is_available=True).order_by('?')[:3]
@@ -178,41 +207,79 @@ def customer_dashboard(request):
 
         "recommendations": recommendations,
         "highlights": highlights,
+
+        # ⭐ NEW: عشان نعرض كل تاريخ الطلبات في الداشبورد
+        "orders": orders,
     }
 
-    return render(request, "restaurant/customer_dashboard.html",context)
+    return render(request, "restaurant/customer_dashboard.html", context)
 
 
+@login_required
 def staff_dashboard(request):
-    """
-    Staff Dashboard
-
-    يقرأ الحالات الحقيقية الموجودة في STATUS_CHOICES في الموديل:
-    - preparing
-    - out_for_delivery
-    - delivered
-    """
     guard = _ensure_role(request, "staff")
     if guard is not None:
         return guard
 
-    preparing_orders = Order.objects.filter(
-        status="preparing"
+    # نجيب الطلبات حسب الحالة
+    pending_orders = Order.objects.filter(status="pending").order_by("-created_at")
+    preparing_orders = Order.objects.filter(status="preparing").order_by("-created_at")
+    ready_orders = Order.objects.filter(
+        status__in=["delivered", "out_for_delivery"]
     ).order_by("-created_at")
-    out_for_delivery_orders = Order.objects.filter(
-        status="out_for_delivery"
-    ).order_by("-created_at")
-    delivered_orders = Order.objects.filter(
-        status="delivered"
-    ).order_by("-created_at")
+
+    # الطلبات الملغية
+    cancelled_orders = Order.objects.filter(status="cancelled").order_by("-created_at")
 
     context = {
+        "pending_orders": pending_orders,
         "preparing_orders": preparing_orders,
-        "out_for_delivery_orders": out_for_delivery_orders,
-        "delivered_orders": delivered_orders,
+        "ready_orders": ready_orders,
+        "cancelled_orders": cancelled_orders,  # جديدة
     }
-
     return render(request, "restaurant/staff_dashboard.html", context)
+
+
+from django.views.decorators.http import require_POST
+
+@login_required
+@require_POST
+def staff_update_order_status(request, order_id):
+    guard = _ensure_role(request, "staff")
+    if guard is not None:
+        return guard
+
+    order = get_object_or_404(Order, id=order_id)
+
+    action = request.POST.get("action")
+
+    # pending -> preparing
+    if action == "to_preparing" and order.status == "pending":
+        order.status = "preparing"
+        order.save()
+        messages.success(request, f"Order #{order.id} marked as Preparing.")
+
+    # preparing -> ready (يختلف حسب نوع الطلب)
+    elif action == "to_ready" and order.status == "preparing":
+        if order.order_type == "delivery":
+            order.status = "out_for_delivery"
+        else:
+            # takeaway = جاهز للاستلام
+            order.status = "delivered"
+        order.save()
+        messages.success(request, f"Order #{order.id} marked as Ready.")
+
+    # لو حبيتي تخلي للـ delivery خطوة أخيرة (out_for_delivery -> delivered)
+    elif action == "to_delivered" and order.status == "out_for_delivery":
+        order.status = "delivered"
+        order.save()
+        messages.success(request, f"Order #{order.id} marked as Delivered.")
+
+    else:
+        messages.warning(request, "Invalid status change.")
+
+    return redirect("staff_dashboard")
+
 
 
 @login_required
@@ -517,7 +584,6 @@ def remove_from_cart(request, cart_item_id):
 
 
 @login_required
-
 @transaction.atomic
 def checkout_view(request):
     """
@@ -528,25 +594,31 @@ def checkout_view(request):
         return guard
 
     cart = _get_or_create_cart(request.user)
-
-    # ✅ استخدمي related_name="items" بدل cartitem_set
+    # لاحظي: نستخدم related_name="items"
     cart_items = cart.items.select_related("item")
 
     if not cart_items.exists():
         messages.warning(request, "Your cart is empty.")
         return redirect("cart_view")
 
-    # ✅ total_price صارت property مو فانكشن
+    # استخدمنا الـ property total_price من CartItem
     cart_total = sum(c.total_price for c in cart_items)
 
     if request.method == "POST":
+        # 🔹 نقرأ نوع الطلب من الفورم
+        order_type = request.POST.get("order_type", "takeaway")
+        if order_type not in ["takeaway", "delivery"]:
+            order_type = "takeaway"
+
+        # إنشاء الطلب
         order = Order.objects.create(
             user=request.user,
             total=cart_total,
-            status="preparing",     # نفس STATUS_CHOICES
-            order_type="takeaway",  # تقدرون تعدلونه لاحقًا
+            status="preparing",   # يبدأ بـ preparing
+            order_type=order_type,
         )
 
+        # نقل عناصر السلة إلى عناصر الطلب
         for c_item in cart_items:
             OrderItem.objects.create(
                 order=order,
@@ -555,7 +627,7 @@ def checkout_view(request):
                 price=c_item.item.price,
             )
 
-        # نفرّغ السلة بعد إنشاء الأوردر
+        # تفريغ السلة
         cart_items.delete()
 
         messages.success(
@@ -576,8 +648,8 @@ def checkout_view(request):
 def payment_process(request, order_id):
     """
     محاكاة عملية الدفع:
-    - أول زيارة: زر Pay Now
-    - بعد الضغط: نغيّر حالة الطلب إلى delivered
+    - أول زيارة: يعرض زر Pay Now
+    - بعد الضغط: نغيّر is_paid فقط، والـ staff هم اللي يحدّثون status
     """
     guard = _ensure_role(request, "customer")
     if guard is not None:
@@ -590,8 +662,8 @@ def payment_process(request, order_id):
     )
 
     if request.method == "POST":
-        # ما عندنا بوابة دفع حقيقية، بس نحاكي نجاح الدفع
-        order.status = "delivered"   # موجودة في STATUS_CHOICES
+        # هنا بس نعلّم أن الطلب مدفوع
+        order.is_paid = True
         order.save()
 
         messages.success(
@@ -609,7 +681,10 @@ def payment_process(request, order_id):
         "restaurant/payment.html",
         {"order": order, "paid": False},
     )
-@login_required
+
+
+
+
 @login_required
 def cart_view(request):
     """
@@ -635,6 +710,75 @@ def cart_view(request):
     return render(request, "restaurant/cart.html", context)
 
 
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
+from .models import Order
+from django.shortcuts import redirect, render
+from django.contrib import messages
 
 
+from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Count, Q
+from django.shortcuts import render, redirect
+from django.contrib import messages
 
+from .models import Order
+
+
+@login_required
+def manager_reports(request):
+    user = request.user
+
+    # السماح للمدير فقط
+    if not hasattr(user, "is_manager") or not user.is_manager():
+        messages.error(request, "You are not authorized to view this page.")
+        return redirect("home")
+
+    # نحسب الإحصائيات باستخدام Q و icontains عشان نلقط كل الحالات المشابهة
+    stats = Order.objects.aggregate(
+        total_orders=Count("id"),
+        # أي status فيه كلمة pending (pending / Pending / PENDING / pending_payment ...)
+        pending_orders=Count(
+            "id",
+            filter=Q(status__icontains="pending")
+        ),
+        # نعتبر completed أو delivered كلها "مكتملة"
+        completed_orders=Count(
+            "id",
+            filter=Q(status__icontains="completed") | Q(status__icontains="deliver")
+        ),
+        # أي حالة فيها كلمة cancel (cancel / cancelled / Cancelled ...)
+        cancelled_orders=Count(
+            "id",
+            filter=Q(status__icontains="cancel")
+        ),
+    )
+
+    total_orders = stats["total_orders"] or 0
+    pending_orders = stats["pending_orders"] or 0
+    completed_orders = stats["completed_orders"] or 0
+    cancelled_orders = stats["cancelled_orders"] or 0
+
+    # إجمالي الإيرادات من الحقل total
+    total_revenue = (
+        Order.objects.filter(
+            Q(status__icontains="completed") | Q(status__icontains="deliver")
+        ).aggregate(Sum("total"))["total__sum"]
+        or 0
+    )
+
+    # آخر 10 طلبات
+    latest_orders = (
+        Order.objects.select_related("user")
+        .order_by("-created_at")[:10]
+    )
+
+    context = {
+        "total_orders": total_orders,
+        "pending_orders": pending_orders,
+        "completed_orders": completed_orders,
+        "cancelled_orders": cancelled_orders,
+        "total_revenue": total_revenue,
+        "latest_orders": latest_orders,
+    }
+    return render(request, "restaurant/manager_reports.html", context)

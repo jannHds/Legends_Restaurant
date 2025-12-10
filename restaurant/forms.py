@@ -40,7 +40,7 @@ class MenuItemForm(forms.ModelForm):
 # ==========================
 class UserUpdateForm(forms.ModelForm):
     """
-    يستخدم في صفحة Manage Employees لتعديل بيانات المستخدم
+    يستخدم في صفحة Manage Employees لتعديل بيانات المستخدم:
     (username, email, phone, address, role, salary, hired_at)
     """
 
@@ -48,11 +48,24 @@ class UserUpdateForm(forms.ModelForm):
         model = User
         fields = ["username", "email", "phone", "address", "role", "salary", "hired_at"]
 
+    def clean_salary(self):
+        """
+        نضمن أن salary إما رقم صحيح (Decimal) أو None
+        (ما يكون سترنق فاضي أو قيمة غريبة تسبب decimal.InvalidOperation)
+        """
+        salary = self.cleaned_data.get("salary")
+
+        # لو تركته فاضي أو None → نخليه None عشان يتخزن NULL في الداتابيس
+        if salary in ("", None):
+            return None
+
+        return salary
+
     def clean(self):
         cleaned_data = super().clean()
         role = cleaned_data.get("role")
 
-        # لو مو staff نخلي hired_at فاضي عشان ما يخرب الدنيا
+        # لو مو staff نخلي hired_at فاضي
         if role != "staff":
             cleaned_data["hired_at"] = None
 
@@ -64,15 +77,13 @@ class UserUpdateForm(forms.ModelForm):
 # ==========================
 class CustomerSignUpForm(UserCreationForm):
     """
-    Customer Sign Up Form:
-    - ينشئ User في جدول المستخدمين
-    - يضبط role = "customer" (لو الحقل موجود)
-    - ينشئ سجل في CustomerUser مربوط بنفس الـ User
-    - يسمح بالتسجيل باستخدام إيميل أو جوال أو الاثنين (واحد منهم على الأقل)
+    فورم تسجيل عميل جديد
+    - واحد من (email أو phone) على الأقل
+    - address اختياري
     """
 
     email = forms.EmailField(
-        required=False,  # واحد من الإيميل أو الجوال يكفي
+        required=False,
         label="Email",
         widget=forms.EmailInput(
             attrs={
@@ -84,7 +95,7 @@ class CustomerSignUpForm(UserCreationForm):
     )
 
     phone = forms.CharField(
-        required=False,  # واحد من الإيميل أو الجوال يكفي
+        required=False,
         label="Phone",
         max_length=20,
         widget=forms.TextInput(
@@ -96,7 +107,6 @@ class CustomerSignUpForm(UserCreationForm):
         ),
     )
 
-    # العنوان غير إجباري بناءً على طلبك
     address = forms.CharField(
         required=False,
         label="Address",
@@ -112,16 +122,13 @@ class CustomerSignUpForm(UserCreationForm):
 
     class Meta(UserCreationForm.Meta):
         model = User
-        # الترتيب: Username → Email → Phone → Address → Passwords
         fields = ("username", "email", "phone", "address", "password1", "password2")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # ترتيب الحقول في الفورم
         self.order_fields(["username", "email", "phone", "address", "password1", "password2"])
 
-        # شكل وترتيب الحقول
         self.fields["username"].widget.attrs.update(
             {
                 "class": "input-field",
@@ -130,7 +137,6 @@ class CustomerSignUpForm(UserCreationForm):
             }
         )
 
-        # نخفي الملاحظات الافتراضية للباسورد ونحوّلها Tooltip على الحقل نفسه
         self.fields["password1"].help_text = None
         self.fields["password2"].help_text = None
 
@@ -157,61 +163,43 @@ class CustomerSignUpForm(UserCreationForm):
         )
 
     def clean(self):
-        """
-        نتأكد أن فيه على الأقل (إيميل أو جوال)
-        ونتأكد من uniqueness في جدول CustomerUser
-        """
         cleaned_data = super().clean()
         email = cleaned_data.get("email")
         phone = cleaned_data.get("phone")
 
-        # واحد منهم لازم يكون موجود
         if not email and not phone:
             raise ValidationError("Please provide at least an email or a phone number.")
 
-        # لو فيه إيميل، تأكد أنه غير مكرر
         if email and CustomerUser.objects.filter(email=email).exists():
             self.add_error("email", "This email is already registered.")
 
-        # لو فيه جوال، تأكد أنه غير مكرر
         if phone and CustomerUser.objects.filter(phone=phone).exists():
             self.add_error("phone", "This phone number is already registered.")
 
         return cleaned_data
 
     def save(self, commit=True):
-        """
-        1) إنشاء User (في جدول المستخدمين الرئيسي)
-        2) تعيين role = "customer" (لو حقل role موجود في User)
-        3) إنشاء سجل في CustomerUser مربوط بنفس الـ User
-        """
         user = super().save(commit=False)
 
-        # تخزين الإيميل (وباقي البيانات لو الحقول موجودة في User model)
         user.email = self.cleaned_data.get("email", "")
-
         if hasattr(user, "phone"):
             user.phone = self.cleaned_data.get("phone", "")
-
         if hasattr(user, "address"):
             user.address = self.cleaned_data.get("address", "")
 
-        # ربطه كـ Customer للنظام لو فيه حقل role
         if hasattr(user, "role"):
             user.role = "customer"
 
-        # نتأكد أنه مو staff ولا superuser
         user.is_staff = False
         user.is_superuser = False
 
         if commit:
             user.save()
 
-            # ننشئ سجل في جدول CustomerUser
             CustomerUser.objects.create(
                 user=user,
                 username=user.username,
-                password=user.password,  # hashed
+                password=user.password,
                 email=self.cleaned_data.get("email", ""),
                 phone=self.cleaned_data.get("phone", ""),
                 address=self.cleaned_data.get("address", ""),
@@ -236,6 +224,5 @@ class CustomerAccountForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # تنسيق بسيط للحقول مع ثيم Legends
         for field in self.fields.values():
             field.widget.attrs.update({"class": "lr-input"})

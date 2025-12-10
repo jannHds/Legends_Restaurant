@@ -22,129 +22,209 @@
 
     <h1 class="manager-title">Welcome, Staff</h1>
 
-    <div class="lr-menu-grid">
+    <!-- كروت التنقل العلوية -->
+   <div class="lr-menu-grid">
 
-        <div class="lr-menu-card">
-            <img src="{% static 'restaurant/pending.png' %}" width="80">
-            <h3>Pending Orders</h3>
-            <p>Orders waiting for confirmation.</p>
-            <div class="lr-menu-footer">
-                <a href="#pending-section" class="lr-btn-primary">View</a>
-            </div>
+    <div class="lr-menu-card">
+        <img src="{% static 'restaurant/pending.png' %}" width="80" alt="Pending icon" class="staff-card-icon">
+        <h3>Pending Orders</h3>
+        <p>Orders waiting for confirmation.</p>
+        <div class="lr-menu-footer">
+            <a href="#pending-section" class="lr-btn-primary">View</a>
         </div>
-
-        <div class="lr-menu-card">
-            <img src="{% static 'restaurant/preparing.png' %}" width="80">
-            <h3>Preparing</h3>
-            <p>Orders currently being prepared.</p>
-            <div class="lr-menu-footer">
-                <a href="#preparing-section" class="lr-btn-primary">View</a>
-            </div>
-        </div>
-
-        <div class="lr-menu-card">
-            <img src="{% static 'restaurant/ready.png' %}" width="80">
-            <h3>Ready</h3>
-            <p>Orders ready for pickup.</p>
-            <div class="lr-menu-footer">
-                <a href="#ready-section" class="lr-btn-primary">View</a>
-            </div>
-        </div>
-
     </div>
 
+    <div class="lr-menu-card">
+        <img src="{% static 'restaurant/preparing.png' %}" width="80" alt="Preparing icon" class="staff-card-icon">
+        <h3>Preparing</h3>
+        <p>Orders currently being prepared.</p>
+        <div class="lr-menu-footer">
+            <a href="#preparing-section" class="lr-btn-primary">View</a>
+        </div>
+    </div>
+
+    <div class="lr-menu-card">
+        <img src="{% static 'restaurant/ready.png' %}" width="80" alt="Ready icon" class="staff-card-icon">
+        <h3>Ready</h3>
+        <p>Orders ready for pickup / delivery.</p>
+        <div class="lr-menu-footer">
+            <a href="#ready-section" class="lr-btn-primary">View</a>
+        </div>
+    </div>
+
+    <div class="lr-menu-card">
+        <img src="{% static 'restaurant/cancelled.png' %}" width="80" alt="Cancelled icon" class="staff-card-icon">
+        <h3>Cancelled</h3>
+        <p>Orders that were cancelled.</p>
+        <div class="lr-menu-footer">
+            <a href="#cancelled-section" class="lr-btn-primary">View</a>
+        </div>
+    </div>
+
+</div>
+
+
     <!-- ======================== -->
-    <!-- Pending Orders -->
+    <!-- Orders sections (nicer) -->
     <!-- ======================== -->
-    <section id="pending-section" style="margin-top:40px;">
-        <h2>Pending Orders</h2>
 
-        {% if pending %}
-            {% for o in pending %}
-            <div class="order-box">
+    <section class="staff-orders-page">
 
-                <img src="{% static 'restaurant/pending.png' %}" width="30" style="float:right;">
-
-                <strong>Order #{{ o.id }}</strong><br>
-                <small>{{ o.created_at }}</small><br><br>
-
-                <a class="lr-btn-secondary" href="{% url 'order_detail' o.id %}">View</a>
-
-                <!-- Accept -->
-                <a class="lr-btn-primary" href="{% url 'update_status' o.id 'Confirmed' %}">
-                    Accept
-                </a>
-
-                <!-- Reject -->
-                <a class="lr-btn-danger" href="{% url 'update_status' o.id 'Rejected' %}">
-                    Reject
-                </a>
-
+        <!-- Pending Orders -->
+        <section id="pending-section" class="staff-orders-card">
+            <div class="staff-card-header">
+                <h2 class="staff-section-title">Pending Orders</h2>
+                <span class="staff-count-badge">
+                    {{ pending_orders|length }} orders
+                </span>
             </div>
-            {% endfor %}
-        {% else %}
-            <p>No pending orders.</p>
-        {% endif %}
-    </section>
 
-    <hr>
+            {% if pending_orders %}
+                <ul class="staff-order-list">
+                    {% for o in pending_orders %}
+                    <li class="staff-order-row">
+                        <div class="staff-order-main">
+                            <span class="staff-order-id">Order #{{ o.id }}</span>
+                            <span class="staff-order-meta">
+                                {{ o.order_type|title }} · {{ o.created_at|date:"Y-m-d H:i" }}
+                            </span>
+                        </div>
 
-    <!-- ======================== -->
-    <!-- Preparing Orders -->
-    <!-- ======================== -->
-    <section id="preparing-section" style="margin-top:40px;">
-        <h2>Preparing Orders</h2>
+                        <div class="staff-order-actions">
+                            <span class="staff-badge staff-badge-pending">Pending</span>
+                            <form method="post" action="{% url 'staff_update_order_status' o.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="to_preparing">
+                                <button class="lr-btn-primary staff-order-btn" type="submit">
+                                    Move to Preparing
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="staff-empty">No pending orders.</p>
+            {% endif %}
+        </section>
 
-        {% if preparing %}
-            {% for o in preparing %}
-            <div class="order-box">
-
-                <img src="{% static 'restaurant/preparing.png' %}" width="30" style="float:right;">
-
-                <strong>Order #{{ o.id }}</strong><br><br>
-
-                <a class="lr-btn-secondary" href="{% url 'order_detail' o.id %}">View</a>
-
-                <!-- Mark Ready -->
-                <a class="lr-btn-primary" href="{% url 'update_status' o.id 'Ready' %}">
-                    Mark Ready
-                </a>
-
+        <!-- Preparing Orders -->
+        <section id="preparing-section" class="staff-orders-card">
+            <div class="staff-card-header">
+                <h2 class="staff-section-title">Preparing Orders</h2>
+                <span class="staff-count-badge">
+                    {{ preparing_orders|length }} orders
+                </span>
             </div>
-            {% endfor %}
-        {% else %}
-            <p>No preparing orders.</p>
-        {% endif %}
-    </section>
 
-    <hr>
+            {% if preparing_orders %}
+                <ul class="staff-order-list">
+                    {% for o in preparing_orders %}
+                    <li class="staff-order-row">
+                        <div class="staff-order-main">
+                            <span class="staff-order-id">Order #{{ o.id }}</span>
+                            <span class="staff-order-meta">
+                                {{ o.order_type|title }} · {{ o.created_at|date:"Y-m-d H:i" }}
+                            </span>
+                        </div>
 
-    <!-- ======================== -->
-    <!-- Ready Orders -->
-    <!-- ======================== -->
-    <section id="ready-section" style="margin-top:40px;">
-        <h2>Ready for Pickup</h2>
+                        <div class="staff-order-actions">
+                            <span class="staff-badge staff-badge-preparing">Preparing</span>
+                            <form method="post" action="{% url 'staff_update_order_status' o.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="to_ready">
+                                <button class="lr-btn-primary staff-order-btn" type="submit">
+                                    Mark as Ready
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="staff-empty">No preparing orders.</p>
+            {% endif %}
+        </section>
 
-        {% if ready %}
-            {% for o in ready %}
-            <div class="order-box">
-
-                <img src="{% static 'restaurant/ready.png' %}" width="30" style="float:right;">
-
-                <strong>Order #{{ o.id }}</strong><br><br>
-
-                <a class="lr-btn-secondary" href="{% url 'order_detail' o.id %}">View</a>
-
-                <!-- Complete Order -->
-                <a class="lr-btn-primary" href="{% url 'update_status' o.id 'Delivered' %}">
-                    Complete
-                </a>
-
+        <!-- Ready Orders -->
+        <section id="ready-section" class="staff-orders-card">
+            <div class="staff-card-header">
+                <h2 class="staff-section-title">Ready / Out for Delivery</h2>
+                <span class="staff-count-badge">
+                    {{ ready_orders|length }} orders
+                </span>
             </div>
-            {% endfor %}
-        {% else %}
-            <p>No ready orders.</p>
-        {% endif %}
+
+            {% if ready_orders %}
+                <ul class="staff-order-list">
+                    {% for o in ready_orders %}
+                    <li class="staff-order-row">
+                        <div class="staff-order-main">
+                            <span class="staff-order-id">Order #{{ o.id }}</span>
+                            <span class="staff-order-meta">
+                                {{ o.order_type|title }} · {{ o.created_at|date:"Y-m-d H:i" }}
+                            </span>
+                        </div>
+
+                        <div class="staff-order-actions">
+                            <span class="staff-badge staff-badge-ready">
+                                {% if o.status == "out_for_delivery" %}
+                                    Out for delivery
+                                {% else %}
+                                    Completed
+                                {% endif %}
+                            </span>
+
+                            {% if o.status == "out_for_delivery" %}
+                                <form method="post" action="{% url 'staff_update_order_status' o.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="to_delivered">
+                                    <button class="lr-btn-primary staff-order-btn" type="submit">
+                                        Mark Delivered
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="staff-empty">No ready / delivery orders.</p>
+            {% endif %}
+        </section>
+            <!-- Cancelled Orders -->
+        <section id="cancelled-section" class="staff-orders-card">
+            <div class="staff-card-header">
+                <h2 class="staff-section-title">Cancelled Orders</h2>
+                <span class="staff-count-badge">
+                    {{ cancelled_orders|length }} orders
+                </span>
+            </div>
+
+            {% if cancelled_orders %}
+                <ul class="staff-order-list">
+                    {% for o in cancelled_orders %}
+                    <li class="staff-order-row">
+                        <div class="staff-order-main">
+                            <span class="staff-order-id">Order #{{ o.id }}</span>
+                            <span class="staff-order-meta">
+                                {{ o.order_type|title }} · {{ o.created_at|date:"Y-m-d H:i" }}
+                            </span>
+                        </div>
+
+                        <div class="staff-order-actions">
+                            <span class="staff-badge staff-badge-cancelled">Cancelled</span>
+                            {# ما في زر، خلاص ملغى #}
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="staff-empty">No cancelled orders.</p>
+            {% endif %}
+        </section>
+
+
     </section>
 
 </main>

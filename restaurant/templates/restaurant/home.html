@@ -18,6 +18,22 @@
 
     <!-- Menu section -->
     <section class="lr-menu-section">
+
+        <!-- فلتر الكاتوقري -->
+        <form method="get" class="lr-filter-form" style="margin-bottom: 15px;">
+            <label for="category">Filter by Category:</label>
+            <select name="category" id="category" onchange="this.form.submit()">
+                <option value="all" {% if selected_category == "all" %}selected{% endif %}>
+                    All
+                </option>
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>
+                    {{ cat }}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+
         <h2 class="lr-section-title">Today's Menu</h2>
 
         <div class="lr-menu-grid">

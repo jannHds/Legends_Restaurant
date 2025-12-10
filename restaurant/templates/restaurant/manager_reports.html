@@ -1,0 +1,74 @@
+{% extends "restaurant/base.html" %}
+{% load static %}
+
+{% block title %}Manager Reports{% endblock %}
+
+{% block content %}
+<section class="lr-section">
+    <h1 class="lr-page-title">Manager Reports</h1>
+    <p class="lr-page-subtitle">Summary of orders and total revenue.</p>
+
+    <!-- الكروت العلوية -->
+    <div class="stats">
+        <div class="stat">
+            <div class="stat-label">Total Orders</div>
+            <div class="stat-value">{{ total_orders }}</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Pending</div>
+            <div class="stat-value">{{ pending_orders }}</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Completed</div>
+            <div class="stat-value">{{ completed_orders }}</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-label">Cancelled</div>
+            <div class="stat-value">{{ cancelled_orders }}</div>
+        </div>
+
+        <div class="stat" style="grid-column: span 2;">
+            <div class="stat-label">Total Revenue</div>
+            <div class="stat-value">{{ total_revenue }} SAR</div>
+        </div>
+    </div>
+
+    <h2 style="margin-top: 40px;">Latest Orders</h2>
+
+    <div class="table-wrap">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User</th>
+                    <th>Status</th>
+                    <th>Total</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for order in latest_orders %}
+                <tr>
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>{{ order.status }}</td>
+                    <td>{{ order.total }} SAR</td>
+                    <td>{{ order.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align:center; padding:20px;">
+                        No orders found.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</section>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "restaurant/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="lr-checkout-page">
+    <header class="lr-checkout-header">
+        <h1>Payment</h1>
+        <p class="lr-checkout-subtitle">
+            Review your payment details for Order #{{ order.id }}.
+        </p>
+    </header>
+
+    <div class="lr-checkout-layout">
+        <!-- بطاقة ملخص الطلب -->
+        <div class="lr-checkout-main">
+            <div class="lr-checkout-card">
+                <h2 class="lr-checkout-section-title">Order Summary</h2>
+
+                <p class="lr-checkout-row">
+                    <span>Order ID</span>
+                    <span>#{{ order.id }}</span>
+                </p>
+                <p class="lr-checkout-row">
+                    <span>Status</span>
+                    <span>{{ order.get_status_display }}</span>
+                </p>
+                <p class="lr-checkout-row lr-checkout-total">
+                    <span>Total</span>
+                    <span>SAR {{ order.total }}</span>
+                </p>
+            </div>
+
+            {% if not paid %}
+            <!-- زر الدفع -->
+            <div class="lr-checkout-card">
+                <h2 class="lr-checkout-section-title">Confirm Payment</h2>
+                <p>Click the button below to simulate a successful payment.</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="lr-btn-primary">
+                        Pay Now
+                    </button>
+                </form>
+            </div>
+            {% else %}
+            <!-- رسالة نجاح الدفع -->
+            <div class="lr-checkout-card">
+                <h2 class="lr-checkout-section-title">Payment Successful</h2>
+                <p>
+                    Thank you! Your payment for Order #{{ order.id }} was successful.
+                    Our staff will now review and start preparing your order.
+                    You can track the status from your dashboard.
+                </p>
+                <a href="{% url 'customer_dashboard' %}" class="lr-btn-secondary">
+                    Back to Dashboard
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
