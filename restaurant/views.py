@@ -413,7 +413,7 @@ def cart_view(request):
 
     cart = _get_or_create_cart(request.user)
     cart_items = cart.cartitem_set.select_related("item")
-    cart_total = sum(item.total_price() for item in cart_items)
+    cart_total = sum(item.total_price for item in cart_items)
 
     context = {
         "cart": cart,
@@ -517,6 +517,7 @@ def remove_from_cart(request, cart_item_id):
 
 
 @login_required
+
 @transaction.atomic
 def checkout_view(request):
     """
@@ -527,20 +528,23 @@ def checkout_view(request):
         return guard
 
     cart = _get_or_create_cart(request.user)
-    cart_items = cart.cartitem_set.select_related("item")
+
+    # ✅ استخدمي related_name="items" بدل cartitem_set
+    cart_items = cart.items.select_related("item")
 
     if not cart_items.exists():
         messages.warning(request, "Your cart is empty.")
         return redirect("cart_view")
 
-    cart_total = sum(item.total_price() for item in cart_items)
+    # ✅ total_price صارت property مو فانكشن
+    cart_total = sum(c.total_price for c in cart_items)
 
     if request.method == "POST":
         order = Order.objects.create(
             user=request.user,
             total=cart_total,
-            status="preparing",    # نفس اللي في STATUS_CHOICES بالموديل
-            order_type="takeaway",  # تقدرين تغيرينها لاحقاً حسب اختيار اليوزر
+            status="preparing",     # نفس STATUS_CHOICES
+            order_type="takeaway",  # تقدرون تعدلونه لاحقًا
         )
 
         for c_item in cart_items:
@@ -551,6 +555,7 @@ def checkout_view(request):
                 price=c_item.item.price,
             )
 
+        # نفرّغ السلة بعد إنشاء الأوردر
         cart_items.delete()
 
         messages.success(
@@ -564,6 +569,7 @@ def checkout_view(request):
         "cart_total": cart_total,
     }
     return render(request, "restaurant/checkout.html", context)
+
 
 
 @login_required
@@ -619,7 +625,7 @@ def cart_view(request):
     cart_items = cart.items.select_related("item")
 
     # نستفيد من دالة Cart.total_price()
-    cart_total = cart.total_price()
+    cart_total = cart.total_price
 
     context = {
         "cart": cart,

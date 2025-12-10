@@ -4,41 +4,152 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Legends Restaurant</title>
+    <title>{% block title %}Legends Restaurant{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 </head>
 
 <body class="lr-body">
 
-    <!-- HEADER + NAV -->
     <header class="lr-header">
         <div class="lr-logo">Legends Restaurant</div>
-        <nav class="lr-nav">
-            <a href="{% url 'home' %}">Home</a>
+        <<nav class="lr-nav">
+    <a href="{% url 'home' %}">Home</a>
 
-            {% if request.user.is_authenticated %}
-                <a href="{% url 'customer_dashboard' %}">Customer</a>
-                <a href="{% url 'staff_dashboard' %}">Staff</a>
-                <a href="{% url 'manager_dashboard' %}">Manager</a>
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'customer_dashboard' %}" class="nav-account">
+            👤 {{ request.user.username }}
+        <a href="{% url 'cart_view' %}">Cart 🛒</a>
+        </a>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+</nav>
 
-                <!-- زر الكارت 👇 -->
-                <a href="{% url 'cart_view' %}">Cart 🛒</a>
-
-                <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a>
-                <a href="{% url 'signup' %}">Sign Up</a>
-            {% endif %}
-        </nav>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main class="lr-main">
         {% block content %}
+        {# هذا المحتوى الافتراضي يظهر في صفحة الهوم فقط #}
+
+        {# بانر الترحيب للـ customer المسجل دخوله #}
+        {% if request.user.is_authenticated and request.user.role == "customer" %}
+        <section style="
+            background: #F4E1FF;
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin: 16px auto 8px;
+            max-width: 980px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            color: #2E2140;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        ">
+            <div>
+                <h2 style="margin: 0; font-size: 1.3rem;">
+                    Welcome, {{ request.user.username }}! 👋
+                </h2>
+                <p style="margin: 4px 0 0; font-size: 0.95rem;">
+                    Glad to have you back at Legends Restaurant.
+                </p>
+            </div>
+
+            <a href="{% url 'edit_customer_account' %}" 
+   style="
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        background:#8064A2;
+        color:white;
+        padding:9px 14px;
+        border-radius:999px;
+        text-decoration:none;
+        font-size:0.9rem;
+        font-weight:600;
+    ">
+    ⚙ Edit Account
+</a>
+
+        </section>
+        {% endif %}
+
+        <!-- Hero section -->
+        <section class="lr-hero">
+            <div class="lr-hero-text">
+                <h1>Order your favorite dishes</h1>
+                <p>Soft purple vibes, smooth experience. Legends Restaurant takeaway &amp; delivery.</p>
+                <a href="{% url 'login' %}" class="lr-btn-primary">Start Ordering</a>
+            </div>
+        </section>
+
+        <!-- Menu section -->
+        <section class="lr-menu-section">
+            <h2 class="lr-section-title">Today’s Menu</h2>
+
+            <div class="lr-menu-grid">
+                {% if menu_items %}
+                    {% for item in menu_items %}
+                    <article class="lr-menu-card">
+                        <div class="lr-menu-image"></div>
+                        <h3 class="lr-menu-title">{{ item.name }}</h3>
+                        <p class="lr-menu-desc">{{ item.description }}</p>
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                {{ item.price }}
+                            </span>
+                            <button class="lr-btn-secondary">Add to cart</button>
+                        </div>
+                    </article>
+                    {% endfor %}
+                {% else %}
+                    <article class="lr-menu-card">
+                        <div class="lr-menu-image"></div>
+                        <h3 class="lr-menu-title">Classic Burger</h3>
+                        <p class="lr-menu-desc">Juicy beef patty, fresh lettuce and cheese.</p>
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                32
+                            </span>
+                            <button class="lr-btn-secondary">Add to cart</button>
+                        </div>
+                    </article>
+
+                    <article class="lr-menu-card">
+                        <div class="lr-menu-image"></div>
+                        <h3 class="lr-menu-title">Chicken Alfredo Pasta</h3>
+                        <p class="lr-menu-desc">Creamy sauce with grilled chicken and parmesan.</p>
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                45
+                            </span>
+                            <button class="lr-btn-secondary">Add to cart</button>
+                        </div>
+                    </article>
+
+                    <article class="lr-menu-card">
+                        <div class="lr-menu-image"></div>
+                        <h3 class="lr-menu-title">Caramel Latte</h3>
+                        <p class="lr-menu-desc">Hot coffee with milk foam and caramel drizzle.</p>
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                18
+                            </span>
+                            <button class="lr-btn-secondary">Add to cart</button>
+                        </div>
+                    </article>
+                {% endif %}
+            </div>
+        </section>
+
         {% endblock %}
     </main>
 
-    <!-- FOOTER -->
     <footer class="lr-footer">
         © {{ now|date:"Y" }} Legends Restaurant – Takeaway &amp; Delivery
     </footer>

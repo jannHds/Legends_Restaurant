@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Order #{{ order.id }}</title>
+    <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
+</head>
+
+<body class="lr-body">
+
+<header class="lr-header">
+    <div class="lr-logo">Order Details</div>
+    <nav class="lr-nav">
+        <a href="{% url 'staff_dashboard' %}">Back</a>
+    </nav>
+</header>
+
+<main class="lr-main">
+
+    <h1 class="manager-title">Order #{{ order.id }}</h1>
+
+    <div class="order-box">
+
+        {% if order.status == "Pending" %}
+            <img src="{% static 'restaurant/pending.png' %}" width="50">
+        {% elif order.status == "Preparing" %}
+            <img src="{% static 'restaurant/preparing.png' %}" width="50">
+        {% elif order.status == "Ready" %}
+            <img src="{% static 'restaurant/ready.png' %}" width="50">
+        {% elif order.status == "Delivered" %}
+            <img src="{% static 'restaurant/delivered.png' %}" width="50">
+        {% endif %}
+
+        <p><strong>Status:</strong> {{ order.status }}</p>
+        <p><strong>Type:</strong> {{ order.order_type }}</p>
+        <p><strong>Total:</strong> {{ order.total }} SAR</p>
+        <p><strong>Notes:</strong> {{ order.notes }}</p>
+
+        <h3>Items:</h3>
+        {% for item in order.orderitem_set.all %}
+            <p>{{ item.quantity }} × {{ item.item.name }} — {{ item.price }} SAR</p>
+        {% endfor %}
+
+    </div>
+
+</main>
+
+</body>
+</html>

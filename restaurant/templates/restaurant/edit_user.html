@@ -6,6 +6,59 @@
     <meta charset="UTF-8">
     <title>Edit Employee</title>
     <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
+    <style>
+    .mu-role-tag {
+        background: #898AC4;
+        color: white;
+        padding: 4px 10px;
+        font-size: 0.85rem;
+        border-radius: 12px;
+        margin-left: 10px;
+    }
+
+    .mu-card {
+        background: white;
+        padding: 30px;
+        border-radius: 18px;
+        width: 70%;
+        margin: auto;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .mu-form label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+        color: #4c4073;
+    }
+
+    .mu-form input,
+    .mu-form select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 18px;
+        border: 1.5px solid #d6ccef;
+        border-radius: 8px;
+        font-size: 1rem;
+    }
+
+    .mu-submit-btn {
+        background: #8e82d8;
+        color: white;
+        padding: 12px 18px;
+        width: 100%;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: 0.2s;
+    }
+
+    .mu-submit-btn:hover {
+        background: #6b5fb8;
+    }
+</style>
+
 </head>
 
 <body class="lr-body">
@@ -23,7 +76,11 @@
     <div class="mu-container">
 
         <section class="mu-card">
-            <h2 class="manager-title">Edit Employee: {{ user_obj.username }}</h2>
+            <h2 class="manager-title">
+               Edit Employee: {{ user_obj.username }}
+               <span class="mu-role-tag">{{ user_obj.role|capfirst }}</span>
+                </h2>
+
 
             <form method="post" class="mu-form">
                 {% csrf_token %}

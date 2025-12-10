@@ -1,0 +1,55 @@
+{% extends "restaurant/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="lr-cart-page">
+    <div class="lr-cart-header">
+        <h1>Checkout</h1>
+        <p class="lr-cart-subtitle">
+            Review your order before confirming.
+        </p>
+    </div>
+
+    {% if cart_items %}
+        <div class="lr-cart-list">
+            {% for c in cart_items %}
+                <article class="lr-cart-item">
+                    {% if c.item.image %}
+                        <img src="{{ c.item.image.url }}" alt="{{ c.item.name }}" class="lr-cart-img">
+                    {% endif %}
+
+                    <div class="lr-cart-main">
+                        <h3 class="lr-cart-name">{{ c.item.name }}</h3>
+                        <p class="lr-cart-price">SAR {{ c.item.price }}</p>
+                        <p class="lr-cart-qty">Quantity: {{ c.quantity }}</p>
+                        <p class="lr-cart-line-total">
+                            Line total: SAR {{ c.total_price }}
+                        </p>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <div class="lr-cart-summary">
+            <p class="lr-cart-total">
+                <strong>Total:</strong> SAR {{ cart_total }}
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="lr-btn-primary">
+                    Confirm Order
+                </button>
+                <a href="{% url 'cart_view' %}" class="lr-btn-secondary">
+                    Back to Cart
+                </a>
+            </form>
+        </div>
+    {% else %}
+        <div class="lr-cart-empty">
+            <p>Your cart is empty.</p>
+            <a href="{% url 'home' %}" class="lr-btn-primary">Browse Menu</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

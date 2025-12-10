@@ -2,8 +2,17 @@
 
 <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 
+<header class="lr-header">
+    <div class="lr-logo">Manage Menu</div>
+    <nav class="lr-nav">
+        <a href="{% url 'manager_dashboard' %}">Back</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+</header>
+
 <div class="menu-container">
     <h1 class="page-title">Manage Menu</h1>
+
 
     <!-- زر إضافة عنصر -->
     <button class="add-item-btn" onclick="toggleAddForm()">+ Add New Item</button>
@@ -47,16 +56,21 @@
                     </p>
                 </div>
             </div>
-
-            <!-- أزرار التحكم -->
+                        <!-- أزرار التحكم -->
             <div class="menu-actions">
                 <button onclick="openEditModal({{ item.id }})" class="btn-small btn-edit">✎ Edit</button>
 
                 <a href="#" class="delete-btn" onclick="openDeleteModal({{ item.id }}, '{{ item.name }}')">
-                   🗑️ Delete
+                   🗑 Delete
                 </a>
 
-                <a href="{% url 'toggle_availability' item.id %}" class="btn-small btn-toggle">⟳ Toggle</a>
+                <a href="{% url 'toggle_availability' item.id %}" class="btn-small btn-toggle">
+                    {% if item.is_available %}
+                        ⟳ Set Unavailable
+                    {% else %}
+                        ⟳ Set Available
+                    {% endif %}
+                </a>
             </div>
 
         </div>
@@ -138,7 +152,7 @@ function toggleAddForm() {
 
 /* ⭐ فتح مودال Edit */
 function openEditModal(itemId) {
-    fetch(`/manager/menu/edit/${itemId}/`)
+    fetch(/manager/menu/edit/${itemId}/)
         .then(response => response.text())
         .then(html => {
 
@@ -161,12 +175,12 @@ function openEditModal(itemId) {
             const imgMatch = html.match(/src="([^"]+)"/);
             if (imgMatch) {
                 document.getElementById("currentImagePreview").innerHTML =
-                    `<img src="${imgMatch[1]}" class="image-preview">`;
+                    <img src="${imgMatch[1]}" class="image-preview">;
             } else {
                 document.getElementById("currentImagePreview").innerHTML = "";
             }
 
-            document.getElementById("editForm").action = `/manager/menu/edit/${itemId}/`;
+            document.getElementById("editForm").action = /manager/menu/edit/${itemId}/;
 
             document.getElementById("editModal").classList.remove("hidden");
         });
@@ -180,7 +194,7 @@ function closeModal() {
 /* ⭐ فتح مودال Delete */
 function openDeleteModal(id, name) {
     document.getElementById("deleteItemName").innerText = name;
-    document.getElementById("deleteForm").action = `/manager/menu/delete/${id}/`;
+    document.getElementById("deleteForm").action = /manager/menu/delete/${id}/;
     document.getElementById("deleteModal").classList.remove("hidden");
 }
 
@@ -190,5 +204,3 @@ function closeDeleteModal() {
 }
 
 </script>
-
-

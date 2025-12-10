@@ -4,11 +4,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Manage Employees</title>
+    <title>Manage Users</title>
     <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 
     <style>
-        /* يلف الكروت الاثنين ويخليهم فوق بعض ووسط الصفحة */
         .mu-accordion-wrapper {
             display: flex;
             flex-direction: column;
@@ -18,7 +17,6 @@
             margin-bottom: 40px;
         }
 
-        /* الكرت نفسه: عرضه قريب من الهيرو */
         .mu-accordion-card {
             width: 90%;
             max-width: 1100px;
@@ -29,12 +27,10 @@
             overflow: hidden;
         }
 
-        /* العنوان اللي فوق (السهم + النص) */
         .mu-accordion-card summary {
             list-style: none;
             cursor: pointer;
             padding: 20px 32px;
-            font-family: inherit;
             font-size: 28px;
             font-weight: 700;
             color: #4b3b6b;
@@ -43,38 +39,29 @@
             gap: 12px;
         }
 
-        /* نشيل شكل السهم الافتراضي */
         .mu-accordion-card summary::-webkit-details-marker {
             display: none;
         }
 
-        /* السهم نفسه */
         .mu-accordion-card summary::before {
             content: "▶";
             font-size: 18px;
             transition: transform 0.2s ease;
         }
 
-        /* لما يتفتح */
         .mu-accordion-card[open] summary::before {
             transform: rotate(90deg);
         }
 
-        /* المحتوى الداخلي */
         .mu-accordion-content {
             padding: 0 32px 28px 32px;
         }
 
-        /* إزالة خلفيات الفورم الداخلية */
         .mu-accordion-content .users-card {
             box-shadow: none;
             background: transparent;
             padding: 0;
             margin: 0;
-        }
-
-        .mu-accordion-content .manager-title {
-            margin-top: 0;
         }
     </style>
 </head>
@@ -82,7 +69,7 @@
 <body class="lr-body">
 
     <header class="lr-header">
-        <div class="lr-logo">Manage Employees</div>
+        <div class="lr-logo">Manage Users</div>
         <nav class="lr-nav">
             <a href="{% url 'manager_dashboard' %}">Back</a>
             <a href="{% url 'logout' %}">Logout</a>
@@ -91,19 +78,19 @@
 
     <main class="lr-main">
         <h2 class="manager-title" style="text-align:center; margin-top: 15px; margin-bottom: 5px;">
-            Manage Employees Panel
+            Manage Users Panel
         </h2>
         <p style="text-align:center; margin-bottom: 20px; color:#555;">
-            Add new employees or view existing accounts
+            Add new users or view existing accounts
         </p>
 
         <div class="mu-container">
 
             <div class="mu-accordion-wrapper">
 
-                <!-- Add New Employee -->
+                <!-- Add New User -->
                 <details class="mu-accordion-card">
-                    <summary>Add New Employee</summary>
+                    <summary>Add New User</summary>
 
                     <div class="mu-accordion-content">
                         <section class="mu-card users-card">
@@ -146,20 +133,18 @@
 
                                     <div class="user-field">
                                         <label for="id_salary">Salary (for staff)</label>
-                                        <input type="number" step="0.01" id="id_salary" name="salary"
-                                            class="lr-input">
+                                        <input type="number" step="0.01" id="id_salary" name="salary" class="lr-input">
                                     </div>
                                 </div>
 
                                 <div class="user-form-row">
                                     <div class="user-field full">
                                         <label for="id_password">Password</label>
-                                        <input type="password" id="id_password" name="password"
-                                            class="lr-input">
+                                        <input type="password" id="id_password" name="password" class="lr-input">
                                     </div>
                                 </div>
 
-                                <button class="lr-btn-primary" type="submit">Create Employee</button>
+                                <button class="lr-btn-primary" type="submit">Create User</button>
                             </form>
 
                             {% if form_error %}
@@ -173,17 +158,18 @@
                     </div>
                 </details>
 
-                <!-- Existing Employees -->
+                <!-- Existing Users -->
                 <details class="mu-accordion-card">
-                    <summary>Existing Employees</summary>
+                    <summary>Existing Users</summary>
 
                     <div class="mu-accordion-content">
                         <form method="get" class="mu-filter-form">
                             <label for="role-filter">Filter by role:</label>
-                            <select id="role-filter" name="role" onchange="this.form.submit()">
-                                <option value="all" {% if role_filter == 'all' %}selected{% endif %}>All</option>
-                                <option value="manager" {% if role_filter == 'manager' %}selected{% endif %}>Managers</option>
-                                <option value="staff" {% if role_filter == 'staff' %}selected{% endif %}>Staff</option>
+                            <select name="role">
+                                <option value="all" {% if role_filter == "all" %}selected{% endif %}>All</option>
+                                <option value="manager" {% if role_filter == "manager" %}selected{% endif %}>Managers</option>
+                                <option value="staff" {% if role_filter == "staff" %}selected{% endif %}>Staff</option>
+                                <option value="customer" {% if role_filter == "customer" %}selected{% endif %}>Customers</option>
                             </select>
                         </form>
 
@@ -247,4 +233,3 @@
 </body>
 
 </html>
-
