@@ -3,19 +3,38 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
-from .forms import CustomerSignUpForm
-from .models import Order
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db import transaction
+from django.shortcuts import render
+from .models import MenuItem
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+
+from .forms import CustomerSignUpForm, UserUpdateForm
+from .models import Order, OrderItem, MenuItem, Cart, CartItem  # ← أضفنا OrderItem هنا
+
+User = get_user_model()
 
 
-# صفحة رئيسية بسيطة (تقدرين تغيرينها لاحقاً)
+# ============================
+# HOME
+# ============================
 def home(request):
-    return render(request, "restaurant/base.html")
+    """
+    صفحة الهوم:
+    - تستخدم التمبلت restaurant/home.html
+    - تمرر قائمة الأصناف المتاحة من الـ MenuItem إلى الصفحة
+    """
+    menu_items = MenuItem.objects.filter(is_available=True)
+    return render(request, "restaurant/home.html", {"menu_items": menu_items})
 
 
-# ========== AUTHENTICATION ==========
-
+# ============================
+# AUTHENTICATION
+# ============================
 def login_view(request):
     """
     Login مشترك لكل الأدوار:
@@ -29,10 +48,8 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            # يسجّل الدخول فعلياً
             login(request, user)
 
-            # نجيب الـ role بأمان (لو ما عنده role ما يطيح البرنامج)
             role = getattr(user, "role", None)
 
             if role == "customer":
@@ -42,22 +59,41 @@ def login_view(request):
             elif role == "manager":
                 return redirect("manager_dashboard")
             else:
-                # لو ما فيه role أو شيء مو متوقّع
                 return redirect("home")
         else:
-            # لو اليوزر/الباس غلط → نرجع لنفس صفحة اللوق إن مع رسالة
             return render(
                 request,
                 "restaurant/login.html",
                 {"error": "Invalid username or password"},
             )
 
-    # GET → أول مرة يفتح الصفحة
     return render(request, "restaurant/login.html")
 
 
+def customer_signup_view(request):
+    """
+    صفحة تسجيل كستمر جديدة باستخدام CustomerSignUpForm
+    """
+    if request.method == "POST":
+        form = CustomerSignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # تسجيل دخول بعد التسجيل (اختياري)
+            login(request, user)
+            # غيري "customer_dashboard" لو اسم URL عندكم مختلف
+            return redirect("customer_dashboard")
+    else:
+        form = CustomerSignUpForm()
+
+    context = {
+        "form": form,
+    }
+    return render(request, "restaurant/customer_signup.html", context)
+
+
+# لو فيه URLs قديمة تشير إلى signup_view، نخليها تعيد استخدام نفس المنطق
 def signup_view(request):
-    return render(request, 'restaurant/signup.html')
+    return customer_signup_view(request)
 
 
 def logout_view(request):
@@ -65,14 +101,18 @@ def logout_view(request):
     return redirect("login")
 
 
-# ========== ROLE-BASED DASHBOARDS ==========
-
+# ============================
+# ROLE-BASED DASHBOARDS
+# ============================
 def _ensure_role(request, required_role):
-    """هيلبر داخلي: يتحقق من تسجيل الدخول والـ role"""
+    """
+    هيلبر داخلي:
+    - يتأكد إن المستخدم مسجل دخول
+    - ويتأكد إن دوره يطابق الدور المطلوب
+    """
     if not request.user.is_authenticated:
         return redirect("login")
 
-    # لو الدور مختلف، نعرض صفحة شكلها حلو بدل النص العادي
     if getattr(request.user, "role", None) != required_role:
         return render(
             request,
@@ -82,7 +122,6 @@ def _ensure_role(request, required_role):
         )
 
     return None
-
 
 
 def customer_dashboard(request):
@@ -97,31 +136,54 @@ def customer_dashboard(request):
 
 
 def staff_dashboard(request):
-    pending_orders = Order.objects.filter(status="Pending").order_by("-created_at")
-    preparing_orders = Order.objects.filter(status="Preparing").order_by("-created_at")
-    ready_orders = Order.objects.filter(status="Ready").order_by("-created_at")
+    """
+    Staff Dashboard
 
-    context = {
-        "pending_orders": pending_orders,
-        "preparing_orders": preparing_orders,
-        "ready_orders": ready_orders,
-    }
+    يقرأ الحالات الحقيقية الموجودة في STATUS_CHOICES في الموديل:
+    - preparing
+    - out_for_delivery
+    - delivered
+    """
     guard = _ensure_role(request, "staff")
     if guard is not None:
         return guard
 
+    preparing_orders = Order.objects.filter(
+        status="preparing"
+    ).order_by("-created_at")
+    out_for_delivery_orders = Order.objects.filter(
+        status="out_for_delivery"
+    ).order_by("-created_at")
+    delivered_orders = Order.objects.filter(
+        status="delivered"
+    ).order_by("-created_at")
+
+    context = {
+        "preparing_orders": preparing_orders,
+        "out_for_delivery_orders": out_for_delivery_orders,
+        "delivered_orders": delivered_orders,
+    }
+
     return render(request, "restaurant/staff_dashboard.html", context)
+
 
 @login_required
 def update_order_status(request, order_id, new_status):
-
+    """
+    تغيير حالة الطلب من صفحة الستاف
+    القيم المسموحة:
+    - preparing
+    - out_for_delivery
+    - delivered
+    (مطابقة لـ STATUS_CHOICES بالموديل)
+    """
     guard = _ensure_role(request, "staff")
     if guard is not None:
         return guard
 
     order = get_object_or_404(Order, id=order_id)
 
-    allowed_statuses = ["Pending", "Preparing", "Ready", "Completed"]
+    allowed_statuses = ["preparing", "out_for_delivery", "delivered"]
 
     if new_status not in allowed_statuses:
         return HttpResponseForbidden("Invalid status")
@@ -130,7 +192,6 @@ def update_order_status(request, order_id, new_status):
     order.save()
 
     return redirect("staff_dashboard")
-
 
 
 def manager_dashboard(request):
@@ -144,9 +205,9 @@ def manager_dashboard(request):
     return render(request, "restaurant/manager_dashboard.html")
 
 
-User = get_user_model()
-
-
+# ============================
+# MANAGER – MANAGE USERS
+# ============================
 def manage_users(request):
     """
     صفحة المدير لإدارة المستخدمين (manager / staff)
@@ -161,7 +222,6 @@ def manage_users(request):
     form_error = None
     form_success = None
 
-    # فلتر الدور في الجدول (GET parameter)
     role_filter = request.GET.get("role", "all")
 
     if request.method == "POST":
@@ -176,7 +236,6 @@ def manage_users(request):
 
         errors = []
 
-        # فحوصات أساسية
         if not username:
             errors.append("Username is required.")
         elif User.objects.filter(username=username).exists():
@@ -188,11 +247,9 @@ def manage_users(request):
         if role not in ["manager", "staff"]:
             errors.append("Role must be either 'manager' or 'staff'.")
 
-        # لو ستاف لازم نكتب الراتب
         if role == "staff" and not salary_str:
             errors.append("Salary is required for staff users.")
 
-        # لو فيه راتب تأكدي أنه رقم
         if salary_str:
             try:
                 float(salary_str)
@@ -202,7 +259,6 @@ def manage_users(request):
         if errors:
             form_error = " | ".join(errors)
         else:
-            # إنشاء المستخدم
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -215,12 +271,11 @@ def manage_users(request):
             if role == "staff":
                 user.hired_at = timezone.now()
                 if salary_str:
-                    user.salary = salary_str  # Django يحولها تلقائياً لـ DecimalField
+                    user.salary = salary_str
 
             user.save()
             form_success = "User created successfully."
 
-    # تجهيز قائمة المستخدمين مع الفلتر
     users_qs = User.objects.filter(role__in=["manager", "staff"])
 
     if role_filter in ["manager", "staff"]:
@@ -238,63 +293,274 @@ def manage_users(request):
             "role_filter": role_filter,
         },
     )
-# restaurant/views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .forms import UserUpdateForm
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
 
+# تعديل بيانات مستخدم (للـ manager)
 def edit_user(request, user_id):
+    guard = _ensure_role(request, "manager")
+    if guard is not None:
+        return guard
+
     user_obj = get_object_or_404(User, id=user_id)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserUpdateForm(request.POST, instance=user_obj)
         if form.is_valid():
             form.save()
             messages.success(request, "User updated successfully.")
-            return redirect('manage_users')  # اسم URL صفحة المانجر اللي فيها الجدول
+            return redirect("manage_users")
     else:
         form = UserUpdateForm(instance=user_obj)
+
+    return render(
+        request,
+        "restaurant/edit_user.html",
+        {
+            "form": form,
+            "user_obj": user_obj,
+        },
+    )
+
+
+# ============================
+# CUSTOMER CART / CHECKOUT / PAYMENT  (Leen)
+# ============================
+def _get_or_create_cart(user):
+    """
+    ترجع سلة المستخدم أو تنشئ له واحدة إذا ما عنده
+    """
+    cart, created = Cart.objects.get_or_create(user=user)
+    return cart
+
+
+@login_required
+def cart_view(request):
+    """
+    عرض صفحة السلة للعميل.
+    """
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    cart = _get_or_create_cart(request.user)
+    cart_items = cart.cartitem_set.select_related("item")
+    cart_total = sum(item.total_price() for item in cart_items)
 
     context = {
-        'form': form,
-        'user_obj': user_obj,
+        "cart": cart,
+        "cart_items": cart_items,
+        "cart_total": cart_total,
     }
-    return render(request, 'manager/edit_user.html', context)
-def edit_user(request, user_id):
-    user_obj = get_object_or_404(User, id=user_id)
+    return render(request, "restaurant/cart.html", context)
 
-    if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=user_obj)
-        if form.is_valid():
-            form.save()
-            return redirect('manage_users')
-    else:
-        form = UserUpdateForm(instance=user_obj)
 
-    return render(request, 'restaurant/edit_user.html', {
-        'form': form,
-        'user_obj': user_obj,
-    })
-def customer_signup_view(request):
+
+
+@login_required
+def add_to_cart(request, item_id):
     """
-    Customer Sign Up Page
+    إضافة صنف من المنيو إلى السلة.
     """
+    # يتأكد إن اليوزر Customer
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    # لو ما عندكم is_available احذفيها من الفلتر
+    menu_item = get_object_or_404(MenuItem, id=item_id, is_available=True)
+    # menu_item = get_object_or_404(MenuItem, id=item_id)  # ← استخدمي هذا لو ما تبين is_available
+
+    cart = _get_or_create_cart(request.user)
+
     if request.method == "POST":
-        form = CustomerSignUpForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            # تسجيل الدخول مباشرة بعد التسجيل (تقدرين تشيلينه لو ما تبغينه)
-            login(request, user)
-            # غيري "customer_home" لاسم الـ URL الخاص بداشبورد الكستمر عندكم
-            return redirect("customer_home")  # مثال: "customer_dashboard"
-    else:
-        form = CustomerSignUpForm()
+        # نتأكد إن الكمية رقم صحيح وما هي أقل من 1
+        try:
+            qty = int(request.POST.get("quantity", 1))
+        except (TypeError, ValueError):
+            qty = 1
+
+        if qty < 1:
+            qty = 1
+
+        cart_item, created = CartItem.objects.get_or_create(
+            cart=cart,
+            item=menu_item,
+            defaults={"quantity": qty},
+        )
+
+        if not created:
+            cart_item.quantity += qty
+            cart_item.save()
+
+        messages.success(request, f"{menu_item.name} added to cart.")
+
+    # في كل الحالات نرجع للكارت
+    return redirect("cart_view")
+
+
+
+@login_required
+def update_cart(request, cart_item_id):
+    """
+    تحديث كمية عنصر داخل السلة.
+    إذا صارت الكمية 0 أو أقل، نحذف العنصر.
+    """
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    cart_item = get_object_or_404(
+        CartItem,
+        id=cart_item_id,
+        cart__user=request.user,
+    )
+
+    if request.method == "POST":
+        new_qty = int(request.POST.get("quantity", 1))
+        if new_qty <= 0:
+            cart_item.delete()
+            messages.info(request, "Item removed from cart.")
+        else:
+            cart_item.quantity = new_qty
+            cart_item.save()
+            messages.success(request, "Cart updated.")
+
+    return redirect("cart_view")
+
+
+@login_required
+def remove_from_cart(request, cart_item_id):
+    """
+    حذف عنصر من السلة مباشرة.
+    """
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    cart_item = get_object_or_404(
+        CartItem,
+        id=cart_item_id,
+        cart__user=request.user,
+    )
+    cart_item.delete()
+    messages.info(request, "Item removed from cart.")
+    return redirect("cart_view")
+
+
+@login_required
+@transaction.atomic
+def checkout_view(request):
+    """
+    صفحة التأكيد قبل إنشاء الطلب الفعلي.
+    """
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    cart = _get_or_create_cart(request.user)
+    cart_items = cart.cartitem_set.select_related("item")
+
+    if not cart_items.exists():
+        messages.warning(request, "Your cart is empty.")
+        return redirect("cart_view")
+
+    cart_total = sum(item.total_price() for item in cart_items)
+
+    if request.method == "POST":
+        order = Order.objects.create(
+            user=request.user,
+            total=cart_total,
+            status="preparing",    # نفس اللي في STATUS_CHOICES بالموديل
+            order_type="takeaway",  # تقدرين تغيرينها لاحقاً حسب اختيار اليوزر
+        )
+
+        for c_item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                item=c_item.item,
+                quantity=c_item.quantity,
+                price=c_item.item.price,
+            )
+
+        cart_items.delete()
+
+        messages.success(
+            request,
+            f"Order #{order.id} created. Proceed to payment.",
+        )
+        return redirect("payment_process", order_id=order.id)
 
     context = {
-        "form": form,
+        "cart_items": cart_items,
+        "cart_total": cart_total,
     }
-    return render(request, "restaurant/customer_signup.html", context)
+    return render(request, "restaurant/checkout.html", context)
+
+
+@login_required
+def payment_process(request, order_id):
+    """
+    محاكاة عملية الدفع:
+    - أول زيارة: زر Pay Now
+    - بعد الضغط: نغيّر حالة الطلب إلى delivered
+    """
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    order = get_object_or_404(
+        Order,
+        id=order_id,
+        user=request.user,
+    )
+
+    if request.method == "POST":
+        # ما عندنا بوابة دفع حقيقية، بس نحاكي نجاح الدفع
+        order.status = "delivered"   # موجودة في STATUS_CHOICES
+        order.save()
+
+        messages.success(
+            request,
+            f"Payment successful for Order #{order.id}.",
+        )
+        return render(
+            request,
+            "restaurant/payment.html",
+            {"order": order, "paid": True},
+        )
+
+    return render(
+        request,
+        "restaurant/payment.html",
+        {"order": order, "paid": False},
+    )
+@login_required
+@login_required
+def cart_view(request):
+    """
+    عرض صفحة السلة للعميل.
+    """
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    cart = _get_or_create_cart(request.user)
+
+    # نستخدم related_name="items"
+    cart_items = cart.items.select_related("item")
+
+    # نستفيد من دالة Cart.total_price()
+    cart_total = cart.total_price()
+
+    context = {
+        "cart": cart,
+        "cart_items": cart_items,
+        "cart_total": cart_total,
+    }
+    return render(request, "restaurant/cart.html", context)
+
+
+
+
+
 

@@ -1,0 +1,215 @@
+{% extends "restaurant/base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="lr-cart-page">
+    <div class="lr-cart-header">
+        <h1>Your Cart</h1>
+        <p class="lr-cart-subtitle">
+            Review your selected items before checkout.
+        </p>
+    </div>
+
+    {% if cart_items %}
+        <div class="lr-cart-list">
+            {% for c in cart_items %}
+                <article class="lr-cart-item">
+
+                    {% if c.item.image %}
+                        <img src="{{ c.item.image.url }}" alt="{{ c.item.name }}" class="lr-cart-img">
+                    {% endif %}
+
+                    <div class="lr-cart-main">
+                        <h3 class="lr-cart-name">{{ c.item.name }}</h3>
+                        <p class="lr-cart-price">SAR {{ c.item.price }}</p>
+
+                        <div class="lr-cart-actions">
+                            <!-- تحديث الكمية -->
+                            <form method="post" action="{% url 'update_cart' c.id %}" class="lr-cart-update-form">
+                                {% csrf_token %}
+                                <label>
+                                    Qty:
+                                    <input type="number" name="quantity" value="{{ c.quantity }}" min="1" class="lr-cart-qty-input">
+                                </label>
+                                <button type="submit" class="lr-btn-secondary lr-btn-sm">Update</button>
+                            </form>
+
+                            <!-- حذف العنصر -->
+                            <form method="post" action="{% url 'remove_from_cart' c.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="lr-btn-danger lr-btn-sm">Remove</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="lr-cart-line-total">
+                        <span>Item Total</span>
+                        <strong>SAR {{ c.total_price }}</strong>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <!-- ملخص الكارت -->
+        <div class="lr-cart-summary">
+            <div class="lr-cart-summary-row">
+                <span>Subtotal</span>
+                <strong>SAR {{ cart_total }}</strong>
+            </div>
+            <!-- لو تبون تضيفون VAT أو Delivery لاحقاً حطوه هنا -->
+
+            <a href="{% url 'checkout_view' %}" class="lr-btn-primary lr-cart-checkout-btn">
+                Proceed to Checkout
+            </a>
+        </div>
+
+    {% else %}
+        <div class="lr-cart-empty">
+            <p>No items in your cart yet.</p>
+            <a href="{% url 'home' %}" class="lr-btn-primary">Browse Menu</a>
+        </div>
+    {% endif %}
+</section>
+
+<style>
+/* ===== Cart Page Styling ===== */
+.lr-cart-page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+}
+
+.lr-cart-header h1 {
+    margin: 0 0 6px;
+    font-size: 28px;
+    color: #33334b;
+}
+
+.lr-cart-subtitle {
+    margin: 0 0 18px;
+    color: #6a6b87;
+    font-size: 14px;
+}
+
+.lr-cart-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.lr-cart-item {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 14px 18px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.06);
+}
+
+.lr-cart-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.lr-cart-main {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lr-cart-name {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #33334b;
+}
+
+.lr-cart-price {
+    margin: 0;
+    font-size: 14px;
+    color: #6a6b87;
+}
+
+.lr-cart-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.lr-cart-update-form {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.lr-cart-qty-input {
+    width: 60px;
+    padding: 5px 6px;
+    border-radius: 10px;
+    border: 1px solid #d4d7f3;
+    font-size: 13px;
+}
+
+.lr-btn-sm {
+    padding: 6px 10px;
+    font-size: 12px;
+    border-radius: 999px;
+}
+
+.lr-btn-danger {
+    background: #e86b7b;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.lr-btn-danger:hover {
+    background: #d35666;
+}
+
+.lr-cart-line-total {
+    text-align: right;
+    font-size: 13px;
+    color: #6a6b87;
+}
+
+.lr-cart-line-total strong {
+    display: block;
+    font-size: 15px;
+    color: #33334b;
+    margin-top: 4px;
+}
+
+.lr-cart-summary {
+    margin-top: 24px;
+    padding: 18px 20px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+}
+
+.lr-cart-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 15px;
+    color: #4b4d73;
+}
+
+.lr-cart-checkout-btn {
+    display: inline-block;
+    margin-top: 6px;
+}
+
+/* empty state */
+.lr-cart-empty {
+    margin-top: 20px;
+}
+</style>
+{% endblock %}

@@ -1,20 +1,28 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import User
+# لاحظي: شلنا import User من django.contrib.auth.models
+# لأننا نستخدم اليوزر المخصص اللي تحت
 
 
+# ============================
+# CUSTOM USER
+# ============================
 class User(AbstractUser):
     ROLE_CHOICES = [
         ("customer", "Customer"),
         ("staff", "Staff"),
         ("manager", "Manager"),
     ]
+
     role = models.CharField(
-        max_length=20, choices=ROLE_CHOICES, default="customer")
+        max_length=20,
+        choices=ROLE_CHOICES,
+        default="customer",
+    )
     phone = models.CharField(max_length=20, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
 
-    # للستاف
+    # معلومات إضافية للستاف
     hired_at = models.DateTimeField(blank=True, null=True)
     salary = models.DecimalField(
         max_digits=10,
@@ -32,52 +40,69 @@ class User(AbstractUser):
     def is_manager(self):
         return self.role == "manager"
 
+    def __str__(self):
+        return self.username
 
+
+# ============================
+# MENU ITEM
+# ============================
 class MenuItem(models.Model):
-
     CATEGORY_CHOICES = [
-        ('drinks', 'Drinks'),
-        ('main', 'Main Dishes'),
-        ('appetizers', 'Appetizers'),
-        ('sweet', 'Sweet'),
-        ('special', 'Special Dishes'),
+        ("drinks", "Drinks"),
+        ("main", "Main Dishes"),
+        ("appetizers", "Appetizers"),
+        ("sweet", "Sweet"),
+        ("special", "Special Dishes"),
     ]
 
     name = models.CharField(max_length=150)
     description = models.TextField(blank=True, null=True)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
-    image = models.ImageField(upload_to='menu_images/', blank=True, null=True)  # ⭐ أهم إضافة
+    image = models.ImageField(
+        upload_to="menu_images/",
+        blank=True,
+        null=True,
+    )
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.name 
+        return self.name
 
 
 # ============================
 # CART (سلة العميل)
 # ============================
-
-
 class Cart(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="cart")
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def total_price(self):
-        items = self.cartitem_set.all()
-        return sum([item.total_price() for item in items])
+        # نستخدم related_name="items" من CartItem
+        items = self.items.all()
+        # CartItem.total_price عندك @property → بدون أقواس
+        return sum(item.total_price for item in items)
 
     def __str__(self):
         return f"{self.user.username}'s Cart"
+
+
 
 
 # ============================
 # CART ITEM (عنصر داخل السلة)
 # ============================
 class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    cart = models.ForeignKey(
+        Cart,
+        on_delete=models.CASCADE,
+        related_name="items",
+    )
     item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
+    @property
     def total_price(self):
         return self.item.price * self.quantity
 
@@ -90,26 +115,36 @@ class CartItem(models.Model):
 # ============================
 class Order(models.Model):
     STATUS_CHOICES = [
-        ('preparing', 'Preparing'),
-        ('out_for_delivery', 'Out For Delivery'),
-        ('delivered', 'Delivered'),
+        ("preparing", "Preparing"),
+        ("out_for_delivery", "Out For Delivery"),
+        ("delivered", "Delivered"),
     ]
 
     TYPE_CHOICES = [
-        ('takeaway', 'Takeaway'),
-        ('delivery', 'Delivery'),
+        ("takeaway", "Takeaway"),
+        ("delivery", "Delivery"),
     ]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="orders",
+    )
     status = models.CharField(
-        max_length=30, choices=STATUS_CHOICES, default='preparing'
+        max_length=30,
+        choices=STATUS_CHOICES,
+        default="preparing",
     )
     order_type = models.CharField(
-        max_length=30, choices=TYPE_CHOICES, default='takeaway'
+        max_length=30,
+        choices=TYPE_CHOICES,
+        default="takeaway",
     )
     total = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     notes = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    # مهم للكود حق الدفع:
+    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Order #{self.id} - {self.user.username}"
@@ -119,16 +154,26 @@ class Order(models.Model):
 # ORDER ITEM
 # ============================
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="items",
+    )
     item = models.ForeignKey(MenuItem, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=8, decimal_places=2)
 
+    @property
     def total(self):
         return self.price * self.quantity
 
     def __str__(self):
         return f"{self.quantity} × {self.item.name}"
+
+
+# ============================
+# CUSTOMER USER (اختياري)
+# ============================
 class CustomerUser(models.Model):
     # هذا هو Customer_id = INT(PK) ويتولد تلقائياً
     customer_id = models.AutoField(primary_key=True)
@@ -143,10 +188,11 @@ class CustomerUser(models.Model):
     )
 
     username = models.CharField(max_length=150)
-    password = models.CharField(max_length=128)  # بنخزن فيها نفس الـ hashed password
+    # ملاحظة: عادة ما نخزن الباسورد هنا، يكفي User نفسه
+    password = models.CharField(max_length=128)
     email = models.EmailField(unique=True, null=True, blank=True)
     phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     address = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"{self.username} ({self.customer_id})" 
+        return f"{self.username} ({self.customer_id})"
