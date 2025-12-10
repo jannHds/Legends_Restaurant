@@ -157,40 +157,54 @@ def customer_dashboard(request):
     return render(request, "restaurant/customer_home.html")
 
 
+
+@login_required
 def staff_dashboard(request):
-    pending_orders = Order.objects.filter(status="Pending").order_by("-created_at")
-    preparing_orders = Order.objects.filter(status="Preparing").order_by("-created_at")
-    ready_orders = Order.objects.filter(status="Ready").order_by("-created_at")
+
+    pending = Order.objects.filter(status="Pending")
+    confirmed = Order.objects.filter(status="Confirmed")
+    preparing = Order.objects.filter(status="Preparing")
+    ready = Order.objects.filter(status="Ready")
+    completed_today = Order.objects.filter(status="Delivered")
 
     context = {
-        "pending_orders": pending_orders,
-        "preparing_orders": preparing_orders,
-        "ready_orders": ready_orders,
+        "pending": pending,
+        "confirmed": confirmed,
+        "preparing": preparing,
+        "ready": ready,
+        "completed_today": completed_today,
     }
-    guard = _ensure_role(request, "staff")
-    if guard is not None:
-        return guard
 
     return render(request, "restaurant/staff_dashboard.html", context)
 
+
+
 @login_required
-def update_order_status(request, order_id, new_status):
-
-    guard = _ensure_role(request, "staff")
-    if guard is not None:
-        return guard
-
+def update_status(request, order_id, new_status):
     order = get_object_or_404(Order, id=order_id)
+    
+    valid_flow = {
+        "Pending": ["Confirmed", "Rejected"],
+        "Confirmed": ["Preparing"],
+        "Preparing": ["Ready"],
+        "Ready": ["Delivered"],
+    }
 
-    allowed_statuses = ["Pending", "Preparing", "Ready", "Completed"]
+    if new_status in valid_flow.get(order.status, []):
+        order.status = new_status
+        order.save()
+        messages.success(request, f"Order {order_id} updated to {new_status}")
+    else:
+        messages.error(request, "Invalid status transition")
 
-    if new_status not in allowed_statuses:
-        return HttpResponseForbidden("Invalid status")
+    return render(request, "restaurant/staff_dashboard.html")
 
-    order.status = new_status
-    order.save()
 
-    return redirect("staff_dashboard")
+def order_detail(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    return render(request, 'restaurant/order_detail.html', {'order': order})
+
+
 
 
 

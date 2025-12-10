@@ -15,26 +15,10 @@
 
         <nav class="lr-nav">
             <a href="{% url 'home' %}">Home</a>
-
-            {% if request.user.is_authenticated %}
-                {# كل رول يروح للدashboard الخاصة فيه #}
-                {% if request.user.role == "customer" %}
-                    <a href="{% url 'customer_dashboard' %}" class="nav-account">
-                        👤 {{ request.user.username }}
-                    </a>
-                {% elif request.user.role == "staff" %}
-                    <a href="{% url 'staff_dashboard' %}" class="nav-account">
-                        👤 {{ request.user.username }}
-                    </a>
-                {% elif request.user.role == "manager" %}
-                    <a href="{% url 'manager_dashboard' %}" class="nav-account">
-                        👤 {{ request.user.username }}
-                    </a>
-                {% endif %}
-                <a href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'login' %}">Login</a>
-            {% endif %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="/customer/dashboard/">Customer</a>
+            <a href="/staff/dashboard/">Staff</a>
+            <a href="/manager/dashboard/">Manager</a>
         </nav>
     </header>
 

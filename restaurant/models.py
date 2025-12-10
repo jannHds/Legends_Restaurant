@@ -49,6 +49,7 @@ class MenuItem(models.Model):
     category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
     image = models.ImageField(upload_to='menu_images/', blank=True, null=True)  # ⭐ أهم إضافة
     is_available = models.BooleanField(default=True)
+    
 
     def __str__(self):
         return self.name 
