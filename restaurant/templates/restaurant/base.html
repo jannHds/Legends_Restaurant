@@ -17,7 +17,7 @@
             <a href="{% url 'home' %}">Home</a>
 
             {% if request.user.is_authenticated %}
-                {# كل رول يروح للداشبورد الخاصة فيه #}
+                {# كل رول يروح للدashboard الخاصة فيه #}
                 {% if request.user.role == "customer" %}
                     <a href="{% url 'customer_dashboard' %}" class="nav-account">
                         👤 {{ request.user.username }}
@@ -31,7 +31,6 @@
                         👤 {{ request.user.username }}
                     </a>
                 {% endif %}
-
                 <a href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>
@@ -41,49 +40,7 @@
 
     <main class="lr-main">
         {% block content %}
-        {# هذا المحتوى الافتراضي يظهر في صفحة الهوم فقط #}
-
-        {# بانر الترحيب للـ customer المسجل دخوله #}
-        {% if request.user.is_authenticated and request.user.role == "customer" %}
-        <section style="
-            background: #F4E1FF;
-            padding: 14px 18px;
-            border-radius: 14px;
-            margin: 16px auto 8px;
-            max-width: 980px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            color: #2E2140;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        ">
-            <div>
-                <h2 style="margin: 0; font-size: 1.3rem;">
-                    Welcome, {{ request.user.username }}! 👋
-                </h2>
-                <p style="margin: 4px 0 0; font-size: 0.95rem;">
-                    Glad to have you back at Legends Restaurant.
-                </p>
-            </div>
-
-            <a href="{% url 'edit_customer_account' %}" 
-               style="
-                    display:inline-flex;
-                    align-items:center;
-                    gap:6px;
-                    background:#8064A2;
-                    color:white;
-                    padding:9px 14px;
-                    border-radius:999px;
-                    text-decoration:none;
-                    font-size:0.9rem;
-                    font-weight:600;
-               ">
-                ⚙️ Edit Account
-            </a>
-        </section>
-        {% endif %}
+        {# هذا المحتوى الافتراضي لصفحة الهوم #}
 
         <!-- Hero section -->
         <section class="lr-hero">
@@ -115,6 +72,7 @@
                     </article>
                     {% endfor %}
                 {% else %}
+                    {# بيانات تجريبية لو ما فيه DB للحين #}
                     <article class="lr-menu-card">
                         <div class="lr-menu-image"></div>
                         <h3 class="lr-menu-title">Classic Burger</h3>
