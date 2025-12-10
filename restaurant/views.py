@@ -157,54 +157,40 @@ def customer_dashboard(request):
     return render(request, "restaurant/customer_home.html")
 
 
-
-@login_required
 def staff_dashboard(request):
-
-    pending = Order.objects.filter(status="Pending")
-    confirmed = Order.objects.filter(status="Confirmed")
-    preparing = Order.objects.filter(status="Preparing")
-    ready = Order.objects.filter(status="Ready")
-    completed_today = Order.objects.filter(status="Delivered")
+    pending_orders = Order.objects.filter(status="Pending").order_by("-created_at")
+    preparing_orders = Order.objects.filter(status="Preparing").order_by("-created_at")
+    ready_orders = Order.objects.filter(status="Ready").order_by("-created_at")
 
     context = {
-        "pending": pending,
-        "confirmed": confirmed,
-        "preparing": preparing,
-        "ready": ready,
-        "completed_today": completed_today,
+        "pending_orders": pending_orders,
+        "preparing_orders": preparing_orders,
+        "ready_orders": ready_orders,
     }
+    guard = _ensure_role(request, "staff")
+    if guard is not None:
+        return guard
 
     return render(request, "restaurant/staff_dashboard.html", context)
 
-
-
 @login_required
-def update_status(request, order_id, new_status):
+def update_order_status(request, order_id, new_status):
+
+    guard = _ensure_role(request, "staff")
+    if guard is not None:
+        return guard
+
     order = get_object_or_404(Order, id=order_id)
-    
-    valid_flow = {
-        "Pending": ["Confirmed", "Rejected"],
-        "Confirmed": ["Preparing"],
-        "Preparing": ["Ready"],
-        "Ready": ["Delivered"],
-    }
 
-    if new_status in valid_flow.get(order.status, []):
-        order.status = new_status
-        order.save()
-        messages.success(request, f"Order {order_id} updated to {new_status}")
-    else:
-        messages.error(request, "Invalid status transition")
+    allowed_statuses = ["Pending", "Preparing", "Ready", "Completed"]
 
-    return render(request, "restaurant/staff_dashboard.html")
+    if new_status not in allowed_statuses:
+        return HttpResponseForbidden("Invalid status")
 
+    order.status = new_status
+    order.save()
 
-def order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    return render(request, 'restaurant/order_detail.html', {'order': order})
-
-
+    return redirect("staff_dashboard")
 
 
 
@@ -217,6 +203,9 @@ def manager_dashboard(request):
         return guard
 
     return render(request, "restaurant/manager_dashboard.html")
+
+
+User = get_user_model()
 
 
 User = get_user_model()
@@ -239,17 +228,21 @@ def manage_users(request):
     # فلتر الدور في الجدول (GET parameter)
     role_filter = request.GET.get("role", "all")
 
+    # ---------- معالجة فورم الإضافة (POST) ----------
     if request.method == "POST":
         username = (request.POST.get("username") or "").strip()
         email = (request.POST.get("email") or "").strip()
-        role = request.POST.get("role")
-        password = (request.POST.get("password") or "").strip()
 
+        # نقرأ الدور ونحوّله لحروف صغيرة (staff / manager)
+        role_raw = (request.POST.get("role") or "").strip()
+        role = role_raw.lower()
+
+        password = (request.POST.get("password") or "").strip()
         phone = (request.POST.get("phone") or "").strip()
         address = (request.POST.get("address") or "").strip()
         salary_str = (request.POST.get("salary") or "").strip()
 
-        errors = []
+        errors: list[str] = []
 
         # فحوصات أساسية
         if not username:
@@ -260,8 +253,104 @@ def manage_users(request):
         if len(password) < 8:
             errors.append("Password must be at least 8 characters long.")
 
-        users_qs = User.objects.filter(role__in=["manager", "staff", "customer"])
+        # التحقق من الدور
+        if role not in ["manager", "staff"]:
+            errors.append("Role must be either 'manager' or 'staff'.")
+
+        # لو ستاف لازم نكتب الراتب
+        if role == "staff" and not salary_str:
+            errors.append("Salary is required for staff users.")
+
+        # لو فيه راتب تأكدي أنه رقم
+        if salary_str:
+            try:
+                float(salary_str)
+            except ValueError:
+                errors.append("Salary must be a valid number.")
+
+        if errors:
+            form_error = " | ".join(errors)
+        else:
+            # إنشاء المستخدم
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+            )
+            user.role = role
+            user.phone = phone
+            user.address = address
+
+            if role == "staff":
+                user.hired_at = timezone.now()
+                if salary_str:
+                    user.salary = salary_str  # Django سيحوّلها لـ Decimal
+
+            user.save()
+            form_success = "User created successfully."
+
+    # ---------- تجهيز قائمة المستخدمين (GET / بعد POST) ----------
+    users_qs = User.objects.filter(role__in=["manager", "staff", "customer"])
+
+    if role_filter in ["manager", "staff", "customer"]:
+        users_qs = users_qs.filter(role=role_filter)
+
+    users = users_qs.order_by("username")
+
+    return render(
+        request,
+        "restaurant/manage_users.html",
+        {
+            "users": users,
+            "form_error": form_error,
+            "form_success": form_success,
+            "role_filter": role_filter,
+        },
+    )
+
+    """
+    صفحة المدير لإدارة المستخدمين (manager / staff)
+    - تضيف مستخدم جديد مع phone, address, salary
+    - تضبط hired_at تلقائياً إذا كان role = staff
+    - تعرض جدول المستخدمين مع فلتر حسب الدور
+    """
+    guard = _ensure_role(request, "manager")
+    if guard is not None:
+        return guard
+
+    form_error = None
+    form_success = None
+
+    # فلتر الدور في الجدول (GET parameter)
+    role_filter = request.GET.get("role", "all")
+
+    if request.method == "POST":
+        username = (request.POST.get("username") or "").strip()
+        email = (request.POST.get("email") or "").strip()
+
+        role_raw = (request.POST.get("role") or "").strip()
+        role = role_raw.lower()
+
+        password = (request.POST.get("password") or "").strip()
+        phone = (request.POST.get("phone") or "").strip()
+        address = (request.POST.get("address") or "").strip()
+        salary_str = (request.POST.get("salary") or "").strip()
+
+        errors = []
+
+    # فحوصات أساسية
+    if not username:
+        errors.append("Username is required.")
+    elif User.objects.filter(username=username).exists():
+        errors.append("Username already exists.")
+
+    if len(password) < 8:
+        errors.append("Password must be at least 8 characters long.")
+
+    # ✅ هنا التحقق الصحيح من الدور
+    if role not in ["manager", "staff"]:
         errors.append("Role must be either 'manager' or 'staff'.")
+
 
         # لو ستاف لازم نكتب الراتب
         if role == "staff" and not salary_str:
