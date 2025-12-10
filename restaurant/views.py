@@ -417,7 +417,7 @@ def edit_user_manager(request, user_id):
     else:
         form = UserUpdateForm(instance=user_obj)
 
-    return render(request, 'manager/edit_user.html', {
+    return render(request, 'restaurant/edit_user.html', {
         'form': form,
         'user_obj': user_obj,
     })
