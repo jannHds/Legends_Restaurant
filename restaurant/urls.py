@@ -17,8 +17,8 @@ urlpatterns = [
     path("customer/dashboard/", views.customer_dashboard,
          name="customer_dashboard"),
     #staff
-    path("staff/dashboard/", views.staff_dashboard, name="staff_dashboard"),
-    path("staff/update/<int:order_id>/<str:new_status>/", views.update_order_status, name="update_order_status"),
+    path('staff/dashboard/', views.staff_dashboard, name='staff_dashboard'),
+    path('update-status/<int:order_id>/<str:new_status>/', views.update_status, name='update_status'),
 
     path("manager/dashboard/", views.manager_dashboard, name="manager_dashboard"),
     
