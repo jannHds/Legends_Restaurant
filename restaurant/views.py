@@ -7,6 +7,16 @@ from .forms import CustomerSignUpForm
 from .models import Order
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from .models import Order, MenuItem
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from .forms import UserUpdateForm
+from django.contrib.auth import get_user_model
+from .forms import UserUpdateForm, CustomerAccountForm
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 
 # صفحة رئيسية بسيطة (تقدرين تغيرينها لاحقاً)
@@ -85,15 +95,58 @@ def _ensure_role(request, required_role):
 
 
 
+@login_required
 def customer_dashboard(request):
-    """
-    Customer Dashboard
-    """
-    guard = _ensure_role(request, "customer")
-    if guard is not None:
-        return guard
+    
+    # لازم يكون مسجل دخول
+    if not request.user.is_authenticated:
+        return redirect("login")
 
-    return render(request, "restaurant/customer_dashboard.html")
+    # لو دخل ستاف → نرجعه لصفحة الستاف
+    if request.user.role == "staff":
+        return redirect("staff_dashboard")
+
+    # لو دخل مانجر → نرجعه لصفحة المانجر
+    if request.user.role == "manager":
+        return redirect("manager_dashboard")
+    user = request.user
+
+    # 1) إجمالي الطلبات
+    total_orders = Order.objects.filter(user=user).count()
+
+    # 2) حالة آخر طلب
+    last_order = Order.objects.filter(user=user).order_by('-created_at').first()
+
+    last_status = None
+    if last_order:
+        last_status = last_order.get_status_display()  # يخليها "Preparing" بدل preparing
+
+    # 3) الطلبات حسب الحالة
+    preparing = Order.objects.filter(user=user, status='preparing').count()
+    out_for_delivery = Order.objects.filter(user=user, status='out_for_delivery').count()
+    delivered = Order.objects.filter(user=user, status='delivered').count()
+
+    # 4) توصيات (نختار 3 أكلات عشوائية من المينيو)
+    recommendations = MenuItem.objects.filter(is_available=True).order_by('?')[:3]
+
+    # 5) أبرز المينيو (نختار 4 عناصر عشوائية)
+    highlights = MenuItem.objects.filter(is_available=True).order_by('?')[:4]
+
+    context = {
+        "username": user.username,
+        "total_orders": total_orders,
+        "last_order": last_order,
+        "last_status": last_status,
+
+        "preparing": preparing,
+        "out_for_delivery": out_for_delivery,
+        "delivered": delivered,
+
+        "recommendations": recommendations,
+        "highlights": highlights,
+    }
+
+    return render(request, "restaurant/customer_dashboard.html", context)
     """
     Simple Customer Home page after login
     """
@@ -247,15 +300,9 @@ def manage_users(request):
             "role_filter": role_filter,
         },
     )
-# restaurant/views.py
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .forms import UserUpdateForm
-from django.contrib.auth import get_user_model
-
 User = get_user_model()
 
-def edit_user(request, user_id):
+def edit_user_manager(request, user_id):
     user_obj = get_object_or_404(User, id=user_id)
 
     if request.method == 'POST':
@@ -263,30 +310,33 @@ def edit_user(request, user_id):
         if form.is_valid():
             form.save()
             messages.success(request, "User updated successfully.")
-            return redirect('manage_users')  # اسم URL صفحة المانجر اللي فيها الجدول
-    else:
-        form = UserUpdateForm(instance=user_obj)
-
-    context = {
-        'form': form,
-        'user_obj': user_obj,
-    }
-    return render(request, 'manager/edit_user.html', context)
-def edit_user(request, user_id):
-    user_obj = get_object_or_404(User, id=user_id)
-
-    if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=user_obj)
-        if form.is_valid():
-            form.save()
             return redirect('manage_users')
     else:
         form = UserUpdateForm(instance=user_obj)
 
-    return render(request, 'restaurant/edit_user.html', {
+    return render(request, 'manager/edit_user.html', {
         'form': form,
         'user_obj': user_obj,
     })
+
+@login_required
+def edit_customer_account(request):
+    user_obj = request.user  # الكستمر يعدّل نفسه فقط
+
+    if request.method == "POST":
+        form = CustomerAccountForm(request.POST, instance=user_obj)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Account updated successfully.")
+            return redirect("customer_dashboard")
+    else:
+        form = CustomerAccountForm(instance=user_obj)
+
+    return render(request, "restaurant/customer_account_edit.html", {
+        "form": form,
+        "user_obj": user_obj,
+    })
+
 def customer_signup_view(request):
     """
     Customer Sign Up Page (for role = customer)

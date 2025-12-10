@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Legends Restaurant</title>
+    <title>{% block title %}Legends Restaurant{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 </head>
 
@@ -12,18 +12,26 @@
 
     <header class="lr-header">
         <div class="lr-logo">Legends Restaurant</div>
-        <nav class="lr-nav">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'login' %}">Login</a>
-            <a href="/customer/dashboard/">Customer</a>
-            <a href="/staff/dashboard/">Staff</a>
-            <a href="/manager/dashboard/">Manager</a>
-        </nav>
+        <<nav class="lr-nav">
+    <a href="{% url 'home' %}">Home</a>
+
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'customer_dashboard' %}" class="nav-account">
+            👤 {{ request.user.username }}
+        </a>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+</nav>
+
     </header>
 
     <main class="lr-main">
+        {% block content %}
+        {# هذا المحتوى الافتراضي يظهر في صفحة الهوم فقط #}
 
-        {# بانر ترحيب يظهر فقط للـ customer المسجّل دخوله #}
+        {# بانر الترحيب للـ customer المسجل دخوله #}
         {% if request.user.is_authenticated and request.user.role == "customer" %}
         <section style="
             background: #F4E1FF;
@@ -47,21 +55,22 @@
                 </p>
             </div>
 
-            <a href="{% url 'edit_user' request.user.id %}"
-               style="
-                   display: inline-flex;
-                   align-items: center;
-                   gap: 6px;
-                   background: #8064A2;
-                   color: #ffffff;
-                   padding: 9px 14px;
-                   border-radius: 999px;
-                   text-decoration: none;
-                   font-size: 0.9rem;
-                   font-weight: 600;
-               ">
-                ⚙ Edit Account
-            </a>
+            <a href="{% url 'edit_customer_account' %}" 
+   style="
+        display:inline-flex;
+        align-items:center;
+        gap:6px;
+        background:#8064A2;
+        color:white;
+        padding:9px 14px;
+        border-radius:999px;
+        text-decoration:none;
+        font-size:0.9rem;
+        font-weight:600;
+    ">
+    ⚙️ Edit Account
+</a>
+
         </section>
         {% endif %}
 
@@ -79,24 +88,22 @@
             <h2 class="lr-section-title">Today’s Menu</h2>
 
             <div class="lr-menu-grid">
-                {# لو عندك menu_items من الـ DB استخدمي هذا اللوب #}
                 {% if menu_items %}
                     {% for item in menu_items %}
-                        <article class="lr-menu-card">
-                            <div class="lr-menu-image"></div>
-                            <h3 class="lr-menu-title">{{ item.name }}</h3>
-                            <p class="lr-menu-desc">{{ item.description }}</p>
-                            <div class="lr-menu-footer">
-                                <span class="lr-menu-price">
-                                    <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
-                                    {{ item.price }}
-                                </span>
-                                <button class="lr-btn-secondary">Add to cart</button>
-                            </div>
-                        </article>
+                    <article class="lr-menu-card">
+                        <div class="lr-menu-image"></div>
+                        <h3 class="lr-menu-title">{{ item.name }}</h3>
+                        <p class="lr-menu-desc">{{ item.description }}</p>
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                {{ item.price }}
+                            </span>
+                            <button class="lr-btn-secondary">Add to cart</button>
+                        </div>
+                    </article>
                     {% endfor %}
                 {% else %}
-                    {# بيانات تجريبية لو ما فيه DB للحين #}
                     <article class="lr-menu-card">
                         <div class="lr-menu-image"></div>
                         <h3 class="lr-menu-title">Classic Burger</h3>
@@ -138,6 +145,8 @@
                 {% endif %}
             </div>
         </section>
+
+        {% endblock %}
     </main>
 
     <footer class="lr-footer">

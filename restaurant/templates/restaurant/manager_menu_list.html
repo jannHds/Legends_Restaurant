@@ -2,8 +2,17 @@
 
 <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
 
+<header class="lr-header">
+    <div class="lr-logo">Manage Menu</div>
+    <nav class="lr-nav">
+        <a href="{% url 'manager_dashboard' %}">Back</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+</header>
+
 <div class="menu-container">
     <h1 class="page-title">Manage Menu</h1>
+
 
     <!-- زر إضافة عنصر -->
     <button class="add-item-btn" onclick="toggleAddForm()">+ Add New Item</button>
@@ -47,8 +56,7 @@
                     </p>
                 </div>
             </div>
-
-            <!-- أزرار التحكم -->
+                        <!-- أزرار التحكم -->
             <div class="menu-actions">
                 <button onclick="openEditModal({{ item.id }})" class="btn-small btn-edit">✎ Edit</button>
 
@@ -56,7 +64,13 @@
                    🗑️ Delete
                 </a>
 
-                <a href="{% url 'toggle_availability' item.id %}" class="btn-small btn-toggle">⟳ Toggle</a>
+                <a href="{% url 'toggle_availability' item.id %}" class="btn-small btn-toggle">
+                    {% if item.is_available %}
+                        ⟳ Set Unavailable
+                    {% else %}
+                        ⟳ Set Available
+                    {% endif %}
+                </a>
             </div>
 
         </div>

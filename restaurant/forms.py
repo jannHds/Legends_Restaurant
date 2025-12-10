@@ -494,3 +494,13 @@ class MenuItemForm(forms.ModelForm):
             "category": forms.Select(attrs={"class": "lr-input"}),
             "image": forms.ClearableFileInput(attrs={"class": "lr-input"}),
         }
+class CustomerAccountForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["username", "email", "phone", "address"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # تنسيق بسيط للحقول
+        for field in self.fields.values():
+            field.widget.attrs.update({"class": "lr-input"})

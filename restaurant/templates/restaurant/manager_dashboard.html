@@ -20,7 +20,7 @@
 
     <main class="lr-main">
 
-        <h1 class="manager-title">Welcome, Manager</h1>
+        <h1>Welcome, {{ request.user.username }}</h1>
 
 
         <div class="lr-menu-grid">
@@ -36,15 +36,16 @@
             </div>
 
             <!-- زر إدارة المستخدمين -->
+                        <!-- زر إدارة المستخدمين -->
             <div class="lr-menu-card">
                 <div class="lr-menu-image"></div>
-                <p class="card-title">Manage Employees</p>
-                <p class="card-text">Add, view, and manage staff or managers.</p>
-
+                <h3>Manage Users</h3>
+                <p>Add, view, and manage staff, managers, and customers.</p>
                 <div class="lr-menu-footer">
                     <a href="{% url 'manage_users' %}" class="lr-btn-primary">Open</a>
                 </div>
             </div>
+
 
             <!-- زر التقارير -->
             <div class="lr-menu-card">
