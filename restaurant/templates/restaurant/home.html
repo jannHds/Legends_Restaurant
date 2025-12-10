@@ -1,0 +1,54 @@
+{% extends "restaurant/base.html" %}
+{% load static %}
+
+{% block content %}
+    <!-- Hero section -->
+    <section class="lr-hero">
+        <div class="lr-hero-text">
+            <h1>Order your favorite dishes</h1>
+            <p>Soft purple vibes, smooth experience. Legends Restaurant takeaway &amp; delivery.</p>
+
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'customer_dashboard' %}" class="lr-btn-primary">Go to Dashboard</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="lr-btn-primary">Start Ordering</a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Menu section -->
+    <section class="lr-menu-section">
+        <h2 class="lr-section-title">Today's Menu</h2>
+
+        <div class="lr-menu-grid">
+            {% if menu_items %}
+                {% for item in menu_items %}
+                    <article class="lr-menu-card">
+
+                        {% if item.image %}
+                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="lr-menu-photo">
+                        {% endif %}
+
+                        <h3 class="lr-menu-title">{{ item.name }}</h3>
+                        <p class="lr-menu-desc">{{ item.description }}</p>
+
+                        <div class="lr-menu-footer">
+                            <span class="lr-menu-price">
+                                <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
+                                {{ item.price }}
+                            </span>
+
+                            <form method="post" action="{% url 'add_to_cart' item.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="lr-btn-secondary">Add to cart</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            {% else %}
+                <p>No items available today.</p>
+            {% endif %}
+        </div>
+    </section>
+{% endblock %}
