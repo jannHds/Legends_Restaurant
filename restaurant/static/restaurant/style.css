@@ -492,6 +492,7 @@ body {
 
 /* MENU SECTION */
 
+
 .lr-menu-section {
     margin-top: 24px;
 }
@@ -503,12 +504,47 @@ body {
 }
 
 /* MENU GRID */
-
+/* MENU GRID – for customer home page */
 .lr-menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-    gap: 18px;
+    grid-template-columns: 1fr;   /* عمود واحد */
+    gap: 24px;                    /* المسافة بين الكروت */
 }
+
+/* لو حابة يصير عمودين في الشاشات الكبيرة */
+@media (min-width: 900px) {
+    .lr-menu-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+/* GRID layout for menu cards */
+.lr-menu-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr); /* جوال = عمود واحد */
+    gap: 24px;
+}
+
+/* تابلت */
+@media (min-width: 700px) {
+    .lr-menu-grid {
+        grid-template-columns: repeat(2, 1fr); /* عمودين */
+    }
+}
+
+/* لابتوب متوسط */
+@media (min-width: 1000px) {
+    .lr-menu-grid {
+        grid-template-columns: repeat(3, 1fr); /* 3 أعمدة */
+    }
+}
+
+/* شاشات كبيرة (4 أعمدة) */
+@media (min-width: 1300px) {
+    .lr-menu-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 أعمدة */
+    }
+}
+
 
 .lr-menu-card {
     background-color: #ffffff;
@@ -519,13 +555,27 @@ body {
     flex-direction: column;
 }
 
-/* صورة الأكل (placeholder حالياً) */
-.lr-menu-image {
-    height: 120px;
+/* صورة الأكل داخل الكارد */
+/* صورة المنيو في الهوم بيج */
+.lr-menu-photo {
+    width: 100%;
+    height: 180px;        /* غيّري الرقم لو تبينها أعلى/أقصر */
     border-radius: 12px;
-    background: linear-gradient(135deg, #C0C9EE, #898AC4);
+    object-fit: cover;    /* يقص الصورة بشكل حلو بدون تمدّد */
+    display: block;
     margin-bottom: 12px;
 }
+
+
+/* تنسيق و قص الصورة */
+.lr-menu-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* يقص الصورة بشكل حلو بدون تمدد غبي */
+    display: block;
+}
+
+
 
 .lr-menu-title {
     margin: 0 0 4px;

@@ -3,20 +3,22 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseForbidden
 from django.contrib.auth import authenticate, login, logout
 from django.utils import timezone
-from .forms import CustomerSignUpForm
-from .models import Order
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.shortcuts import render
+
+
+User = get_user_model()
+
+
+
+from django.db import transaction
+from .models import MenuItem
 from django.contrib.auth.decorators import login_required
-from .models import Order, MenuItem
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib import messages
-from .forms import UserUpdateForm
-from django.contrib.auth import get_user_model
-from .forms import UserUpdateForm, CustomerAccountForm
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from .forms import CustomerSignUpForm, UserUpdateForm
+from .models import Order, OrderItem, MenuItem, Cart, CartItem  # ← أضفنا OrderItem هنا
+from .forms import UserUpdateForm ,CustomerAccountForm
+
 
 User = get_user_model()
 
@@ -33,8 +35,10 @@ def home(request):
     menu_items = MenuItem.objects.filter(is_available=True)
     return render(request, "restaurant/home.html", {"menu_items": menu_items})
 
-# ========== AUTHENTICATION ==========
 
+# ============================
+# AUTHENTICATION
+# ============================
 def login_view(request):
     """
     Login مشترك لكل الأدوار:
@@ -74,7 +78,31 @@ def login_view(request):
     # GET → أول مرة يفتح الصفحة
     return render(request, "restaurant/login.html")
 
+def customer_signup_view(request):
+    """
+    Customer Sign Up Page (for role = customer)
+    Uses CustomerSignUpForm to create a new user, then logs them in
+    and redirects to the customer dashboard.
+    """
+    if request.method == "POST":
+        form = CustomerSignUpForm(request.POST)
+        if form.is_valid():
+            # form.save() يفترض أنه ينشئ User مع role = "customer"
+            user = form.save()
+            login(request, user)
+            # حاليًا عندكم customer_dashboard شغّال، لذلك نوجّه له
+            return redirect("home")
+    else:
+        form = CustomerSignUpForm()
 
+    context = {
+        "form": form,
+    }
+    # هذا التمبلت هو اللي Jana راح تشتغل عليه
+    return render(request, "restaurant/customer_signup.html",context)
+
+
+# لو فيه URLs قديمة تشير إلى signup_view، نخليها تعيد استخدام نفس المنطق
 def signup_view(request):
     return render(request, 'restaurant/signup.html')
 
@@ -84,14 +112,18 @@ def logout_view(request):
     return redirect("login")
 
 
-# ========== ROLE-BASED DASHBOARDS ==========
-
+# ============================
+# ROLE-BASED DASHBOARDS
+# ============================
 def _ensure_role(request, required_role):
-    """هيلبر داخلي: يتحقق من تسجيل الدخول والـ role"""
+    """
+    هيلبر داخلي:
+    - يتأكد إن المستخدم مسجل دخول
+    - ويتأكد إن دوره يطابق الدور المطلوب
+    """
     if not request.user.is_authenticated:
         return redirect("login")
 
-    # لو الدور مختلف، نعرض صفحة شكلها حلو بدل النص العادي
     if getattr(request.user, "role", None) != required_role:
         return render(
             request,
@@ -101,8 +133,6 @@ def _ensure_role(request, required_role):
         )
 
     return None
-
-
 
 @login_required
 def customer_dashboard(request):
@@ -155,7 +185,9 @@ def customer_dashboard(request):
         "highlights": highlights,
     }
 
+
     return render(request, "restaurant/customer_dashboard.html", context)
+
 
 
 def staff_dashboard(request):
@@ -229,6 +261,10 @@ def manager_dashboard(request):
 
 
 
+
+# ============================
+# MANAGER – MANAGE USERS
+# ============================
 def manage_users(request):
     """
     صفحة المدير لإدارة المستخدمين (manager / staff)
@@ -323,9 +359,12 @@ def manage_users(request):
             "form_error": form_error,
             "form_success": form_success,
             "role_filter": role_filter,
-        },
+},
     )
 
+
+
+# تعديل بيانات مستخدم (للـ manager)
 
 def edit_user_manager(request, user_id):
     user_obj = get_object_or_404(User, id=user_id)
@@ -368,20 +407,57 @@ def customer_signup_view(request):
     Uses CustomerSignUpForm to create a new user, then logs them in
     and redirects to the customer dashboard.
     """
+
     if request.method == "POST":
-        form = CustomerSignUpForm(request.POST)
+        form = CustomerAccountForm(request.POST, instance=user_obj)
         if form.is_valid():
             # form.save() يفترض أنه ينشئ User مع role = "customer"
             user = form.save()
             login(request, user)
             # حاليًا عندكم customer_dashboard شغّال، لذلك نوجّه له
             return redirect("home")
+            form.save()
+            messages.success(request, "Account updated successfully.")
+            return redirect("customer_dashboard")
     else:
-        form = CustomerSignUpForm()
+        form = CustomerAccountForm(instance=user_obj)
+
+    return render(request, "restaurant/customer_account_edit.html", {
+        "form": form,
+        "user_obj": user_obj,
+})
+
+
+# ============================
+# CUSTOMER CART / CHECKOUT / PAYMENT  (Leen)
+# ============================
+def _get_or_create_cart(user):
+    """
+    ترجع سلة المستخدم أو تنشئ له واحدة إذا ما عنده
+    """
+    cart, created = Cart.objects.get_or_create(user=user)
+    return cart
+
+
+@login_required
+def cart_view(request):
+    """
+    عرض صفحة السلة للعميل.
+    """
+    guard = _ensure_role(request, "customer")
+    if guard is not None:
+        return guard
+
+    cart = _get_or_create_cart(request.user)
+    cart_items = cart.cartitem_set.select_related("item")
+    cart_total = sum(item.total_price() for item in cart_items)
 
     context = {
-        "form": form,
+        "cart": cart,
+        "cart_items": cart_items,
+        "cart_total": cart_total,
     }
+
     return render(request, "restaurant/customer_signup.html", context)
 # ============================
 # CUSTOMER CART / CHECKOUT / PAYMENT  (Leen)
@@ -412,6 +488,7 @@ def cart_view(request):
         "cart_items": cart_items,
         "cart_total": cart_total,
     }
+
     return render(request, "restaurant/cart.html", context)
 
 
@@ -619,4 +696,5 @@ def cart_view(request):
         "cart_total": cart_total,
     }
     return render(request, "restaurant/cart.html", context)
+
 

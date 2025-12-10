@@ -40,7 +40,8 @@ class User(AbstractUser):
     def is_manager(self):
         return self.role == "manager"
 
-    def _str_(self):
+
+    def __str__(self):
         return self.username
 
 
@@ -67,7 +68,10 @@ class MenuItem(models.Model):
     )
     is_available = models.BooleanField(default=True)
 
-    def _str_(self):
+
+
+    def __str__(self):
+
         return self.name
 
 
@@ -193,6 +197,7 @@ class CustomerUser(models.Model):
     email = models.EmailField(unique=True, null=True, blank=True)
     phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
     address = models.CharField(max_length=255)
+
 
     def _str_(self):
         return f"{self.username} ({self.customer_id})"
