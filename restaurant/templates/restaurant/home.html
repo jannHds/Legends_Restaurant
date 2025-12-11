@@ -19,17 +19,20 @@
     <!-- Menu section -->
     <section class="lr-menu-section">
 
-        <!-- فلتر الكاتوقري -->
-        <form method="get" class="lr-filter-form" style="margin-bottom: 15px;">
-            <label for="category">Filter by Category:</label>
+        <!-- فلتر الكاتوقري بشكل ألطف -->
+        <form method="get" class="lr-filter-form">
+            <label for="category" class="lr-filter-label">
+                Browse our menu by category:
+            </label>
+
             <select name="category" id="category" onchange="this.form.submit()">
                 <option value="all" {% if selected_category == "all" %}selected{% endif %}>
                     All
                 </option>
                 {% for cat in categories %}
-                <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>
-                    {{ cat }}
-                </option>
+                    <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>
+                        {{ cat }}
+                    </option>
                 {% endfor %}
             </select>
         </form>
@@ -48,6 +51,7 @@
                         <h3 class="lr-menu-title">{{ item.name }}</h3>
                         <p class="lr-menu-desc">{{ item.description }}</p>
 
+                        <!-- السعر + زر الكارت ثابتين تحت الكرت -->
                         <div class="lr-menu-footer">
                             <span class="lr-menu-price">
                                 <img src="{% static 'restaurant/sar-logo.png' %}" class="sar-icon" alt="SAR">
@@ -57,7 +61,9 @@
                             <form method="post" action="{% url 'add_to_cart' item.id %}">
                                 {% csrf_token %}
                                 <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="lr-btn-secondary">Add to cart</button>
+                                <button type="submit" class="lr-btn-secondary">
+                                    Add to cart
+                                </button>
                             </form>
                         </div>
                     </article>

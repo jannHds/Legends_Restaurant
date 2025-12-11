@@ -159,13 +159,19 @@
                 </details>
 
                 <!-- Existing Users -->
-                <details class="mu-accordion-card">
+                <details class="mu-accordion-card" open>
                     <summary>Existing Users</summary>
 
                     <div class="mu-accordion-content">
-                        <form method="get" class="mu-filter-form">
+
+                        <!-- ⭐ فلتر الأدوار -->
+                        <form method="get"
+                              action="{% url 'manage_users' %}"
+                              class="mu-filter-form">
                             <label for="role-filter">Filter by role:</label>
-                            <select name="role">
+                            <select name="role"
+                                    id="role-filter"
+                                    onchange="this.form.submit()">
                                 <option value="all" {% if role_filter == "all" %}selected{% endif %}>All</option>
                                 <option value="manager" {% if role_filter == "manager" %}selected{% endif %}>Managers</option>
                                 <option value="staff" {% if role_filter == "staff" %}selected{% endif %}>Staff</option>
