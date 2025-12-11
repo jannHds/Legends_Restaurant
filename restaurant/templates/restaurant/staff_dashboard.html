@@ -23,45 +23,45 @@
     <h1 class="manager-title">Welcome, Staff</h1>
 
     <!-- كروت التنقل العلوية -->
-   <div class="lr-menu-grid">
+    <div class="lr-menu-grid">
 
-    <div class="lr-menu-card">
-        <img src="{% static 'restaurant/pending.png' %}" width="80" alt="Pending icon" class="staff-card-icon">
-        <h3>Pending Orders</h3>
-        <p>Orders waiting for confirmation.</p>
-        <div class="lr-menu-footer">
-            <a href="#pending-section" class="lr-btn-primary">View</a>
+        <div class="lr-menu-card">
+            <div class="staff-card-icon staff-card-icon-pending">⏳</div>
+            <h3>Pending Orders</h3>
+            <p>Orders waiting for confirmation.</p>
+            <div class="lr-menu-footer">
+                <a href="#pending-section" class="lr-btn-primary">View</a>
+            </div>
         </div>
-    </div>
 
-    <div class="lr-menu-card">
-        <img src="{% static 'restaurant/preparing.png' %}" width="80" alt="Preparing icon" class="staff-card-icon">
-        <h3>Preparing</h3>
-        <p>Orders currently being prepared.</p>
-        <div class="lr-menu-footer">
-            <a href="#preparing-section" class="lr-btn-primary">View</a>
+        <div class="lr-menu-card">
+            <div class="staff-card-icon staff-card-icon-preparing">🍳</div>
+            <h3>Preparing</h3>
+            <p>Orders currently being prepared.</p>
+            <div class="lr-menu-footer">
+                <a href="#preparing-section" class="lr-btn-primary">View</a>
+            </div>
         </div>
-    </div>
 
-    <div class="lr-menu-card">
-        <img src="{% static 'restaurant/ready.png' %}" width="80" alt="Ready icon" class="staff-card-icon">
-        <h3>Ready</h3>
-        <p>Orders ready for pickup / delivery.</p>
-        <div class="lr-menu-footer">
-            <a href="#ready-section" class="lr-btn-primary">View</a>
+        <div class="lr-menu-card">
+            <div class="staff-card-icon staff-card-icon-ready">🚚</div>
+            <h3>Ready</h3>
+            <p>Orders ready for pickup / delivery.</p>
+            <div class="lr-menu-footer">
+                <a href="#ready-section" class="lr-btn-primary">View</a>
+            </div>
         </div>
-    </div>
 
-    <div class="lr-menu-card">
-        <img src="{% static 'restaurant/cancelled.png' %}" width="80" alt="Cancelled icon" class="staff-card-icon">
-        <h3>Cancelled</h3>
-        <p>Orders that were cancelled.</p>
-        <div class="lr-menu-footer">
-            <a href="#cancelled-section" class="lr-btn-primary">View</a>
+        <div class="lr-menu-card">
+            <div class="staff-card-icon staff-card-icon-cancelled">❌</div>
+            <h3>Cancelled</h3>
+            <p>Orders that were cancelled.</p>
+            <div class="lr-menu-footer">
+                <a href="#cancelled-section" class="lr-btn-primary">View</a>
+            </div>
         </div>
-    </div>
 
-</div>
+    </div>
 
 
     <!-- ======================== -->
@@ -192,7 +192,8 @@
                 <p class="staff-empty">No ready / delivery orders.</p>
             {% endif %}
         </section>
-            <!-- Cancelled Orders -->
+
+        <!-- Cancelled Orders -->
         <section id="cancelled-section" class="staff-orders-card">
             <div class="staff-card-header">
                 <h2 class="staff-section-title">Cancelled Orders</h2>
@@ -214,7 +215,6 @@
 
                         <div class="staff-order-actions">
                             <span class="staff-badge staff-badge-cancelled">Cancelled</span>
-                            {# ما في زر، خلاص ملغى #}
                         </div>
                     </li>
                     {% endfor %}
@@ -223,7 +223,6 @@
                 <p class="staff-empty">No cancelled orders.</p>
             {% endif %}
         </section>
-
 
     </section>
 

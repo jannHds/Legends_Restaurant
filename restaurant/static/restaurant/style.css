@@ -2419,6 +2419,37 @@ label[for*="image"] {
     }
 }
 
+/* Staff dashboard summary icons */
+.staff-card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+    color: #2E2140;
+}
+
+/* ألوان مختلفة لكل حالة */
+.staff-card-icon-pending {
+    background: #FFF5D6;   /* أصفر فاتح */
+}
+
+.staff-card-icon-preparing {
+    background: #E5D4FF;   /* بنفسجي فاتح */
+}
+
+.staff-card-icon-ready {
+    background: #D7F5E8;   /* أخضر فاتح */
+}
+
+.staff-card-icon-cancelled {
+    background: #FFE1E1;   /* أحمر فاتح */
+}
 
 
 
