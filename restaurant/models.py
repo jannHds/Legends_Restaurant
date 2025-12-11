@@ -115,9 +115,11 @@ class CartItem(models.Model):
 # ============================
 class Order(models.Model):
     STATUS_CHOICES = [
+        ('pending', 'Pending'),
         ("preparing", "Preparing"),
         ("out_for_delivery", "Out For Delivery"),
         ("delivered", "Delivered"),
+        ('cancelled', 'Cancelled'),
     ]
 
     TYPE_CHOICES = [
@@ -133,7 +135,7 @@ class Order(models.Model):
     status = models.CharField(
         max_length=30,
         choices=STATUS_CHOICES,
-        default="preparing",
+        default="pending"
     )
     order_type = models.CharField(
         max_length=30,

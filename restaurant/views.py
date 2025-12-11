@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404, redirect
 from .forms import CustomerSignUpForm, UserUpdateForm
 from .models import Order, OrderItem, MenuItem, Cart, CartItem  # ← أضفنا OrderItem هنا
 from .forms import UserUpdateForm ,CustomerAccountForm
-
+from django.views.decorators.http import require_POST
 from django.db.models import Sum
 
 
@@ -240,8 +240,6 @@ def staff_dashboard(request):
     return render(request, "restaurant/staff_dashboard.html", context)
 
 
-from django.views.decorators.http import require_POST
-
 @login_required
 @require_POST
 def staff_update_order_status(request, order_id):
@@ -264,16 +262,22 @@ def staff_update_order_status(request, order_id):
         if order.order_type == "delivery":
             order.status = "out_for_delivery"
         else:
-            # takeaway = جاهز للاستلام
+            # takeaway = جاهز للاستلام مباشرة
             order.status = "delivered"
         order.save()
         messages.success(request, f"Order #{order.id} marked as Ready.")
 
-    # لو حبيتي تخلي للـ delivery خطوة أخيرة (out_for_delivery -> delivered)
+    # delivery: out_for_delivery -> delivered
     elif action == "to_delivered" and order.status == "out_for_delivery":
         order.status = "delivered"
         order.save()
         messages.success(request, f"Order #{order.id} marked as Delivered.")
+
+    # ✅ كنسل الطلب (مسموح من pending / preparing / out_for_delivery)
+    elif action == "cancel" and order.status in ["pending", "preparing", "out_for_delivery"]:
+        order.status = "cancelled"
+        order.save()
+        messages.success(request, f"Order #{order.id} has been cancelled.")
 
     else:
         messages.warning(request, "Invalid status change.")
@@ -606,7 +610,7 @@ def checkout_view(request):
         order = Order.objects.create(
             user=request.user,
             total=cart_total,
-            status="preparing",   # يبدأ بـ preparing
+            status="pending",   # يبدأ بـ preparing
             order_type=order_type,
         )
 

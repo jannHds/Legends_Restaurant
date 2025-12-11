@@ -99,6 +99,16 @@
                                     Move to Preparing
                                 </button>
                             </form>
+
+                            <!-- ✅ زر كنسل للـ Pending -->
+                            <form method="post" action="{% url 'staff_update_order_status' o.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="cancel">
+                                <button class="lr-btn-primary staff-order-btn" type="submit" style="margin-left: 8px; background:#ffe5e5; color:#c74b4b;">
+                                    Cancel
+                                </button>
+                            </form>
+                            <!-- نهاية الإضافة -->
                         </div>
                     </li>
                     {% endfor %}
@@ -137,6 +147,16 @@
                                     Mark as Ready
                                 </button>
                             </form>
+
+                            <!-- ✅ زر كنسل للـ Preparing -->
+                            <form method="post" action="{% url 'staff_update_order_status' o.id %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="cancel">
+                                <button class="lr-btn-primary staff-order-btn" type="submit" style="margin-left: 8px; background:#ffe5e5; color:#c74b4b;">
+                                    Cancel
+                                </button>
+                            </form>
+                            <!-- نهاية الإضافة -->
                         </div>
                     </li>
                     {% endfor %}
@@ -183,6 +203,16 @@
                                         Mark Delivered
                                     </button>
                                 </form>
+
+                                <!-- ✅ (اختياري) زر كنسل حتى وهو Out for delivery -->
+                                <form method="post" action="{% url 'staff_update_order_status' o.id %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="cancel">
+                                    <button class="lr-btn-primary staff-order-btn" type="submit" style="margin-left: 8px; background:#ffe5e5; color:#c74b4b;">
+                                        Cancel
+                                    </button>
+                                </form>
+                                <!-- نهاية الإضافة -->
                             {% endif %}
                         </div>
                     </li>
