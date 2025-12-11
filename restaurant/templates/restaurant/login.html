@@ -1,89 +1,61 @@
+{% extends "restaurant/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <title>Login | Legends Restaurant</title>
-    <link rel="stylesheet" href="{% static 'restaurant/style.css' %}">
-</head>
+{% block title %}Login | Legends Restaurant{% endblock %}
 
-<body class="lr-body">
+{% block content %}
 
-    <header class="lr-header">
-        <div class="lr-logo">Legends Restaurant</div>
-        <nav class="lr-nav">
-            <a href="{% url 'home' %}">Home</a>
-            <a href="{% url 'login' %}">Login</a>
-            <a href="/customer/dashboard/">Customer</a>
-            <a href="/staff/dashboard/">Staff</a>
-            <a href="/manager/dashboard/">Manager</a>
-        </nav>
-    </header>
+<div class="lr-login-wrapper">
 
-    <main class="lr-main">
+    <h1 class="lr-login-title">Welcome Back</h1>
+    <p class="lr-login-subtitle">
+        Sign in to continue your Legends Restaurant experience.
+    </p>
 
-        <div class="lr-login-wrapper">
+    {% if error %}
+    <p style="color: red; text-align:center; margin-bottom: 10px;">
+        {{ error }}
+    </p>
+    {% endif %}
 
-            <h1 class="lr-login-title">Welcome Back</h1>
-            <p class="lr-login-subtitle">
-                Sign in to continue your Legends Restaurant experience.
-            </p>
+    <form method="POST">
+        {% csrf_token %}
 
-            {% if error %}
-            <p style="color: red; text-align:center; margin-bottom: 10px;">
-                {{ error }}
-            </p>
-            {% endif %}
+        <label class="lr-form-label">Username</label>
+        <input type="text" name="username" class="lr-input" required>
 
-            <form method="POST">
-                {% csrf_token %}
+        <label class="lr-form-label">Password</label>
+        <input type="password" name="password" class="lr-input" required>
 
-                <label class="lr-form-label">Username</label>
-                <input type="text" name="username" class="lr-input" required>
+        <button type="submit" class="lr-btn-login">Login</button>
+    </form>
 
-                <label class="lr-form-label">Password</label>
-                <input type="password" name="password" class="lr-input" required>
+    {# ✅ سطر واحد فقط للتسجيل بدون تكرار #}
+    <p class="lr-login-note">
+        New customer?
+        <a href="{% url 'customer_signup' %}">Create an account</a>
+    </p>
 
-                <button type="submit" class="lr-btn-login">Login</button>
-                <p style="text-align:center; margin-top:10px; font-size:0.9rem;">
-    New customer?
-    <a href="{% url 'customer_signup' %}" style="color:#8064A2; font-weight:600;">Create an account</a>
-</p>
-            </form>
+    <!-- ===== SOCIAL MEDIA (SMALL ICON + TEXT) ===== -->
+    <div class="lr-login-social-clean">
 
-            <p class="lr-login-note">
-                Don’t have an account? <a href="{% url 'signup' %}">Create one</a>
-            </p>
+        <a class="lr-social-line" href="#" target="_blank">
+            <img src="{% static 'restaurant/insta.png' %}" alt="Instagram">
+            <span>Instagram</span>
+        </a>
 
-            <!-- ===== SOCIAL MEDIA (SMALL ICON + TEXT) ===== -->
-            <div class="lr-login-social-clean">
+        <a class="lr-social-line" href="#" target="_blank">
+            <img src="{% static 'restaurant/tiktok.png' %}" alt="TikTok">
+            <span>TikTok</span>
+        </a>
 
-                <a class="lr-social-line" href="#" target="_blank">
-                    <img src="{% static 'restaurant/insta.png' %}" alt="Instagram">
-                    <span>Instagram</span>
-                </a>
+        <a class="lr-social-line" href="#" target="_blank">
+            <img src="{% static 'restaurant/whatsapp.png' %}" alt="WhatsApp">
+            <span>WhatsApp</span>
+        </a>
 
-                <a class="lr-social-line" href="#" target="_blank">
-                    <img src="{% static 'restaurant/tiktok.png' %}" alt="TikTok">
-                    <span>TikTok</span>
-                </a>
+    </div>
 
-                <a class="lr-social-line" href="#" target="_blank">
-                    <img src="{% static 'restaurant/whatsapp.png' %}" alt="WhatsApp">
-                    <span>WhatsApp</span>
-                </a>
+</div>
 
-            </div>
-
-        </div>
-
-    </main>
-
-    <footer class="lr-footer">
-        &copy; {{ now|date:"Y" }} Legends Restaurant – Takeaway & Delivery
-    </footer>
-
-</body>
-
-</html>
+{% endblock %}
