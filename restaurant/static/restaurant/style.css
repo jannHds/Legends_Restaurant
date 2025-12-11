@@ -492,6 +492,7 @@ body {
 
 /* MENU SECTION */
 
+/* MENU SECTION */
 
 .lr-menu-section {
     margin-top: 24px;
@@ -503,21 +504,30 @@ body {
     color: #4b4d73;
 }
 
-/* MENU GRID */
-/* MENU GRID – for customer home page */
-.lr-menu-grid {
-    display: grid;
-    grid-template-columns: 1fr;   /* عمود واحد */
-    gap: 24px;                    /* المسافة بين الكروت */
+/* ===== Filter bar above menu ===== */
+.lr-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* لو حابة يصير عمودين في الشاشات الكبيرة */
-@media (min-width: 900px) {
-    .lr-menu-grid {
-        grid-template-columns: 1fr 1fr;
-    }
+.lr-filter-label {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--muted);
 }
-/* GRID layout for menu cards */
+
+.lr-filter-form select {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--panel-border);
+    background: #fff;
+    font-size: 0.9rem;
+    outline: none;
+}
+
+/* MENU GRID – responsive layout */
 .lr-menu-grid {
     display: grid;
     grid-template-columns: repeat(1, 1fr); /* جوال = عمود واحد */
@@ -545,37 +555,25 @@ body {
     }
 }
 
-
+/* كرت المنيو */
 .lr-menu-card {
     background-color: #ffffff;
     border-radius: 16px;
     padding: 14px 14px 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
     display: flex;
-    flex-direction: column;
+    flex-direction: column;   /* مهم عشان الفوتر ينزل تحت */
 }
 
-/* صورة الأكل داخل الكارد */
 /* صورة المنيو في الهوم بيج */
 .lr-menu-photo {
     width: 100%;
-    height: 180px;        /* غيّري الرقم لو تبينها أعلى/أقصر */
+    height: 180px;
     border-radius: 12px;
-    object-fit: cover;    /* يقص الصورة بشكل حلو بدون تمدّد */
+    object-fit: cover;
     display: block;
     margin-bottom: 12px;
 }
-
-
-/* تنسيق و قص الصورة */
-.lr-menu-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;      /* يقص الصورة بشكل حلو بدون تمدد غبي */
-    display: block;
-}
-
-
 
 .lr-menu-title {
     margin: 0 0 4px;
@@ -589,25 +587,16 @@ body {
     color: #6a6b87;
 }
 
-/* الفوتر اللي يحتوي زر Open في كروت الداشبورد */
+/* الفوتر: السعر + زر Add to cart ثابتين تحت */
 .lr-menu-footer {
+    margin-top: auto;                  /* هذا اللي ينزل الفوتر تحت الكرت */
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;    /* السعر يسار، الزر يمين */
     align-items: center;
-    margin-top: 20px;   /* بدلاً من auto */
+    gap: 10px;
 }
-
-/* نتأكد أن الزرّ يطلع كشكل كبسّة */
-.lr-menu-footer .lr-btn-primary {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-}
-
 
 /* السعر + شعار الريال */
-
 .lr-menu-price {
     display: flex;
     align-items: center;
@@ -621,6 +610,7 @@ body {
     height: 18px;
     margin-right: 5px;
 }
+
 
 /* FOOTER */
 
@@ -889,6 +879,65 @@ body {
     border-radius: 20px;
     box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
 }
+/* ===== Manager dashboard icons ===== */
+.manager-card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+    color: #2E2140;
+}
+
+/* ألوان مختلفة لكل كرت */
+.manager-card-icon-menu {
+    background: #FFF5D6;    /* أصفر فاتح للأكل */
+}
+
+.manager-card-icon-users {
+    background: #E5D4FF;    /* بنفسجي users */
+}
+
+.manager-card-icon-reports {
+    background: #D7F5E8;    /* أخضر خفيف للتقارير */
+}
+
+/* Header row for Manager Reports (title + back button) */
+.manager-reports-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+/* زر الرجوع للمانجر داشبورد */
+.lr-back-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #ffffff;
+    border: 1px solid #e6e9f7;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    font-size: 14px;
+    font-weight: 600;
+    color: #4b4d73;
+    text-decoration: none;
+}
+
+.lr-back-pill:hover {
+    background: #f7f5ff;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+
 
 /* فورم مرتب */
 

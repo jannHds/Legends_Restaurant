@@ -325,10 +325,9 @@ def manager_dashboard(request):
 # ============================
 def manage_users(request):
     """
-    صفحة المدير لإدارة المستخدمين (manager / staff)
-    - تضيف مستخدم جديد مع phone, address, salary
-    - تضبط hired_at تلقائياً إذا كان role = staff
-    - تعرض جدول المستخدمين مع فلتر حسب الدور
+    صفحة المدير لإدارة المستخدمين
+    - إضافة يوزر جديد
+    - عرض جدول المستخدمين مع فلتر حسب الدور
     """
     guard = _ensure_role(request, "manager")
     if guard is not None:
@@ -337,26 +336,22 @@ def manage_users(request):
     form_error = None
     form_success = None
 
-    # فلتر الدور في الجدول (GET parameter)
+    # نقرأ الفلتر من الـ GET دائماً
     role_filter = request.GET.get("role", "all")
 
     # ---------- معالجة فورم الإضافة (POST) ----------
     if request.method == "POST":
         username = (request.POST.get("username") or "").strip()
         email = (request.POST.get("email") or "").strip()
-
-        # نقرأ الدور ونحوّله لحروف صغيرة (staff / manager)
         role_raw = (request.POST.get("role") or "").strip()
         role = role_raw.lower()
-
         password = (request.POST.get("password") or "").strip()
         phone = (request.POST.get("phone") or "").strip()
         address = (request.POST.get("address") or "").strip()
         salary_str = (request.POST.get("salary") or "").strip()
 
-        errors: list[str] = []
+        errors = []
 
-        # فحوصات أساسية
         if not username:
             errors.append("Username is required.")
         elif User.objects.filter(username=username).exists():
@@ -365,15 +360,12 @@ def manage_users(request):
         if len(password) < 8:
             errors.append("Password must be at least 8 characters long.")
 
-        # التحقق من الدور
-        if role not in ["manager", "staff"]:
-            errors.append("Role must be either 'manager' or 'staff'.")
+        if role not in ["manager", "staff", "customer"]:
+            errors.append("Role must be either manager, staff, or customer.")
 
-        # لو ستاف لازم نكتب الراتب
         if role == "staff" and not salary_str:
             errors.append("Salary is required for staff users.")
 
-        # لو فيه راتب تأكدي أنه رقم
         if salary_str:
             try:
                 float(salary_str)
@@ -383,7 +375,6 @@ def manage_users(request):
         if errors:
             form_error = " | ".join(errors)
         else:
-            # إنشاء المستخدم
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -396,12 +387,12 @@ def manage_users(request):
             if role == "staff":
                 user.hired_at = timezone.now()
                 if salary_str:
-                    user.salary = salary_str  # Django سيحوّلها لـ Decimal
+                    user.salary = salary_str
 
             user.save()
             form_success = "User created successfully."
 
-    # ---------- تجهيز قائمة المستخدمين (GET / بعد POST) ----------
+    # ---------- تجهيز قائمة المستخدمين (مع الفلتر) ----------
     users_qs = User.objects.filter(role__in=["manager", "staff", "customer"])
 
     if role_filter in ["manager", "staff", "customer"]:
@@ -417,8 +408,9 @@ def manage_users(request):
             "form_error": form_error,
             "form_success": form_success,
             "role_filter": role_filter,
-},
+        },
     )
+
 
 
 # تعديل بيانات مستخدم (للـ manager)

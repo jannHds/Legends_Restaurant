@@ -24,31 +24,31 @@
 
         <div class="lr-menu-grid">
 
-            <!-- زر إدارة المنيو -->
+            <!-- كرت: Manage Menu -->
             <div class="lr-menu-card">
-                <div class="lr-menu-image"></div>
-                <h3>Manage Menu</h3>
-                <p>Add, edit, or delete menu items.</p>
+                <div class="staff-card-icon staff-card-icon-pending">🍔</div>
+                <h3 class="lr-menu-title">Manage Menu</h3>
+                <p class="lr-menu-desc">Add, edit, or delete menu items.</p>
                 <div class="lr-menu-footer">
                     <a href="{% url 'manager_menu_list' %}" class="lr-btn-primary">Open</a>
                 </div>
             </div>
 
-            <!-- زر إدارة المستخدمين -->
+            <!-- كرت: Manage Users -->
             <div class="lr-menu-card">
-                <div class="lr-menu-image"></div>
-                <h3>Manage Users</h3>
-                <p>Add, view, and manage staff, managers, and customers.</p>
+                <div class="staff-card-icon staff-card-icon-preparing">👥</div>
+                <h3 class="lr-menu-title">Manage Users</h3>
+                <p class="lr-menu-desc">Add, view, and manage staff, managers, and customers.</p>
                 <div class="lr-menu-footer">
                     <a href="{% url 'manage_users' %}" class="lr-btn-primary">Open</a>
                 </div>
             </div>
 
-            <!-- زر التقارير -->
+            <!-- كرت: Reports -->
             <div class="lr-menu-card">
-                <div class="lr-menu-image"></div>
-                <h3>Reports</h3>
-                <p>View system statistics and order summaries.</p>
+                <div class="staff-card-icon staff-card-icon-ready">📊</div>
+                <h3 class="lr-menu-title">Reports</h3>
+                <p class="lr-menu-desc">View system statistics and order summaries.</p>
                 <div class="lr-menu-footer">
                     <a href="{% url 'manager_reports' %}" class="lr-btn-primary">Open</a>
                 </div>
