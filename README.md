@@ -1,6 +1,43 @@
-# Legends Restaurant
+# Legends Restaurant  
+### Takeaway & Delivery System
 
-Legends Restaurant is a web-based takeaway and delivery management system developed as a university software engineering project. The system helps customers browse the menu, place orders, and track order status, while also allowing staff and managers to manage restaurant operations through dedicated dashboards.
+Legends Restaurant is a web-based restaurant ordering and management system developed as a **final course project** for the **Software Engineering course (CSC 305)**.
+
+The system allows customers to browse menu items, place takeaway or delivery orders, and track their order status. Staff members manage order processing, while managers control menu items and system operations through administrative dashboards.
+
+---
+
+## Course Information
+
+**Course:** CSC 305 – Software Engineering  
+**Term:** Term 1  
+**Academic Year:** 2025 / 2026  
+**Course Coordinator:** Dr. Rahma Ahmed  
+
+This project was developed as a required course project following the course guidelines and documentation standards.
+
+---
+
+## Project Title
+
+**Legends Restaurant – Takeaway and Delivery System**
+
+---
+
+## Team Members
+
+Group 1
+
+| Name |
+|-----|
+| Jana Hassan Algarni | 
+| Leen Abdulrahman Hadari | 
+| Asma Abbas Albeshri | 
+| Lujain Abdullah Alqahtani | 
+| Najaf Abdulaziz Al-Mohsen | 
+| Shahad Saeed Al-Shahrani | 
+
+---
 
 ## Project Overview
 
